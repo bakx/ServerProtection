@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Plugins.AbuseIP": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}

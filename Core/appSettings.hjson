@@ -1,0 +1,33 @@
+{
+
+  Plugins: ["eventmonitor", "abuseip"]
+
+  Firewall: {
+    Rules: {
+      # Name of the firewall rule that will be generated
+      # {0} Source IP
+      # {1}DateTime formatted as Firewall.DateFormat
+      NameTemplate: "SP Service block {0}"
+
+      # DateTime formatting
+      DateFormat: "MM-dd-yyyy HH:m:s"
+    }
+  }
+
+  Blocking: {
+    # Amount of attempts that will results in block if within timespan
+    Attempts: 3
+
+    # Time to block after the threshold is exceeded
+    TimeSpanMinutes: 1440
+    
+    # Detect IP Range attemps. 
+    # This feature will look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method
+    # that includes switching the IP to avoid detection
+    DetectIPRange: true
+
+    # Block IP Range. 
+    # This feature will block n.n.n.1 to n.n.n.255 when an IP range attack is determined
+    BlockIPRange: true
+  }
+}
