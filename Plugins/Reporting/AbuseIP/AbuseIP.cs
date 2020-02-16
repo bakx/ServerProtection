@@ -22,7 +22,6 @@ namespace Plugins
 
         private static readonly HttpClient HttpClient = new HttpClient();
         private string apiKey;
-
         private string apiUrl;
 
         // Diagnostics

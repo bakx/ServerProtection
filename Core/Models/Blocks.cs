@@ -4,13 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SP.Core.Models
 {
-    [Table("Blocking")]
-    public class Blocking
+    [Table("Blocks")]
+    public class Blocks
     {
         [Key] public long Id { get; set; }
 
         public string IpAddress { get; set; }
         public string Hostname { get; set; }
         public DateTime Date { get; set; }
+
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string ISP { get; set; }
     }
 }
