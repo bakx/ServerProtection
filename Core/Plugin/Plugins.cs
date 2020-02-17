@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using Microsoft.Extensions.Logging;
 
-namespace SP.Core
+namespace SP.Core.Plugin
 {
     public class Plugins<T> : AssemblyLoadContext, IPlugins
     {

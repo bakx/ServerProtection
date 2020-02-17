@@ -1,7 +1,7 @@
 ﻿using NetFwTypeLib;
 using SP.Core.Models;
 
-namespace SP.Core
+namespace SP.Core.Interfaces
 {
     public interface IFirewall
     {

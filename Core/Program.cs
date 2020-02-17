@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using SP.Core.Interfaces;
 
 namespace SP.Core
 {
@@ -44,9 +45,8 @@ namespace SP.Core
                     services.AddSingleton(config);
                     services.AddSingleton<IProtectHandler, ProtectHandler>();
                     services.AddSingleton<IFirewall, Firewall>();
+                    services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(log));
                     services.AddHostedService<CoreService>();
-                    services.AddLogging(loggingBuilder =>
-                        loggingBuilder.AddSerilog(log));
                 });
         }
     }

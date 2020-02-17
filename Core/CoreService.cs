@@ -9,13 +9,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NetFwTypeLib;
+using SP.Core.Interfaces;
 using SP.Core.Models;
+using SP.Core.Plugin;
 using SP.Core.Tools;
 using SP.Plugins;
 
 namespace SP.Core
 {
-    public class CoreService : BackgroundService
+    public class CoreService : BackgroundService, ICoreService
     {
         // Configuration object
         private readonly IConfigurationRoot config;

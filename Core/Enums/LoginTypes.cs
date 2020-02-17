@@ -1,4 +1,4 @@
-namespace SP.Core
+namespace SP.Core.Enums
 {
     public enum LoginTypes
     {

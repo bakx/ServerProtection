@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NetFwTypeLib;
+using SP.Core.Interfaces;
 using SP.Core.Models;
 
 namespace SP.Core

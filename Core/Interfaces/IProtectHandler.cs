@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SP.Core.Models;
 using SP.Plugins;
 
-namespace SP.Core
+namespace SP.Core.Interfaces
 {
     public interface IProtectHandler
     {

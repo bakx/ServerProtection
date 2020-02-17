@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SP.Core.Interfaces;
 using SP.Core.Models;
 using SP.Plugins;
 
