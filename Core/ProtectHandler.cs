@@ -25,7 +25,7 @@ namespace SP.Core
         /// </summary>
         /// <param name="log"></param>
         /// <param name="config"></param>
-        public ProtectHandler(ILogger<ProtectHandler> log, IConfiguration config)
+        public ProtectHandler(ILogger<ProtectHandler> log, IConfigurationRoot config)
         {
             this.log = log;
 
@@ -91,7 +91,7 @@ namespace SP.Core
             // Determine the block count
             int previousAttempts = await GetLoginAttempts(attempt, previousLogins);
 
-            if (previousAttempts >= attempts)
+            if (previousAttempts > attempts)
             {
                 return await Task.FromResult(true);
             }

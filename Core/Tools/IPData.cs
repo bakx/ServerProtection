@@ -17,9 +17,9 @@ namespace SP.Core.Tools
 
             DataModel model = new DataModel
             {
-                City = o["city"].ToString(),
-                Country = o["country_name"].ToString(),
-                ISP = o["asn"]["name"].ToString()
+                City = o.ContainsKey("city") ? o["city"].ToString() : "",
+                Country = o.ContainsKey("country_name") ? o["country_name"].ToString() : "",
+                ISP = o.ContainsKey("asn") ? o["asn"]["name"].ToString() : ""
             };
 
             return model;

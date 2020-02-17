@@ -57,16 +57,12 @@ namespace SP.Core
             {
                 PluginEventArgs pluginEventArgs = args as PluginEventArgs;
 
-
                 // Sanity check
                 if (pluginEventArgs == null)
                 {
                     log.LogError($"{nameof(BlockEvent)} was called but {nameof(PluginEventArgs)} should not be null");
                     return;
                 }
-
-                // Pass the event to the protect handler
-                bool block = await protectHandler.AnalyzeAttempt(pluginEventArgs);
 
                 // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
                 if (lastBlocks.Count > 10)
@@ -82,6 +78,9 @@ namespace SP.Core
                     log.LogDebug($"{pluginEventArgs.IPAddress} was recently blocked. Ignoring.");
                     return;
                 }
+
+                // Pass the event to the protect handler
+                bool block = await protectHandler.AnalyzeAttempt(pluginEventArgs);
 
                 // Block IP?
                 if (!block)
