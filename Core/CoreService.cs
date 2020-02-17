@@ -141,6 +141,14 @@ namespace SP.Core
                     log.LogDebug($"Unable to get host name for {block.IpAddress}");
                 }
 
+                // Save to database
+                await using Db db = new Db();
+                db.Blocks.Add(block);
+                await db.SaveChangesAsync();
+
+                // Increase statistics
+                await Statistics.Blocks(block);
+
                 // Block IP in Firewall
                 firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
 
