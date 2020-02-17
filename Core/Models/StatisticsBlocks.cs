@@ -3,12 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SP.Core.Models
 {
-    [Table("BlockingStatistics")]
-    public class BlockingStatistics
+    [Table("Statistics.Blocks")]
+    public class StatisticsBlocks
     {
         [Key] public long Id { get; set; }
 
         public string Country { get; set; }
+        public string City { get; set; }
+        public string ISP { get; set; }
         public long Attempts { get; set; }
     }
 }

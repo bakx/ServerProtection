@@ -341,3 +341,6 @@ healthchecksdb
 
 # Ignore all development settings (also can include API keys etc)
 appSettings.development.json
+/DevNotes.txt
+/Core/appSettings.development.hjson
+/Core/Config/appSettings.development.hjson

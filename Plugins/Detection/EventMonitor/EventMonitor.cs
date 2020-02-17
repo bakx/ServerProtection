@@ -153,12 +153,13 @@ namespace Plugins
                 PluginEventArgs pluginEventArgs = new PluginEventArgs
                 {
                     IPAddress = eventLogEntry.SourceNetworkAddress,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    Details = $"Repeated RDP login failures. Last user: {eventLogEntry.AccountAccountName}"
                 };
 
                 // Log attempt
                 log.Information(
-                    $"{eventLogEntry.SourceWorkstationName} of {eventLogEntry.SourceNetworkAddress} failed logging in on port {eventLogEntry.SourcePort}.");
+                    $"Workstation {eventLogEntry.SourceWorkstationName} from {eventLogEntry.SourceNetworkAddress} failed logging in.");
 
                 // Fire event
                 LoginAttemptsHandler?.Invoke(this, pluginEventArgs);

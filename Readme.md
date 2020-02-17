@@ -11,24 +11,5 @@ that a login failure occured of type 4625.
 ### Reporting - AbuseIP
 Reports the hacking attempt to www.abuseipdb.com
 
-
-
-## Ignore below
-sc create TestService BinPath=C:\full\path\to\publish\dir\WindowsServiceExample.exe
-
-The SC command is a bog standard windows command (Has nothing to do with .NET Core), that installs a windows service. We say that we are creating a windows service, and we want to call it “TestService”. Importantly, we pass in the full path to our windows service exe.
-
-We should be greeted with :
-
-[SC] CreateService SUCCESS
-
-Then all we need to do is start our service :
-
-sc start TestService
-
-We can now check our log file and see our service running!
-
-To stop and delete our service, all we need to do is :
-
-sc stop TestService
-sc delete TestService
+## Developer notes
+This project is using SQLite in combination with EF Core. More details at : https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli

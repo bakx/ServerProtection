@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace SP.Core
+namespace SP.Core.Plugin
 {
     public class PluginsLoadContext : AssemblyLoadContext
     {

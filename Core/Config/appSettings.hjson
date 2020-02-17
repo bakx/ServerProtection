@@ -1,13 +1,15 @@
 {
-
   Plugins: ["eventmonitor", "abuseip"]
 
   Firewall: {
     Rules: {
       # Name of the firewall rule that will be generated
       # {0} Source IP
-      # {1}DateTime formatted as Firewall.DateFormat
       NameTemplate: "SP Service block {0}"
+
+      # Description
+      # {0} DateTime formatted as Firewall.DateFormat
+      DescriptionTemplate: "Blocked on {0}"
 
       # DateTime formatting
       DateFormat: "MM-dd-yyyy HH:m:s"
@@ -30,4 +32,17 @@
     # This feature will block n.n.n.1 to n.n.n.255 when an IP range attack is determined
     BlockIPRange: true
   }
+
+  Tools: {
+    # IP Data api key
+    IPData: {
+      # Url of the webservice
+      # {0} API Key
+      Url: "https://api.ipdata.co/1.1.1.1?api-key={0}"
+
+      # API key
+      Key: "your-key"
+    }
+  }
+  
 }

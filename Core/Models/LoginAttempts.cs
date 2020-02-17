@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SP.Core.Models
 {
-    [Table("LoginAttempts")]
-    public class LoginAttempt
+    [Table("Login.Attempts")]
+    public class LoginAttempts
     {
         [Key] public long Id { get; set; }
 

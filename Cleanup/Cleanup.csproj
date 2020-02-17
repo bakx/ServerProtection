@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Gideon Bakx</Authors>
+    <Description>Removes firewall rules.</Description>
+    <RootNamespace>SP.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <COMReference Include="NetFwTypeLib.dll">
+      <Guid>58fbcf7c-e7a9-467c-80b3-fc65e8fcca08</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+    </COMReference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;C:\Program Files (x86)\kSign\signtool.exe&quot; sign /n &quot;Gideon Bakx&quot; /fd sha256 /t &quot;http://timestamp.comodoca.com&quot; &quot;$(TargetDir)$(TargetName).exe&quot;" />
+  </Target>
+</Project>

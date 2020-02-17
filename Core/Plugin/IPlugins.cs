@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace SP.Core
+namespace SP.Core.Plugin
 {
     public interface IPlugins
     {
