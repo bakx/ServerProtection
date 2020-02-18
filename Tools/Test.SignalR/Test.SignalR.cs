@@ -144,11 +144,11 @@ namespace Testing
         /// <summary>
         /// 
         /// </summary>
-        public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
+        public async Task<bool> BlockedEvent(SP.Models.Blocks block)
         {
             try
             {
-                await HubBlocks.InvokeAsync("Block", pluginEventArgs);
+                await HubBlocks.InvokeAsync("Block", block);
                 return true;
             }
             catch (Exception e)

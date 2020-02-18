@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using SP.Plugins;
 
@@ -11,7 +12,7 @@ namespace Plugins
 {
     public class LiveReportSignalR : IPluginBase
     {
-        private string loginAttemptsHubUrl;
+        private string reportingHubUrl;
 
         // Diagnostics
         private ILogger log;
@@ -40,7 +41,7 @@ namespace Plugins
                     .ForContext(typeof(LiveReportSignalR));
 
                 // Assign config variables
-                loginAttemptsHubUrl = config["loginAttemptsHubUrl"];
+                reportingHubUrl = config["reportingHubUrl"];
 
                 // Diagnostics
                 log.Information("Plugin initialized");
@@ -70,8 +71,8 @@ namespace Plugins
             try
             {
                 Hub = new HubConnectionBuilder()
-                    .WithUrl(loginAttemptsHubUrl)
-//                    .AddMessagePackProtocol()
+                    .WithUrl(reportingHubUrl)
+                    .AddMessagePackProtocol()
                     .Build();
 
                 Hub.Closed += async error =>
@@ -135,7 +136,6 @@ namespace Plugins
                 log.Error(e.Message);
                 return false;
             }
-            
         }
 
         /// <summary>
@@ -143,7 +143,16 @@ namespace Plugins
         /// </summary>
         public async Task<bool> BlockedEvent(SP.Models.Blocks block)
         {
-            return await Task.FromResult(true);
+            try
+            {
+                await Hub.InvokeAsync("Block", block);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
+            }
         }
     }
 }

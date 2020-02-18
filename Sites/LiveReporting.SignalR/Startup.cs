@@ -20,7 +20,7 @@ namespace LiveReporting.SignalR
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddSignalR();
+            services.AddSignalR().AddMessagePackProtocol(); ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,8 +47,7 @@ namespace LiveReporting.SignalR
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapHub<LoginAttemptHub>("/loginAttemptHub");
-                endpoints.MapHub<BlocksHub>("/blocksHub");
+                endpoints.MapHub<ReportingHub>("/reportingHub");
             });
         }
     }

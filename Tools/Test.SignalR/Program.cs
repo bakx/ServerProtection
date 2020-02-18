@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SP.Models;
 using SP.Plugins;
 
 namespace Testing
@@ -12,10 +13,20 @@ namespace Testing
             await r.Initialize(null);
             await r.Configure();
 
-            PluginEventArgs p = new PluginEventArgs {IPAddress = "127.0.0.1", DateTime = DateTime.Now, Details = "Details"};
+            PluginEventArgs pluginEventArgs = new PluginEventArgs {IPAddress = "127.0.0.1", DateTime = DateTime.Now, Details = "Details"};
 
-            await r.LoginAttempt(p);
-            await r.BlockedEvent(p);
+            await r.LoginAttempt(pluginEventArgs);
+
+            Blocks block = new Blocks
+            {
+                IpAddress = pluginEventArgs.IPAddress,
+                Details = pluginEventArgs.Details,
+                City = "City",
+                Country = "Country",
+                Date = DateTime.Now
+            };
+
+            await r.BlockedEvent(block);
 
         }
     }
