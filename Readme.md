@@ -13,3 +13,6 @@ Reports the hacking attempt to www.abuseipdb.com
 
 ## Developer notes
 This project is using SQLite in combination with EF Core. More details at : https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
+
+## Acknowledgements
+Shield icon taken from http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/shield-icon.html

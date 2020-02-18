@@ -1,5 +1,5 @@
 ﻿using NetFwTypeLib;
-using SP.Core.Models;
+using SP.Models;
 
 namespace SP.Core.Interfaces
 {

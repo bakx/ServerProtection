@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SP.Core.Interfaces;
-using SP.Core.Models;
-using SP.Plugins;
+using SP.Models;
 
 namespace SP.Core
 {
@@ -25,7 +24,7 @@ namespace SP.Core
         /// </summary>
         /// <param name="log"></param>
         /// <param name="config"></param>
-        public ProtectHandler(ILogger<ProtectHandler> log, IConfiguration config)
+        public ProtectHandler(ILogger<ProtectHandler> log, IConfigurationRoot config)
         {
             this.log = log;
 
@@ -65,22 +64,14 @@ namespace SP.Core
 
         /// <summary>
         /// </summary>
-        /// <param name="args"></param>
-        public async Task<bool> AnalyzeAttempt(PluginEventArgs args)
+        /// <param name="loginAttempt"></param>
+        public async Task<bool> AnalyzeAttempt(LoginAttempts loginAttempt)
         {
-            // Convert arguments to attempt
-            LoginAttempts attempt = new LoginAttempts
-            {
-                IpAddress = args.IPAddress,
-                Details = args.Details,
-                EventDate = args.DateTime
-            };
-
             // Open handle to database
             await using Db db = new Db();
 
             // Add the login attempt
-            db.LoginAttempts.Add(attempt);
+            db.LoginAttempts.Add(loginAttempt);
 
             // Save changes
             await db.SaveChangesAsync();
@@ -89,9 +80,9 @@ namespace SP.Core
             DateTime previousLogins = DateTime.Now.Subtract(new TimeSpan(0, timeSpanMinutes, 0));
 
             // Determine the block count
-            int previousAttempts = await GetLoginAttempts(attempt, previousLogins);
+            int previousAttempts = await GetLoginAttempts(loginAttempt, previousLogins);
 
-            if (previousAttempts >= attempts)
+            if (previousAttempts > attempts)
             {
                 return await Task.FromResult(true);
             }

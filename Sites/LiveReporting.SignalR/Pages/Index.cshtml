@@ -1,0 +1,22 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h1 class="display-4">Login Attempts</h1>
+            <div id="loginAttempts"></div>
+        </div>
+        <div class="col-sm">
+            <h1 class="display-4">Blocks</h1>
+            <div id="blocks"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/reportingHub.js"></script>

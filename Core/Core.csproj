@@ -6,7 +6,13 @@
     <Authors>Gideon Bakx</Authors>
     <Description>Service Protect monitors various system resources to detect brute force login attempts. Integrates with the Windows Firewall to automatically block unwanted connections.</Description>
     <RootNamespace>SP.Core</RootNamespace>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Config\appSettings.json" />
+    <Content Remove="Config\logSettings.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <COMReference Include="NetFwTypeLib.dll">
@@ -17,6 +23,12 @@
       <Lcid>0</Lcid>
       <Isolated>false</Isolated>
     </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Config\appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +48,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
@@ -46,6 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj" />
     <ProjectReference Include="..\Plugins\Base\Plugins.Base.csproj" />
   </ItemGroup>
 
@@ -61,9 +75,7 @@
   <ItemGroup>
     <Folder Include="logs\" />
     <Folder Include="Data\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;C:\Program Files (x86)\kSign\signtool.exe&quot; sign /n &quot;Gideon Bakx&quot; /fd sha256 /t &quot;http://timestamp.comodoca.com&quot; &quot;$(TargetDir)$(TargetName).exe&quot;" />
-  </Target>
 </Project>

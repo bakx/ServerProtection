@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SP.Core.Models;
-using SP.Plugins;
+using SP.Models;
 
 namespace SP.Core.Interfaces
 {
@@ -16,7 +15,7 @@ namespace SP.Core.Interfaces
 
         /// <summary>
         /// </summary>
-        /// <param name="args"></param>
-        Task<bool> AnalyzeAttempt(PluginEventArgs args);
+        /// <param name="attempt"></param>
+        Task<bool> AnalyzeAttempt(LoginAttempts attempt);
     }
 }

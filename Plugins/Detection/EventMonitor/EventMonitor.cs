@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using SP.Models;
 using SP.Plugins;
 using EventLogEntry = Plugins.Models.EventLogEntry;
 
@@ -25,8 +26,7 @@ namespace Plugins
 
         private IConfigurationRoot config;
         private ILogger log;
-
-        public EventHandler LoginAttemptsHandler { get; set; }
+        private IPluginBase.LoginAttempt loginAttemptsHandler;
 
         /// <summary>
         /// </summary>
@@ -104,20 +104,20 @@ namespace Plugins
         /// <summary>
         /// Register the LoginAttemptsHandler in order to fire events
         /// </summary>
-        /// <param name="eventHandler"></param>
+        /// <param name="loginAttemptHandler"></param>
         /// <returns></returns>
-        public async Task<bool> RegisterLoginAttemptHandler(EventHandler eventHandler)
+        public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
         {
-            LoginAttemptsHandler = eventHandler;
+            loginAttemptsHandler = loginAttemptHandler;
             return await Task.FromResult(true);
         }
 
         /// <summary>
         /// Not used by this plugin
         /// </summary>
-        /// <param name="eventHandler"></param>
+        /// <param name="blockHandler"></param>
         /// <returns></returns>
-        public async Task<bool> RegisterBlockHandler(EventHandler eventHandler)
+        public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
         {
             return await Task.FromResult(true);
         }
@@ -125,7 +125,17 @@ namespace Plugins
         /// <summary>
         /// Not used by this plugin
         /// </summary>
-        public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
+        /// <param name="loginAttempt"></param>
+        /// <returns></returns>
+        public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Not used by this plugin
+        /// </summary>
+        public async Task<bool> BlockEvent(Blocks block)
         {
             return await Task.FromResult(true);
         }
@@ -150,10 +160,10 @@ namespace Plugins
                 EventLogEntry eventLogEntry = new EventLogEntry(e.Entry.ReplacementStrings);
 
                 // Trigger login attempt event
-                PluginEventArgs pluginEventArgs = new PluginEventArgs
+                LoginAttempts loginAttempt = new LoginAttempts
                 {
-                    IPAddress = eventLogEntry.SourceNetworkAddress,
-                    DateTime = DateTime.Now,
+                    IpAddress = eventLogEntry.SourceNetworkAddress,
+                    EventDate = DateTime.Now,
                     Details = $"Repeated RDP login failures. Last user: {eventLogEntry.AccountAccountName}"
                 };
 
@@ -162,7 +172,7 @@ namespace Plugins
                     $"Workstation {eventLogEntry.SourceWorkstationName} from {eventLogEntry.SourceNetworkAddress} failed logging in.");
 
                 // Fire event
-                LoginAttemptsHandler?.Invoke(this, pluginEventArgs);
+                loginAttemptsHandler?.Invoke(loginAttempt);
             }
         }
     }

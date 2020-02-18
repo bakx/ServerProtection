@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NetFwTypeLib;
 using SP.Core.Interfaces;
-using SP.Core.Models;
+using SP.Models;
 
 namespace SP.Core
 {
@@ -17,12 +17,13 @@ namespace SP.Core
         private static readonly Type TypeFwRule =
             Type.GetTypeFromCLSID(new Guid("{2C5BC43E-3369-4C33-AB0C-BE9469677AF4}"));
 
-        private readonly string dateFormat;
-        private readonly string descriptionTemplate;
-        private readonly ILogger<Firewall> log; // Diagnostics
+        //
+        private readonly ILogger<Firewall> log;
 
         // Configuration settings
         private readonly string nameTemplate;
+        private readonly string descriptionTemplate;
+        private readonly string dateFormat;
 
         /// <summary>
         /// </summary>
@@ -36,6 +37,11 @@ namespace SP.Core
             nameTemplate = config.GetSection("Firewall:Rules:NameTemplate").Get<string>();
             descriptionTemplate = config.GetSection("Firewall:Rules:DescriptionTemplate").Get<string>();
             dateFormat = config.GetSection("Firewall:Rules::DateFormat").Get<string>();
+        }
+
+        public void TestLog()
+        {
+            log.LogInformation(DateTime.Now.ToString());
         }
 
         /// <summary>

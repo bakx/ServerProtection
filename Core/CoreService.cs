@@ -10,17 +10,21 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NetFwTypeLib;
 using SP.Core.Interfaces;
-using SP.Core.Models;
+using SP.Models;
 using SP.Core.Plugin;
 using SP.Core.Tools;
 using SP.Plugins;
 
 namespace SP.Core
 {
-    public class CoreService : BackgroundService, ICoreService
+    public class CoreService : BackgroundService
     {
         // Configuration object
         private readonly IConfigurationRoot config;
+        private readonly IFirewall firewall;
+
+        // Keep top 10 of last blocks
+        private readonly Stack<string> lastBlocks = new Stack<string>();
 
         // Diagnostics
         private readonly ILogger<CoreService> log;
@@ -28,13 +32,14 @@ namespace SP.Core
         // Contains all plugins that are loaded.
         private readonly List<IPluginBase> plugins = new List<IPluginBase>();
 
-        // Keep top 10 of last blocks
-        private readonly Stack<string> lastBlocks = new Stack<string>();
+        // Handlers
+        private readonly IProtectHandler protectHandler;
+
 
         // Configuration items
         private List<string> configPlugins;
+        private bool ipDataEnabled;
         private string ipDataKey;
-
         private string ipDataUrl;
 
         /// <summary>
@@ -48,113 +53,123 @@ namespace SP.Core
         {
             this.log = log;
             this.config = config;
-
-            // Handle events
-            //
+            this.firewall = firewall;
+            this.protectHandler = protectHandler;
 
             // Login Attempts
-            LoginAttemptEvent += async (sender, args) =>
-            {
-                PluginEventArgs pluginEventArgs = args as PluginEventArgs;
-
-
-                // Sanity check
-                if (pluginEventArgs == null)
-                {
-                    log.LogError($"{nameof(BlockEvent)} was called but {nameof(PluginEventArgs)} should not be null");
-                    return;
-                }
-
-                // Pass the event to the protect handler
-                bool block = await protectHandler.AnalyzeAttempt(pluginEventArgs);
-
-                // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
-                if (lastBlocks.Count > 10)
-                {
-                    // Clear out top item
-                    lastBlocks.Pop();
-                }
-
-                // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
-                // prevents that duplicate firewall rules or reports are being made.
-                if (lastBlocks.Contains(pluginEventArgs.IPAddress))
-                {
-                    log.LogDebug($"{pluginEventArgs.IPAddress} was recently blocked. Ignoring.");
-                    return;
-                }
-
-                // Block IP?
-                if (!block)
-                {
-                    log.LogDebug($"{pluginEventArgs.IPAddress} will not be blocked.");
-                    return;
-                }
-
-                // Add IP to list of last 10 blocks
-                lastBlocks.Push(pluginEventArgs.IPAddress);
-
-                // Signal block
-                BlockEvent?.Invoke(this, args);
-            };
+            LoginAttemptEvent += OnLoginAttemptEvent;
 
             // Block events
-            BlockEvent += async (sender, args) =>
+            BlockEvent += OnBlockEvent;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="loginAttempt"></param>
+        /// <returns></returns>
+        private async void OnLoginAttemptEvent(LoginAttempts loginAttempt)
+        {
+            // Notify plug-ins of login attempt
+            foreach (IPluginBase pluginBase in plugins)
             {
-                PluginEventArgs pluginEventArgs = args as PluginEventArgs;
+                await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
+            }
 
-                // Create EventData object
-                Blocks block = new Blocks();
+            // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
+            if (lastBlocks.Count > 10)
+            {
+                // Clear out top item
+                lastBlocks.Pop();
+            }
 
-                // Sanity check
-                if (pluginEventArgs == null)
-                {
-                    log.LogError($"{nameof(BlockEvent)} was called but {nameof(PluginEventArgs)} should not be null");
-                    return;
-                }
+            // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
+            // prevents that duplicate firewall rules or reports are being made.
+            if (lastBlocks.Contains(loginAttempt.IpAddress))
+            {
+                log.LogDebug($"{loginAttempt.IpAddress} was recently blocked. Ignoring.");
+                return;
+            }
 
-                //
-                block.IpAddress = pluginEventArgs.IPAddress;
-                block.Hostname = "";
-                block.Date = pluginEventArgs.DateTime;
+            // Pass the event to the protect handler
+            bool block = await protectHandler.AnalyzeAttempt(loginAttempt);
 
-                // Use IPData to get additional information about the IP
+            // Block IP?
+            if (!block)
+            {
+                log.LogDebug($"{loginAttempt.IpAddress} will not be blocked.");
+                return;
+            }
+
+            // Add IP to list of last 10 blocks
+            lastBlocks.Push(loginAttempt.IpAddress);
+
+            // Signal block
+            BlockEvent?.Invoke(loginAttempt);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="loginAttempt"></param>
+        private async void OnBlockEvent(LoginAttempts loginAttempt)
+        {
+            // Create EventData object
+            Blocks block = new Blocks
+            {
+                IpAddress = loginAttempt.IpAddress,
+                Hostname = "",
+                Date = loginAttempt.EventDate,
+                Details = loginAttempt.Details
+            };
+
+            // Use IPData to get additional information about the IP
+            if (ipDataEnabled)
+            {
                 try
                 {
-                    DataModel dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, pluginEventArgs.IPAddress);
+                    DataModel dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
                     block.Country = dataModel.Country;
                     block.City = dataModel.City;
                     block.ISP = dataModel.ISP;
                 }
-                catch(Exception e)
+                catch (Exception ex)
                 {
-                    log.LogError($"Unable to get additional details about ip {block.IpAddress}. Service response: {e.Message}");
+                    log.LogError(
+                        $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
                 }
+            }
 
-                // Attempt to get the hostname
-                try
-                {
-                    IPHostEntry hostInfo = Dns.GetHostEntry(block.IpAddress);
-                    block.Hostname = hostInfo.HostName;
-                }
-                catch
-                {
-                    log.LogDebug($"Unable to get host name for {block.IpAddress}");
-                }
+            // Attempt to get the hostname
+            try
+            {
+                IPHostEntry hostInfo = Dns.GetHostEntry(block.IpAddress);
+                block.Hostname = hostInfo.HostName;
+            }
+            catch
+            {
+                log.LogDebug($"Unable to get host name for {block.IpAddress}");
+            }
 
-                // Block IP in Firewall
-                firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
+            // Save to database
+            await using Db db = new Db();
+            db.Blocks.Add(block);
+            await db.SaveChangesAsync();
 
-                // Notify plug-ins of block
-                foreach (IPluginBase pluginBase in plugins)
-                {
-                    await Task.Run(() => { pluginBase.BlockedEvent(pluginEventArgs); });
-                }
-            };
+            // Increase statistics
+            await Statistics.UpdateBlocks(block);
+
+            // Block IP in Firewall
+            firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
+
+            // Notify plug-ins of block
+            foreach (IPluginBase pluginBase in plugins)
+            {
+                await Task.Run(() => { pluginBase.BlockEvent(block); });
+            }
         }
 
         // Events
-        public event EventHandler LoginAttemptEvent;
-        public event EventHandler BlockEvent;
+        public event IPluginBase.LoginAttempt LoginAttemptEvent;
+        public event IPluginBase.Block BlockEvent;
 
         /// <summary>
         /// </summary>
@@ -200,6 +215,7 @@ namespace SP.Core
             // Get IPData configuration items
             ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
             ipDataKey = config.GetSection("Tools:IPData:Key").Get<string>();
+            ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
         }
 
         /// <summary>

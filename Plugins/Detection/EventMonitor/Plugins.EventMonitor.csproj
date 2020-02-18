@@ -28,6 +28,9 @@
     <ProjectReference Include="..\..\Base\Plugins.Base.csproj">
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Models\Models.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -38,9 +41,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;C:\Program Files (x86)\kSign\signtool.exe&quot; sign /n &quot;Gideon Bakx&quot; /fd sha256 /t &quot;http://timestamp.comodoca.com&quot; &quot;$(TargetDir)$(TargetFileName)&quot;" />
-  </Target>
-
 </Project>

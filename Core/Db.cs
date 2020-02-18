@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SP.Core.Models;
+using SP.Models;
 
 namespace SP.Core
 {

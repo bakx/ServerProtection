@@ -19,6 +19,7 @@ namespace SP.Core
 #else
             HjsonValue.Save(HjsonValue.Load("config/appSettings.hjson").Qo(), "config/appSettings.json");
 #endif
+
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -32,6 +33,7 @@ namespace SP.Core
 #else
                 .AddJsonFile("config/appSettings.json", false, true)
 #endif
+                .AddJsonFile("config/logSettings.json", false, true)
                 .Build();
 
             ILogger log = new LoggerConfiguration()
@@ -45,9 +47,9 @@ namespace SP.Core
                     services.AddSingleton(config);
                     services.AddSingleton<IProtectHandler, ProtectHandler>();
                     services.AddSingleton<IFirewall, Firewall>();
-                    services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(log));
                     services.AddHostedService<CoreService>();
-                });
+                })
+                .UseSerilog(log);
         }
     }
 }
