@@ -133,7 +133,8 @@ namespace SP.Core
             {
                 IpAddress = pluginEventArgs.IPAddress,
                 Hostname = "",
-                Date = pluginEventArgs.DateTime
+                Date = pluginEventArgs.DateTime,
+                Details = pluginEventArgs.Details
             };
 
             // Use IPData to get additional information about the IP
@@ -178,7 +179,7 @@ namespace SP.Core
             // Notify plug-ins of block
             foreach (IPluginBase pluginBase in plugins)
             {
-                await Task.Run(() => { pluginBase.BlockedEvent(pluginEventArgs); });
+                await Task.Run(() => { pluginBase.BlockedEvent(block); });
             }
         }
 

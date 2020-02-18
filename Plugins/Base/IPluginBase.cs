@@ -13,6 +13,6 @@ namespace SP.Plugins
 
         // Invoked Event methods
         Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs);
-        Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs);
+        Task<bool> BlockedEvent(Models.Blocks block);
     }
 }

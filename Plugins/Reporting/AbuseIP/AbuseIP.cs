@@ -140,24 +140,24 @@ namespace Plugins
         /// <summary>
         /// Report the ip to AbuseIP
         /// </summary>
-        public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
+        public async Task<bool> BlockedEvent(SP.Models.Blocks block)
         {
-            return await ReportIP(pluginEventArgs);
+            return await ReportIP(block);
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="block"></param>
         /// <returns></returns>
-        public async Task<bool> ReportIP(PluginEventArgs args)
+        public async Task<bool> ReportIP(SP.Models.Blocks block)
         {
             try
             {
                 Dictionary<string, string> values = new Dictionary<string, string>
                 {
-                    {"ip", args.IPAddress},
+                    {"ip", block.IpAddress},
                     {"categories", "18"},
-                    {"comment", args.Details}
+                    {"comment", block.Details}
                 };
 
                 FormUrlEncodedContent content = new FormUrlEncodedContent(values);

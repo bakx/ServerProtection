@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-AbuseIP{Date}.log"
+                "pathFormat": "logs/plugins-LiveReport.SignalR{Date}.log"
               }
             }
           ]

@@ -16,7 +16,7 @@ echo ### Building solution
 msbuild.exe Core/Core.csproj /t:Clean,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/Detection/EventMonitor/Plugins.EventMonitor.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
-msbuild.exe Plugins/Detection/SignalR/Plugins.SignalR.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
+msbuild.exe Plugins/Reporting/LiveReport.SignalR/Plugins.LiveReport.SignalR.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 
 echo ### Copying files from Configuration project to release folder
 xcopy "Core\bin\%configurationName%\netcoreapp3.1" "%releasePath%\" /E
@@ -25,6 +25,7 @@ echo ### Singing dlls
 "C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\Core.dll"
 "C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\Core.exe"
 "C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\eventmonitor\Plugins.EventMonitor.dll"
+"C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
 "C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
 
 echo ### Cleaning up configurations - Core

@@ -135,7 +135,7 @@ namespace Plugins
         /// <summary>
         /// Not used by this plugin
         /// </summary>
-        public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
+        public async Task<bool> BlockedEvent(SP.Models.Blocks block)
         {
             return await Task.FromResult(true);
         }
