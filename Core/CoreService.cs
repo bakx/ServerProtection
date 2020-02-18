@@ -65,22 +65,14 @@ namespace SP.Core
 
         /// <summary>
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="loginAttempt"></param>
         /// <returns></returns>
-        private async void OnLoginAttemptEvent(object sender, EventArgs e)
+        private async void OnLoginAttemptEvent(LoginAttempts loginAttempt)
         {
-            // Sanity check
-            if (!(e is PluginEventArgs pluginEventArgs))
-            {
-                log.LogError($"{nameof(OnLoginAttemptEvent)} was called but {nameof(PluginEventArgs)} should not be null");
-                return;
-            }
-
             // Notify plug-ins of login attempt
             foreach (IPluginBase pluginBase in plugins)
             {
-                await Task.Run(() => { pluginBase.LoginAttempt(pluginEventArgs); });
+                await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
             }
 
             // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
@@ -92,49 +84,41 @@ namespace SP.Core
 
             // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
             // prevents that duplicate firewall rules or reports are being made.
-            if (lastBlocks.Contains(pluginEventArgs.IPAddress))
+            if (lastBlocks.Contains(loginAttempt.IpAddress))
             {
-                log.LogDebug($"{pluginEventArgs.IPAddress} was recently blocked. Ignoring.");
+                log.LogDebug($"{loginAttempt.IpAddress} was recently blocked. Ignoring.");
                 return;
             }
 
             // Pass the event to the protect handler
-            bool block = await protectHandler.AnalyzeAttempt(pluginEventArgs);
+            bool block = await protectHandler.AnalyzeAttempt(loginAttempt);
 
             // Block IP?
             if (!block)
             {
-                log.LogDebug($"{pluginEventArgs.IPAddress} will not be blocked.");
+                log.LogDebug($"{loginAttempt.IpAddress} will not be blocked.");
                 return;
             }
 
             // Add IP to list of last 10 blocks
-            lastBlocks.Push(pluginEventArgs.IPAddress);
+            lastBlocks.Push(loginAttempt.IpAddress);
 
             // Signal block
-            BlockEvent?.Invoke(this, pluginEventArgs);
+            BlockEvent?.Invoke(loginAttempt);
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void OnBlockEvent(object sender, EventArgs e)
+        /// <param name="loginAttempt"></param>
+        private async void OnBlockEvent(LoginAttempts loginAttempt)
         {
-            // Sanity check
-            if (!(e is PluginEventArgs pluginEventArgs))
-            {
-                log.LogError($"{nameof(OnBlockEvent)} was called but {nameof(PluginEventArgs)} should not be null");
-                return;
-            }
-
             // Create EventData object
             Blocks block = new Blocks
             {
-                IpAddress = pluginEventArgs.IPAddress,
+                IpAddress = loginAttempt.IpAddress,
                 Hostname = "",
-                Date = pluginEventArgs.DateTime,
-                Details = pluginEventArgs.Details
+                Date = loginAttempt.EventDate,
+                Details = loginAttempt.Details
             };
 
             // Use IPData to get additional information about the IP
@@ -142,7 +126,7 @@ namespace SP.Core
             {
                 try
                 {
-                    DataModel dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, pluginEventArgs.IPAddress);
+                    DataModel dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
                     block.Country = dataModel.Country;
                     block.City = dataModel.City;
                     block.ISP = dataModel.ISP;
@@ -179,13 +163,13 @@ namespace SP.Core
             // Notify plug-ins of block
             foreach (IPluginBase pluginBase in plugins)
             {
-                await Task.Run(() => { pluginBase.BlockedEvent(block); });
+                await Task.Run(() => { pluginBase.BlockEvent(block); });
             }
         }
 
         // Events
-        public event EventHandler LoginAttemptEvent;
-        public event EventHandler BlockEvent;
+        public event IPluginBase.LoginAttempt LoginAttemptEvent;
+        public event IPluginBase.Block BlockEvent;
 
         /// <summary>
         /// </summary>

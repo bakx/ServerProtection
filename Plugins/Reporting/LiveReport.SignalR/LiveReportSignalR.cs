@@ -102,9 +102,9 @@ namespace Plugins
         /// <summary>
         /// Not used by this plug-in
         /// </summary>
-        /// <param name="eventHandler"></param>
+        /// <param name="loginAttemptHandler"></param>
         /// <returns></returns>
-        public async Task<bool> RegisterLoginAttemptHandler(EventHandler eventHandler)
+        public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
         {
             return await Task.FromResult(true);
         }
@@ -112,9 +112,9 @@ namespace Plugins
         /// <summary>
         /// Not used by this plug-in
         /// </summary>
-        /// <param name="eventHandler"></param>
+        /// <param name="blockHandler"></param>
         /// <returns></returns>
-        public async Task<bool> RegisterBlockHandler(EventHandler eventHandler)
+        public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
         {
             return await Task.FromResult(true);
         }
@@ -122,13 +122,13 @@ namespace Plugins
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pluginEventArgs"></param>
+        /// <param name="loginAttempt"></param>
         /// <returns></returns>
-        public async Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs)
+        public async Task<bool> LoginAttemptEvent(SP.Models.LoginAttempts loginAttempt)
         {
             try
             {
-                await Hub.InvokeAsync("LoginAttempt", pluginEventArgs);
+                await Hub.InvokeAsync("LoginAttempt", loginAttempt);
                 return true;
             }
             catch (Exception e)
@@ -141,7 +141,7 @@ namespace Plugins
         /// <summary>
         /// 
         /// </summary>
-        public async Task<bool> BlockedEvent(SP.Models.Blocks block)
+        public async Task<bool> BlockEvent(SP.Models.Blocks block)
         {
             try
             {

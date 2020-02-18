@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SP.Core.Interfaces;
 using SP.Models;
-using SP.Plugins;
 
 namespace SP.Core
 {
@@ -65,22 +64,14 @@ namespace SP.Core
 
         /// <summary>
         /// </summary>
-        /// <param name="args"></param>
-        public async Task<bool> AnalyzeAttempt(PluginEventArgs args)
+        /// <param name="loginAttempt"></param>
+        public async Task<bool> AnalyzeAttempt(LoginAttempts loginAttempt)
         {
-            // Convert arguments to attempt
-            LoginAttempts attempt = new LoginAttempts
-            {
-                IpAddress = args.IPAddress,
-                Details = args.Details,
-                EventDate = args.DateTime
-            };
-
             // Open handle to database
             await using Db db = new Db();
 
             // Add the login attempt
-            db.LoginAttempts.Add(attempt);
+            db.LoginAttempts.Add(loginAttempt);
 
             // Save changes
             await db.SaveChangesAsync();
@@ -89,7 +80,7 @@ namespace SP.Core
             DateTime previousLogins = DateTime.Now.Subtract(new TimeSpan(0, timeSpanMinutes, 0));
 
             // Determine the block count
-            int previousAttempts = await GetLoginAttempts(attempt, previousLogins);
+            int previousAttempts = await GetLoginAttempts(loginAttempt, previousLogins);
 
             if (previousAttempts > attempts)
             {

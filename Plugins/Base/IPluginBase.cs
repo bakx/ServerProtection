@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using SP.Models;
 
 namespace SP.Plugins
 {
@@ -8,11 +8,15 @@ namespace SP.Plugins
         Task<bool> Initialize(PluginOptions options);
         Task<bool> Configure();
 
-        Task<bool> RegisterLoginAttemptHandler(EventHandler eventHandler);
-        Task<bool> RegisterBlockHandler(EventHandler eventHandler);
+        Task<bool> RegisterLoginAttemptHandler(LoginAttempt eventHandler);
+        Task<bool> RegisterBlockHandler(Block eventHandler);
+
+        // Delegates for events
+        public delegate void LoginAttempt(LoginAttempts loginAttempt);
+        public delegate void Block(LoginAttempts loginAttempt);
 
         // Invoked Event methods
-        Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs);
-        Task<bool> BlockedEvent(Models.Blocks block);
+        Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt);
+        Task<bool> BlockEvent(Blocks block);
     }
 }

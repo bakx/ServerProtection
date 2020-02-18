@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using SP.Models;
 using SP.Plugins;
 
 namespace Testing
 {
     public class TestSignalR
     {
-        private string loginAttemptsHubUrl;
-        private string blocksHubUrl;
+        private string reportingHubUrl;
 
         // Diagnostics
         private ILogger log;
@@ -42,8 +41,7 @@ namespace Testing
                     .ForContext(typeof(TestSignalR));
 
                 // Assign config variables
-                loginAttemptsHubUrl = config["loginAttemptsHubUrl"];
-                blocksHubUrl = config["blocksHubUrl"];
+                reportingHubUrl = config["reportingHubUrl"];
 
                 // Diagnostics
                 log.Information("Plugin initialized");
@@ -74,37 +72,20 @@ namespace Testing
             {
                 // Login attempts hub
   
-                HubLoginAttempts = new HubConnectionBuilder()
-                    .WithUrl(loginAttemptsHubUrl)
+                Hub = new HubConnectionBuilder()
+                    .WithUrl(reportingHubUrl)
                     //                    .AddMessagePackProtocol()
                     .Build();
 
-                HubLoginAttempts.Closed += async error =>
+                Hub.Closed += async error =>
                 {
                     log.Warning("Disconnected. Reconnecting...");
 
                     await Task.Delay(new Random().Next(0, 5) * 1000);
-                    await HubLoginAttempts.StartAsync();
+                    await Hub.StartAsync();
                 };
 
-                await HubLoginAttempts.StartAsync();
-
-                // Blocks hub
-
-                HubBlocks = new HubConnectionBuilder()
-                    .WithUrl(blocksHubUrl)
-                    //                    .AddMessagePackProtocol()
-                    .Build();
-
-                HubBlocks.Closed += async error =>
-                {
-                    log.Warning("Disconnected. Reconnecting...");
-
-                    await Task.Delay(new Random().Next(0, 5) * 1000);
-                    await HubBlocks.StartAsync();
-                };
-
-                await HubBlocks.StartAsync();
+                await Hub.StartAsync();
 
                 return true;
             }
@@ -119,19 +100,18 @@ namespace Testing
             }
         }
 
-        public HubConnection HubLoginAttempts { get; set; }
-        public HubConnection HubBlocks { get; set; }
+        public HubConnection Hub { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pluginEventArgs"></param>
+        /// <param name="loginAttempt"></param>
         /// <returns></returns>
-        public async Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs)
+        public async Task<bool> LoginAttempt(LoginAttempts loginAttempt)
         {
             try
             {
-                await HubLoginAttempts.InvokeAsync("LoginAttempt", pluginEventArgs);
+                await Hub.InvokeAsync("LoginAttempt", loginAttempt);
                 return true;
             }
             catch (Exception e)
@@ -144,11 +124,11 @@ namespace Testing
         /// <summary>
         /// 
         /// </summary>
-        public async Task<bool> BlockedEvent(SP.Models.Blocks block)
+        public async Task<bool> BlockedEvent(Blocks block)
         {
             try
             {
-                await HubBlocks.InvokeAsync("Block", block);
+                await Hub.InvokeAsync("Block", block);
                 return true;
             }
             catch (Exception e)
