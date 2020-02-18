@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2636D675-E239-4553-918A-1B7BA4C6BF22}"
 	ProjectSection(SolutionItems) = preProject
+		Create Release.bat = Create Release.bat
 		DevNotes.txt = DevNotes.txt
 		Readme.md = Readme.md
 	EndProjectSection
@@ -23,11 +24,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.AbuseIP", "Plugins\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{591D2742-2908-4E58-B3AE-75E4E18FF951}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.SignalR", "Plugins\Reporting\SignalR\Plugins.SignalR.csproj", "{C6021ABD-7A9B-4430-8563-2E98823DB2C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.LiveReport.SignalR", "Plugins\Reporting\SignalR\Plugins.LiveReport.SignalR.csproj", "{C6021ABD-7A9B-4430-8563-2E98823DB2C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{BECA0564-D6FD-4041-A0F8-16AB5D51B47B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cleanup", "Tools\Cleanup\Cleanup.csproj", "{D14BBB19-BB4F-422D-85C8-B3AC280EB360}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiveReporting.SignalR", "Tools\LiveReporting.SignalR\LiveReporting.SignalR.csproj", "{8C111553-214C-429C-AFCE-AAD01F793B26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{2DB90B7C-845A-46F6-A136-902A86E51CD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +64,14 @@ Global
 		{D14BBB19-BB4F-422D-85C8-B3AC280EB360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D14BBB19-BB4F-422D-85C8-B3AC280EB360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D14BBB19-BB4F-422D-85C8-B3AC280EB360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C111553-214C-429C-AFCE-AAD01F793B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C111553-214C-429C-AFCE-AAD01F793B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C111553-214C-429C-AFCE-AAD01F793B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C111553-214C-429C-AFCE-AAD01F793B26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DB90B7C-845A-46F6-A136-902A86E51CD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DB90B7C-845A-46F6-A136-902A86E51CD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DB90B7C-845A-46F6-A136-902A86E51CD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DB90B7C-845A-46F6-A136-902A86E51CD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +84,7 @@ Global
 		{2D3C76A1-E370-42C2-85FE-4934B193D50E} = {1BC123A2-388C-4DDF-A36B-2E9758E13546}
 		{C6021ABD-7A9B-4430-8563-2E98823DB2C6} = {1BC123A2-388C-4DDF-A36B-2E9758E13546}
 		{D14BBB19-BB4F-422D-85C8-B3AC280EB360} = {BECA0564-D6FD-4041-A0F8-16AB5D51B47B}
+		{8C111553-214C-429C-AFCE-AAD01F793B26} = {BECA0564-D6FD-4041-A0F8-16AB5D51B47B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4837EBBA-68D4-4C02-96CD-59A89BD6B8EE}

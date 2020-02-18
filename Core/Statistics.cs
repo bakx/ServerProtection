@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using SP.Core.Models;
+using SP.Models;
 
 namespace SP.Core
 {
@@ -9,7 +9,7 @@ namespace SP.Core
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public static async Task Blocks(Blocks block)
+        public static async Task UpdateBlocks(Blocks block)
         {
             // Open handle to database
             await using Db db = new Db();

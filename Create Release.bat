@@ -42,6 +42,10 @@ ren "%releasePath%\plugins\abuseip\logSettings.json" "sample.logSettings.json"
 ren "%releasePath%\plugins\eventmonitor\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\eventmonitor\logSettings.json" "sample.logSettings.json"
 
+del "%releasePath%\plugins\liveReport.signalR\appSettings.development.json" /s /f /q
+ren "%releasePath%\plugins\liveReport.signalR\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\plugins\liveReport.signalR\logSettings.json" "sample.logSettings.json"
+
 versioninfo "%releasePath%\Core.dll" > version.txt
 set /p V=<version.txt
 

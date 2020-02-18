@@ -1,35 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Plugins;
 
 namespace Plugins
 {
-    public class SignalR : IPluginBase
+    public class LiveReportSignalR : IPluginBase
     {
-        /// <summary>
-        /// </summary>
-        public enum Events : long
-        {
-            FailedLogin = 4625
-        }
-
-        private static readonly HttpClient HttpClient = new HttpClient();
-        private string apiKey;
-        private string apiUrl;
+        private string loginAttemptsHubUrl;
 
         // Diagnostics
         private ILogger log;
-
-        // Handlers
-        public EventHandler BlockHandler { get; set; }
-
 
         /// <summary>
         /// </summary>
@@ -52,11 +37,10 @@ namespace Plugins
                 log = new LoggerConfiguration()
                     .ReadFrom.Configuration(config)
                     .CreateLogger()
-                    .ForContext(typeof(SignalR));
+                    .ForContext(typeof(LiveReportSignalR));
 
                 // Assign config variables
-                apiUrl = config["Url"];
-                apiKey = config["Key"];
+                loginAttemptsHubUrl = config["loginAttemptsHubUrl"];
 
                 // Diagnostics
                 log.Information("Plugin initialized");
@@ -85,32 +69,37 @@ namespace Plugins
         {
             try
             {
-                // Set up http client for AbuseIP
-                HttpClient.DefaultRequestHeaders.Add("Key", apiKey);
-                HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                Hub = new HubConnectionBuilder()
+                    .WithUrl(loginAttemptsHubUrl)
+//                    .AddMessagePackProtocol()
+                    .Build();
 
-                return await Task.FromResult(true);
+                Hub.Closed += async error =>
+                {
+                    log.Warning("Disconnected. Reconnecting...");
+
+                    await Task.Delay(new Random().Next(0, 5) * 1000);
+                    await Hub.StartAsync();
+                };
+
+                await Hub.StartAsync();
+                return true;
             }
             catch (Exception e)
             {
                 log.Error("{0}", e);
-                return await Task.FromResult(false);
+                return false;
             }
             finally
             {
-                if (log == null)
-                {
-                    Console.WriteLine("Completed Configuration stage");
-                }
-                else
-                {
-                    log.Information("Completed Configuration stage");
-                }
+                log.Information("Completed Configuration stage");
             }
         }
 
+        public HubConnection Hub { get; set; }
+
         /// <summary>
-        /// Not used by this plugin
+        /// Not used by this plug-in
         /// </summary>
         /// <param name="eventHandler"></param>
         /// <returns></returns>
@@ -120,50 +109,41 @@ namespace Plugins
         }
 
         /// <summary>
+        /// Not used by this plug-in
         /// </summary>
         /// <param name="eventHandler"></param>
         /// <returns></returns>
         public async Task<bool> RegisterBlockHandler(EventHandler eventHandler)
         {
-            BlockHandler = eventHandler;
             return await Task.FromResult(true);
         }
 
         /// <summary>
-        /// Not used by this plugin
+        /// 
         /// </summary>
-        public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
-        {
-            return await ReportIP(pluginEventArgs);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="args"></param>
+        /// <param name="pluginEventArgs"></param>
         /// <returns></returns>
-        public async Task<bool> ReportIP(PluginEventArgs args)
+        public async Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs)
         {
             try
             {
-                Dictionary<string, string> values = new Dictionary<string, string>
-                {
-                    {"ip", args.IPAddress},
-                    {"categories", "18"},
-                    {"comment", args.Details}
-                };
-
-                FormUrlEncodedContent content = new FormUrlEncodedContent(values);
-
-                HttpResponseMessage response = await HttpClient.PostAsync(apiUrl, content);
-
-                log.Debug(await response.Content.ReadAsStringAsync());
-                return await Task.FromResult(true);
+                await Hub.InvokeAsync("LoginAttempt", pluginEventArgs);
+                return true;
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-                return await Task.FromResult(false);
+                return false;
             }
+            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
+        {
+            return await Task.FromResult(true);
         }
     }
 }

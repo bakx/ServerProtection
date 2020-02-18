@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SP.Core.Models;
+using SP.Models;
 using SP.Plugins;
 
 namespace SP.Core.Interfaces

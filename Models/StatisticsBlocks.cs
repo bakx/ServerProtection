@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SP.Core.Models
+namespace SP.Models
 {
     [Table("Statistics.Blocks")]
     public class StatisticsBlocks

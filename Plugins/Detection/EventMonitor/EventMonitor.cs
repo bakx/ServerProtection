@@ -125,6 +125,16 @@ namespace Plugins
         /// <summary>
         /// Not used by this plugin
         /// </summary>
+        /// <param name="pluginEventArgs"></param>
+        /// <returns></returns>
+        public async Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Not used by this plugin
+        /// </summary>
         public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
         {
             return await Task.FromResult(true);

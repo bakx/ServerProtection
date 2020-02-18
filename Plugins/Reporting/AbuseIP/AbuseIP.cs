@@ -132,6 +132,14 @@ namespace Plugins
         /// <summary>
         /// Not used by this plugin
         /// </summary>
+        public async Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Report the ip to AbuseIP
+        /// </summary>
         public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
         {
             return await ReportIP(pluginEventArgs);

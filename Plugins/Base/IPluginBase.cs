@@ -12,6 +12,7 @@ namespace SP.Plugins
         Task<bool> RegisterBlockHandler(EventHandler eventHandler);
 
         // Invoked Event methods
+        Task<bool> LoginAttempt(PluginEventArgs pluginEventArgs);
         Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs);
     }
 }

@@ -19,6 +19,7 @@ namespace SP.Core
 #else
             HjsonValue.Save(HjsonValue.Load("config/appSettings.hjson").Qo(), "config/appSettings.json");
 #endif
+
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -44,11 +45,11 @@ namespace SP.Core
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton(config);
-                    services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(log));
                     services.AddSingleton<IProtectHandler, ProtectHandler>();
                     services.AddSingleton<IFirewall, Firewall>();
                     services.AddHostedService<CoreService>();
-                });
+                })
+                .UseSerilog(log);
         }
     }
 }

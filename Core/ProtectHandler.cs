@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SP.Core.Interfaces;
-using SP.Core.Models;
+using SP.Models;
 using SP.Plugins;
 
 namespace SP.Core

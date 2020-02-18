@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\signalr</OutDir>
+    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>SignalR</Product>
     <PackageId>SignalR</PackageId>

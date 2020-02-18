@@ -17,8 +17,4 @@
       <Isolated>false</Isolated>
     </COMReference>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;C:\Program Files (x86)\kSign\signtool.exe&quot; sign /n &quot;Gideon Bakx&quot; /fd sha256 /t &quot;http://timestamp.comodoca.com&quot; &quot;$(TargetDir)$(TargetName).exe&quot;" />
-  </Target>
 </Project>
