@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,11 +8,12 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Plugins;
 
-namespace Plugins
+namespace Testing
 {
-    public class LiveReportSignalR : IPluginBase
+    public class TestSignalR
     {
         private string loginAttemptsHubUrl;
+        private string blocksHubUrl;
 
         // Diagnostics
         private ILogger log;
@@ -37,10 +39,11 @@ namespace Plugins
                 log = new LoggerConfiguration()
                     .ReadFrom.Configuration(config)
                     .CreateLogger()
-                    .ForContext(typeof(LiveReportSignalR));
+                    .ForContext(typeof(TestSignalR));
 
                 // Assign config variables
                 loginAttemptsHubUrl = config["loginAttemptsHubUrl"];
+                blocksHubUrl = config["blocksHubUrl"];
 
                 // Diagnostics
                 log.Information("Plugin initialized");
@@ -69,20 +72,40 @@ namespace Plugins
         {
             try
             {
-                Hub = new HubConnectionBuilder()
+                // Login attempts hub
+  
+                HubLoginAttempts = new HubConnectionBuilder()
                     .WithUrl(loginAttemptsHubUrl)
-//                    .AddMessagePackProtocol()
+                    //                    .AddMessagePackProtocol()
                     .Build();
 
-                Hub.Closed += async error =>
+                HubLoginAttempts.Closed += async error =>
                 {
                     log.Warning("Disconnected. Reconnecting...");
 
                     await Task.Delay(new Random().Next(0, 5) * 1000);
-                    await Hub.StartAsync();
+                    await HubLoginAttempts.StartAsync();
                 };
 
-                await Hub.StartAsync();
+                await HubLoginAttempts.StartAsync();
+
+                // Blocks hub
+
+                HubBlocks = new HubConnectionBuilder()
+                    .WithUrl(blocksHubUrl)
+                    //                    .AddMessagePackProtocol()
+                    .Build();
+
+                HubBlocks.Closed += async error =>
+                {
+                    log.Warning("Disconnected. Reconnecting...");
+
+                    await Task.Delay(new Random().Next(0, 5) * 1000);
+                    await HubBlocks.StartAsync();
+                };
+
+                await HubBlocks.StartAsync();
+
                 return true;
             }
             catch (Exception e)
@@ -96,27 +119,8 @@ namespace Plugins
             }
         }
 
-        public HubConnection Hub { get; set; }
-
-        /// <summary>
-        /// Not used by this plug-in
-        /// </summary>
-        /// <param name="eventHandler"></param>
-        /// <returns></returns>
-        public async Task<bool> RegisterLoginAttemptHandler(EventHandler eventHandler)
-        {
-            return await Task.FromResult(true);
-        }
-
-        /// <summary>
-        /// Not used by this plug-in
-        /// </summary>
-        /// <param name="eventHandler"></param>
-        /// <returns></returns>
-        public async Task<bool> RegisterBlockHandler(EventHandler eventHandler)
-        {
-            return await Task.FromResult(true);
-        }
+        public HubConnection HubLoginAttempts { get; set; }
+        public HubConnection HubBlocks { get; set; }
 
         /// <summary>
         /// 
@@ -127,7 +131,7 @@ namespace Plugins
         {
             try
             {
-                await Hub.InvokeAsync("LoginAttempt", pluginEventArgs);
+                await HubLoginAttempts.InvokeAsync("LoginAttempt", pluginEventArgs);
                 return true;
             }
             catch (Exception e)
@@ -135,7 +139,6 @@ namespace Plugins
                 log.Error(e.Message);
                 return false;
             }
-            
         }
 
         /// <summary>
@@ -143,7 +146,16 @@ namespace Plugins
         /// </summary>
         public async Task<bool> BlockedEvent(PluginEventArgs pluginEventArgs)
         {
-            return await Task.FromResult(true);
+            try
+            {
+                await HubBlocks.InvokeAsync("Block", pluginEventArgs);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
+            }
         }
     }
 }

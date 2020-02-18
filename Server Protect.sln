@@ -36,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sites", "Sites", "{FABB4AC0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiveReporting.SignalR", "Sites\LiveReporting.SignalR\LiveReporting.SignalR.csproj", "{D7B17264-0E4C-446D-9E71-3FC9D1736E63}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SignalR", "Tools\Test.SignalR\Test.SignalR.csproj", "{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{D7B17264-0E4C-446D-9E71-3FC9D1736E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7B17264-0E4C-446D-9E71-3FC9D1736E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7B17264-0E4C-446D-9E71-3FC9D1736E63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{C6021ABD-7A9B-4430-8563-2E98823DB2C6} = {1BC123A2-388C-4DDF-A36B-2E9758E13546}
 		{D14BBB19-BB4F-422D-85C8-B3AC280EB360} = {BECA0564-D6FD-4041-A0F8-16AB5D51B47B}
 		{D7B17264-0E4C-446D-9E71-3FC9D1736E63} = {FABB4AC0-C403-437B-ABDB-6E841BAA59FD}
+		{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F} = {BECA0564-D6FD-4041-A0F8-16AB5D51B47B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4837EBBA-68D4-4C02-96CD-59A89BD6B8EE}
