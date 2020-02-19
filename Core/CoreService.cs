@@ -24,7 +24,7 @@ namespace SP.Core
         private readonly IConfigurationRoot config;
         private readonly IFirewall firewall;
 
-        // Keep top 10 of last blocks
+        // Keep top 3 of last blocks
         private readonly Stack<string> lastBlocks = new Stack<string>();
 
         // Diagnostics
@@ -106,7 +106,7 @@ namespace SP.Core
             }
 
             // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
-            if (lastBlocks.Count > 10)
+            if (lastBlocks.Count > 3)
             {
                 // Clear out top item
                 lastBlocks.Pop();
