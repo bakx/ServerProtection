@@ -7,17 +7,17 @@ namespace SP.Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<byte>(
-                name: "IsBlocked",
-                table: "Blocks",
+                "IsBlocked",
+                "Blocks",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsBlocked",
-                table: "Blocks");
+                "IsBlocked",
+                "Blocks");
         }
     }
 }

@@ -13,6 +13,6 @@ namespace SP.Core.Interfaces
 
         /// <summary>
         /// </summary>
-        void Unblock();
+        void Unblock(Blocks block);
     }
 }

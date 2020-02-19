@@ -7,9 +7,10 @@ namespace SP.Models
     [Table("Blocks")]
     public class Blocks
     {
+        private string ipAddress;
+
         [Key] public long Id { get; set; }
 
-        private string ipAddress;
         public string IpAddress
         {
             get => ipAddress;
@@ -69,8 +70,13 @@ namespace SP.Models
         public DateTime Date { get; set; }
 
         /// <summary>
+        /// The name of the rule in the firewall
+        /// </summary>
+        public string FirewallRuleName { get; set; }
+
+        /// <summary>
         /// Used in conjunction to remove the firewall rules
         /// </summary>
-        public byte IsBlocked { get; set; } = 0;
+        public byte IsBlocked { get; set; } = 1;
     }
 }

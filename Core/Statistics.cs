@@ -15,7 +15,8 @@ namespace SP.Core
             await using Db db = new Db();
 
             // Determine if this country has been blocked before
-            StatisticsBlocks blocks = db.StatisticsBlocks.FirstOrDefault(s => s.Country == block.Country && s.City == block.City && s.ISP == block.ISP);
+            StatisticsBlocks blocks = db.StatisticsBlocks.FirstOrDefault(s =>
+                s.Country == block.Country && s.City == block.City && s.ISP == block.ISP);
 
             if (blocks != null)
             {
@@ -25,9 +26,9 @@ namespace SP.Core
             {
                 StatisticsBlocks statisticsBlocks = new StatisticsBlocks
                 {
-                    Country = block.Country, 
-                    ISP = block.ISP, 
-                    City = block.City, 
+                    Country = block.Country,
+                    ISP = block.ISP,
+                    City = block.City,
                     Attempts = 1
                 };
 

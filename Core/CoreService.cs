@@ -5,14 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NetFwTypeLib;
 using SP.Core.Interfaces;
-using SP.Models;
 using SP.Core.Plugin;
 using SP.Core.Tools;
+using SP.Models;
 using SP.Plugins;
 
 namespace SP.Core
@@ -35,12 +36,14 @@ namespace SP.Core
         // Handlers
         private readonly IProtectHandler protectHandler;
 
+        // Unblock Timer
 
         // Configuration items
         private List<string> configPlugins;
         private bool ipDataEnabled;
         private string ipDataKey;
         private string ipDataUrl;
+        private int timeSpanMinutes;
 
         /// <summary>
         /// </summary>
@@ -61,6 +64,37 @@ namespace SP.Core
 
             // Block events
             BlockEvent += OnBlockEvent;
+
+            // Unblock timer
+            // ReSharper disable once UnusedVariable
+            Timer unblockTimer = new Timer(async state => await DoWork(state), null, TimeSpan.Zero,
+                TimeSpan.FromMinutes(5));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="state"></param>
+        protected async Task DoWork(object state)
+        {
+            // Open handle to database
+            await using Db db = new Db();
+
+            List<Blocks> unblockList = db.Blocks.Where(b => b.IsBlocked == 1)
+                .ToListAsync().Result.Where(b =>
+                    b.Date < DateTime.Now.Subtract(new TimeSpan(0, timeSpanMinutes, 0)) &&
+                    b.IsBlocked == 1
+                ).ToList();
+
+            if (unblockList.Any())
+            {
+                foreach (Blocks block in unblockList)
+                {
+                    firewall.Unblock(block);
+                    block.IsBlocked = 0;
+                }
+
+                await db.SaveChangesAsync();
+            }
         }
 
         /// <summary>
@@ -149,16 +183,16 @@ namespace SP.Core
                 log.LogDebug($"Unable to get host name for {block.IpAddress}");
             }
 
-            // Save to database
-            await using Db db = new Db();
-            db.Blocks.Add(block);
-            await db.SaveChangesAsync();
-
             // Increase statistics
             await Statistics.UpdateBlocks(block);
 
             // Block IP in Firewall
             firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
+
+            // Save to database
+            await using Db db = new Db();
+            db.Blocks.Add(block);
+            await db.SaveChangesAsync();
 
             // Notify plug-ins of block
             foreach (IPluginBase pluginBase in plugins)
@@ -211,6 +245,9 @@ namespace SP.Core
         private void Configure()
         {
             configPlugins = config.GetSection("Plugins").Get<List<string>>();
+
+            // 
+            timeSpanMinutes = config.GetSection("Blocking:TimeSpanMinutes").Get<int>();
 
             // Get IPData configuration items
             ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
