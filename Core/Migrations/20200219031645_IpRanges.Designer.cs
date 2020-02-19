@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SP.Core;
 
 namespace SP.Core.Migrations
 {
     [DbContext(typeof(Db))]
-    partial class DbModelSnapshot : ModelSnapshot
+    [Migration("20200219031645_IpRanges")]
+    partial class IpRanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,9 +55,6 @@ namespace SP.Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<byte>("IpAddress4")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<byte>("IsBlocked")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");

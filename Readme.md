@@ -11,6 +11,9 @@ that a login failure occured of type 4625.
 ### Reporting - AbuseIP
 Reports the hacking attempt to www.abuseipdb.com
 
+### Reporting - LiveReport.SignalR
+Reports the hacking attempt to the SignalR site that's part of this solution
+
 ## Developer notes
 This project is using SQLite in combination with EF Core. More details at : https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
 

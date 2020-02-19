@@ -24,6 +24,7 @@ namespace SP.Core
         private readonly string nameTemplate;
         private readonly string descriptionTemplate;
         private readonly string dateFormat;
+        private readonly bool blockIPRange;
 
         /// <summary>
         /// </summary>
@@ -37,11 +38,7 @@ namespace SP.Core
             nameTemplate = config.GetSection("Firewall:Rules:NameTemplate").Get<string>();
             descriptionTemplate = config.GetSection("Firewall:Rules:DescriptionTemplate").Get<string>();
             dateFormat = config.GetSection("Firewall:Rules::DateFormat").Get<string>();
-        }
-
-        public void TestLog()
-        {
-            log.LogInformation(DateTime.Now.ToString());
+            blockIPRange = config.GetSection("Blocking:BlockIPRange").Get<bool>();
         }
 
         /// <summary>
@@ -55,8 +52,13 @@ namespace SP.Core
 
             addRule.Profiles = fwPolicy2.CurrentProfileTypes;
 
+            // Ip Address to block
+            string blockIp = blockIPRange
+                ? $"{block.IpAddress1}.{block.IpAddress2}.{block.IpAddress3}.0/24"
+                : block.IpAddress;
+
             // Create Rule Name
-            string ruleName = string.Format(nameTemplate, block.IpAddress);
+            string ruleName = string.Format(nameTemplate, blockIp);
 
             // Create description
             string description = string.Format(descriptionTemplate, block.Date.ToString(dateFormat));
@@ -65,16 +67,18 @@ namespace SP.Core
             addRule.Name = ruleName;
             addRule.Description = description;
             addRule.Protocol = (int) protocol;
-            addRule.RemoteAddresses = block.IpAddress;
+
+            addRule.RemoteAddresses = blockIp;
 
             addRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
             addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
             addRule.Enabled = true;
-
+#if !!DEBUG
             fwPolicy2.Rules.Add(addRule);
+#endif
 
             // Diagnostics
-            log.LogInformation($"Created firewall rules {ruleName} to block {block.IpAddress}");
+            log.LogInformation($"Created firewall rules {ruleName} to block {blockIp}");
         }
 
         /// <summary>
