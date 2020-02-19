@@ -43,7 +43,8 @@ namespace SP.Core
         private bool ipDataEnabled;
         private string ipDataKey;
         private string ipDataUrl;
-        private int timeSpanMinutes;
+
+        private int unblockTimeSpanMinutes;
 
         /// <summary>
         /// </summary>
@@ -81,7 +82,7 @@ namespace SP.Core
 
             List<Blocks> unblockList = db.Blocks.Where(b => b.IsBlocked == 1)
                 .ToListAsync().Result.Where(b =>
-                    b.Date < DateTime.Now.Subtract(new TimeSpan(0, timeSpanMinutes, 0)) &&
+                    b.Date < DateTime.Now.Subtract(new TimeSpan(0, unblockTimeSpanMinutes, 0)) &&
                     b.IsBlocked == 1
                 ).ToList();
 
@@ -247,7 +248,7 @@ namespace SP.Core
             configPlugins = config.GetSection("Plugins").Get<List<string>>();
 
             // 
-            timeSpanMinutes = config.GetSection("Blocking:TimeSpanMinutes").Get<int>();
+            unblockTimeSpanMinutes = config.GetSection("Blocking:UnblockTimeSpanMinutes").Get<int>();
 
             // Get IPData configuration items
             ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
