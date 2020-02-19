@@ -37,13 +37,13 @@ namespace SP.Core
         private readonly IProtectHandler protectHandler;
 
         // Unblock Timer
+        public Timer UnblockTimer { get; private set; }
 
         // Configuration items
-        private List<string> configPlugins;
+        private List<string> enabledPlugins;
         private bool ipDataEnabled;
         private string ipDataKey;
         private string ipDataUrl;
-
         private int unblockTimeSpanMinutes;
 
         /// <summary>
@@ -65,11 +65,6 @@ namespace SP.Core
 
             // Block events
             BlockEvent += OnBlockEvent;
-
-            // Unblock timer
-            // ReSharper disable once UnusedVariable
-            Timer unblockTimer = new Timer(async state => await DoWork(state), null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(5));
         }
 
         /// <summary>
@@ -245,7 +240,7 @@ namespace SP.Core
         /// </summary>
         private void Configure()
         {
-            configPlugins = config.GetSection("Plugins").Get<List<string>>();
+            enabledPlugins = config.GetSection("Plugins").Get<List<string>>();
 
             // 
             unblockTimeSpanMinutes = config.GetSection("Blocking:UnblockTimeSpanMinutes").Get<int>();
@@ -254,6 +249,11 @@ namespace SP.Core
             ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
             ipDataKey = config.GetSection("Tools:IPData:Key").Get<string>();
             ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
+
+            // Unblock timer
+            // ReSharper disable once UnusedVariable
+            UnblockTimer = new Timer(async state => await DoWork(state), null, TimeSpan.Zero,
+                TimeSpan.FromMinutes(5));
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace SP.Core
                                 .Remove(fileInfo.Name.Length - prefixLength - suffixLength, suffixLength)
                                 .ToLowerInvariant();
 
-                        if (!configPlugins.Contains(pluginName))
+                        if (!enabledPlugins.Contains(pluginName))
                         {
                             log.LogInformation($"Plugin {pluginName} is not enabled");
                             continue;
