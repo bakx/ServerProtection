@@ -8,7 +8,7 @@ connection.on("ReportLoginAttempt",
         var elem = document.getElementById("loginAttempts");
 
         var card = document.createElement("div");
-        card.className = "card";
+        card.className = "card text-white bg-dark mb-3";
         card.style = "width: 18rem;";
         card.alt = attemptId;
 
@@ -50,7 +50,7 @@ connection.on("ReportBlock",
         var elem = document.getElementById("blocks");
 
         var card = document.createElement("div");
-        card.className = "card";
+        card.className = "card text-white bg-dark mb-3";
         card.style = "width: 18rem;";
         card.alt = blockId;
 

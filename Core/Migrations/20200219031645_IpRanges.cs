@@ -7,87 +7,87 @@ namespace SP.Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress1",
-                table: "Login.Attempts",
+                "IpAddress1",
+                "Login.Attempts",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress2",
-                table: "Login.Attempts",
+                "IpAddress2",
+                "Login.Attempts",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress3",
-                table: "Login.Attempts",
+                "IpAddress3",
+                "Login.Attempts",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress4",
-                table: "Login.Attempts",
+                "IpAddress4",
+                "Login.Attempts",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress1",
-                table: "Blocks",
+                "IpAddress1",
+                "Blocks",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress2",
-                table: "Blocks",
+                "IpAddress2",
+                "Blocks",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress3",
-                table: "Blocks",
+                "IpAddress3",
+                "Blocks",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
 
             migrationBuilder.AddColumn<byte>(
-                name: "IpAddress4",
-                table: "Blocks",
+                "IpAddress4",
+                "Blocks",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte) 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IpAddress1",
-                table: "Login.Attempts");
+                "IpAddress1",
+                "Login.Attempts");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress2",
-                table: "Login.Attempts");
+                "IpAddress2",
+                "Login.Attempts");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress3",
-                table: "Login.Attempts");
+                "IpAddress3",
+                "Login.Attempts");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress4",
-                table: "Login.Attempts");
+                "IpAddress4",
+                "Login.Attempts");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress1",
-                table: "Blocks");
+                "IpAddress1",
+                "Blocks");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress2",
-                table: "Blocks");
+                "IpAddress2",
+                "Blocks");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress3",
-                table: "Blocks");
+                "IpAddress3",
+                "Blocks");
 
             migrationBuilder.DropColumn(
-                name: "IpAddress4",
-                table: "Blocks");
+                "IpAddress4",
+                "Blocks");
         }
     }
 }

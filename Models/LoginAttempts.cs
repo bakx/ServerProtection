@@ -7,9 +7,10 @@ namespace SP.Models
     [Table("Login.Attempts")]
     public class LoginAttempts
     {
+        private string ipAddress;
+
         [Key] public long Id { get; set; }
 
-        private string ipAddress;
         public string IpAddress
         {
             get => ipAddress;

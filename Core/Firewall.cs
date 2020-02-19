@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NetFwTypeLib;
@@ -17,14 +15,15 @@ namespace SP.Core
         private static readonly Type TypeFwRule =
             Type.GetTypeFromCLSID(new Guid("{2C5BC43E-3369-4C33-AB0C-BE9469677AF4}"));
 
+        private readonly bool blockIPRange;
+        private readonly string dateFormat;
+        private readonly string descriptionTemplate;
+
         //
         private readonly ILogger<Firewall> log;
 
         // Configuration settings
         private readonly string nameTemplate;
-        private readonly string descriptionTemplate;
-        private readonly string dateFormat;
-        private readonly bool blockIPRange;
 
         /// <summary>
         /// </summary>
@@ -58,13 +57,13 @@ namespace SP.Core
                 : block.IpAddress;
 
             // Create Rule Name
-            string ruleName = string.Format(nameTemplate, blockIp);
+            block.FirewallRuleName = string.Format(nameTemplate, blockIp);
 
             // Create description
             string description = string.Format(descriptionTemplate, block.Date.ToString(dateFormat));
 
             // Create firewall rule
-            addRule.Name = ruleName;
+            addRule.Name = block.FirewallRuleName;
             addRule.Description = description;
             addRule.Protocol = (int) protocol;
 
@@ -73,36 +72,22 @@ namespace SP.Core
             addRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
             addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
             addRule.Enabled = true;
-#if !!DEBUG
+
             fwPolicy2.Rules.Add(addRule);
-#endif
 
             // Diagnostics
-            log.LogInformation($"Created firewall rules {ruleName} to block {blockIp}");
+            log.LogInformation($"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
         }
 
         /// <summary>
         /// </summary>
-        public void Unblock()
+        public void Unblock(Blocks block)
         {
-            throw new NotImplementedException("WiP");
+            INetFwPolicy2 firewallPolicy = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
+            firewallPolicy.Rules.Remove(block.FirewallRuleName);
 
-            //
-            //
-            //
-
-            INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
-
-            List<INetFwRule> list = fwPolicy2.Rules.Cast<INetFwRule>().ToList();
-            INetFwRule firewallRule = list.SingleOrDefault(r => r.Name == ""); //eventData.RuleName);
-
-            if (firewallRule != null)
-            {
-                // Diagnostics
-                log.LogInformation($"Removed firewall rule {firewallRule.Name}");
-
-                list.Remove(firewallRule);
-            }
+            // Diagnostics
+            log.LogInformation($"Removed firewall rule {block.FirewallRuleName} that blocked {block.IpAddress}");
         }
     }
 }

@@ -21,7 +21,7 @@
     Attempts: 3
 
     # Time to block after the threshold is exceeded
-    TimeSpanMinutes: 1440
+    TimeSpanMinutes: 180
     
     # Detect IP Range attemps. 
     # This feature will look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method

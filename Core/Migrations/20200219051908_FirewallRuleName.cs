@@ -2,12 +2,12 @@
 
 namespace SP.Core.Migrations
 {
-    public partial class AddDetailsToBlocks : Migration
+    public partial class FirewallRuleName : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                "Details",
+                "FirewallRuleName",
                 "Blocks",
                 nullable: true);
         }
@@ -15,7 +15,7 @@ namespace SP.Core.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                "Details",
+                "FirewallRuleName",
                 "Blocks");
         }
     }
