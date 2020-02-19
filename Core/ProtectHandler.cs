@@ -11,7 +11,6 @@ namespace SP.Core
     public class ProtectHandler : IProtectHandler
     {
         private readonly int attempts;
-        private readonly bool blockIPRange;
         private readonly bool detectIPRange;
 
         // Diagnostics
@@ -31,7 +30,6 @@ namespace SP.Core
             attempts = config.GetSection("Blocking:Attempts").Get<int>();
             timeSpanMinutes = config.GetSection("Blocking:TimeSpanMinutes").Get<int>();
             detectIPRange = config.GetSection("Blocking:DetectIPRange").Get<bool>();
-            blockIPRange = config.GetSection("Blocking:BlockIPRange").Get<bool>();
         }
 
         /// <summary>
@@ -48,12 +46,14 @@ namespace SP.Core
             if (detectIPRange)
             {
                 // Match on the first 3 blocks
-                var z = attempt.IpAddress.Split('.');
-                var a = $"{z[0]}.{z[1]}.{z[2]}";
-
-                log.LogDebug($"{nameof(detectIPRange)} is not yet supported");
+                return db.LoginAttempts
+                    .Where(l =>
+                        l.IpAddress1 == attempt.IpAddress1 &&
+                        l.IpAddress2 == attempt.IpAddress2 &&
+                        l.IpAddress3 == attempt.IpAddress3)
+                    .AsEnumerable()
+                    .Count(l => l.EventDate > fromTime);
             }
-
 
             // Return results
             return db.LoginAttempts

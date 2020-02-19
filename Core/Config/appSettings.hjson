@@ -27,7 +27,7 @@
     # This feature will look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method
     # that includes switching the IP to avoid detection
     DetectIPRange: true
-
+          
     # Block IP Range. 
     # This feature will block n.n.n.1 to n.n.n.255 when an IP range attack is determined
     BlockIPRange: true
