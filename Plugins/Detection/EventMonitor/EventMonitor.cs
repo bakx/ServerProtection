@@ -125,6 +125,16 @@ namespace Plugins
         /// <summary>
         /// Not used by this plugin
         /// </summary>
+        /// <param name="unblockHandler"></param>
+        /// <returns></returns>
+        public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Not used by this plugin
+        /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
         public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
@@ -136,6 +146,14 @@ namespace Plugins
         /// Not used by this plugin
         /// </summary>
         public async Task<bool> BlockEvent(Blocks block)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Not used by this plugin
+        /// </summary>
+        public async Task<bool> UnblockEvent(Blocks block)
         {
             return await Task.FromResult(true);
         }
