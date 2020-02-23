@@ -166,16 +166,6 @@ namespace Plugins
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="block"></param>
-        /// <returns></returns>
-        public async Task<bool> UnblockEvent(Blocks block)
-        {
-            return await Task.FromResult(true);
-        }
-
-        /// <summary>
         /// </summary>
         /// <param name="block"></param>
         /// <returns></returns>
