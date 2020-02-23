@@ -55,7 +55,6 @@ namespace SP.Core
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>

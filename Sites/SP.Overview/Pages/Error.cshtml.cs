@@ -8,16 +8,16 @@ namespace SP.Overview.Pages
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorModel : PageModel
     {
-        public string RequestId { get; set; }
-
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-
         private readonly ILogger<ErrorModel> logger;
 
         public ErrorModel(ILogger<ErrorModel> logger)
         {
             this.logger = logger;
         }
+
+        public string RequestId { get; set; }
+
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
         public void OnGet()
         {

@@ -18,7 +18,8 @@ namespace SP.Core
         {
             INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
 
-            List<INetFwRule> list = fwPolicy2.Rules.Cast<INetFwRule>().Where(r => r.Name.ToLowerInvariant().StartsWith("rdp attack")).ToList();
+            List<INetFwRule> list = fwPolicy2.Rules.Cast<INetFwRule>()
+                .Where(r => r.Name.ToLowerInvariant().StartsWith("rdp attack")).ToList();
 
             Console.WriteLine($"Found {list.Count} rules that should be deleted.");
 
@@ -39,7 +40,6 @@ namespace SP.Core
                         Console.WriteLine(e.Message);
                     }
                 });
-
             }
         }
     }

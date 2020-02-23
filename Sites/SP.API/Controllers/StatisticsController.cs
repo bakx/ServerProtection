@@ -21,7 +21,8 @@ namespace SP.API.Controllers
         [Route(nameof(UpdateBlock))]
         public async Task<bool> UpdateBlock(Blocks block)
         {
-            log.LogDebug($"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
+            log.LogDebug(
+                $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
 
             // Open handle to database
             await using Db db = new Db();

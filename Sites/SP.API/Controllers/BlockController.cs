@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +21,6 @@ namespace SP.API.Controllers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="minutes"></param>
         /// <returns></returns>
@@ -30,7 +28,8 @@ namespace SP.API.Controllers
         [Route(nameof(GetUnblocks))]
         public async Task<List<Blocks>> GetUnblocks(int minutes = 30)
         {
-            log.LogDebug($"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetUnblocks)}. Parameters: minutes {minutes} ");
+            log.LogDebug(
+                $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetUnblocks)}. Parameters: minutes {minutes} ");
 
             // Open handle to database
             await using Db db = new Db();
@@ -58,7 +57,8 @@ namespace SP.API.Controllers
         [Route(nameof(UpdateBlock))]
         public async Task<bool> UpdateBlock(Blocks block)
         {
-            log.LogDebug($"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
+            log.LogDebug(
+                $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
 
             // Open handle to database
             await using Db db = new Db();
@@ -70,7 +70,7 @@ namespace SP.API.Controllers
             {
                 return false;
             }
-            
+
             // Overwrite block details
             blocks.City = block.City;
             blocks.Country = block.Country;

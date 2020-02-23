@@ -14,7 +14,6 @@ namespace SP.Overview.Pages
 
         public void OnGet()
         {
-
         }
     }
 }

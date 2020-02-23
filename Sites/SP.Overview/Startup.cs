@@ -20,7 +20,7 @@ namespace SP.Overview
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddSignalR();//.AddMessagePackProtocol();
+            services.AddSignalR(); //.AddMessagePackProtocol();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

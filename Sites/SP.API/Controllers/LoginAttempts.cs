@@ -19,7 +19,8 @@ namespace SP.API.Controllers
 
         [HttpPost]
         [Route(nameof(GetLoginAttempts))]
-        public async Task<int> GetLoginAttempts([FromBody] Models.LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
+        public async Task<int> GetLoginAttempts([FromBody] Models.LoginAttempts loginAttempt, bool detectIPRange,
+            DateTime fromTime)
         {
             log.LogDebug(
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetLoginAttempts)}.");

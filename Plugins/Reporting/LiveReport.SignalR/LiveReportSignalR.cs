@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using SP.Models;
 using SP.Plugins;
@@ -13,10 +12,14 @@ namespace Plugins
 {
     public class LiveReportSignalR : IPluginBase
     {
-        private string reportingHubUrl;
-
         // Diagnostics
         private ILogger log;
+
+        // Configuration items
+        private string reportingHubUrl;
+
+        // SignalR hub
+        public HubConnection Hub { get; set; }
 
         /// <summary>
         /// </summary>
@@ -73,7 +76,7 @@ namespace Plugins
             {
                 Hub = new HubConnectionBuilder()
                     .WithUrl(reportingHubUrl)
-                    .AddMessagePackProtocol()
+                    //.AddMessagePackProtocol()
                     .Build();
 
                 Hub.Closed += async error =>
@@ -97,8 +100,6 @@ namespace Plugins
                 log.Information("Completed Configuration stage");
             }
         }
-
-        public HubConnection Hub { get; set; }
 
         /// <summary>
         /// Not used by this plug-in
@@ -131,7 +132,6 @@ namespace Plugins
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
@@ -150,7 +150,6 @@ namespace Plugins
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public async Task<bool> BlockEvent(Blocks block)
         {
@@ -167,7 +166,6 @@ namespace Plugins
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="block"></param>
         /// <returns></returns>

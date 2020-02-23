@@ -2,12 +2,10 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/reportingHub").build();
 
 connection.on("ReportLoginAttempt",
-    function (attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
+    function(attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
 
         // Get reference to login attempts
         var elem = document.getElementById("loginAttempts");
-
-
 
         var card = document.createElement("div");
         card.className = "card text-white bg-dark mb-3";
@@ -46,8 +44,8 @@ connection.on("ReportLoginAttempt",
     });
 
 connection.on("ReportBlock",
-    function (blockId, blockIpAddress, blockCity, blockCountry, blockISP) {
-       
+    function(blockId, blockIpAddress, blockCity, blockCountry, blockISP) {
+
         // Get reference to login attempts
         var elem = document.getElementById("blocks");
 
@@ -87,8 +85,8 @@ connection.on("ReportBlock",
         elem.appendChild(card);
     });
 
-connection.start().then(function () {
+connection.start().then(function() {
     console.log("Connected to ReportingHub");
-}).catch(function (err) {
+}).catch(function(err) {
     return console.error(err.toString());
 });

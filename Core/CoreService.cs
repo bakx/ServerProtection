@@ -1,3 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,21 +14,17 @@ using SP.Core.Plugin;
 using SP.Core.Tools;
 using SP.Models;
 using SP.Plugins;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SP.Core
 {
     public class CoreService : BackgroundService
     {
+        private readonly IApiHandler apiHandler;
+
         // Configuration object
         private readonly IConfigurationRoot config;
-        
+        private readonly IFirewall firewall;
+
         // Keep top 3 of last blocks
         private readonly LinkedList<string> lastBlocks = new LinkedList<string>();
 
@@ -33,11 +36,6 @@ namespace SP.Core
 
         // Handlers
         private readonly IProtectHandler protectHandler;
-        private readonly IApiHandler apiHandler;
-        private readonly IFirewall firewall;
-
-        // Unblock Timer
-        public Timer UnblockTimer { get; private set; }
 
         // Configuration items
         private List<string> enabledPlugins;
@@ -73,6 +71,9 @@ namespace SP.Core
             // Unblock events
             UnblockEvent += OnUnblockEvent;
         }
+
+        // Unblock Timer
+        public Timer UnblockTimer { get; private set; }
 
         /// <summary>
         /// </summary>
