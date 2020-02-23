@@ -1,10 +1,2 @@
 {
-  API: {
-      # Url of the API service
-      Url: "http://localhost:30194"
-
-      # Access Token
-      Token: "a033fec3-7e95-4a82-91c9-7525405695a8"
-  }
-
 }

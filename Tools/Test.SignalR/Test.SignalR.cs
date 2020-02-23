@@ -134,5 +134,21 @@ namespace Testing
                 return false;
             }
         }
+
+        /// <summary>
+        /// </summary>
+        public async Task<bool> UnblockedEvent(Blocks block)
+        {
+            try
+            {
+                await Hub.InvokeAsync("Unblock", block);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
+            }
+        }
     }
 }

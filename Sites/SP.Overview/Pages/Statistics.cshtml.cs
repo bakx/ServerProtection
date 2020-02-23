@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace SP.Overview.Pages
 {
-    public class IndexModel : PageModel
+    public class StatisticsModel : PageModel
     {
-        private readonly ILogger<IndexModel> log;
+        private readonly ILogger<StatisticsModel> log;
 
-        public IndexModel(ILogger<IndexModel> log)
+        public StatisticsModel(ILogger<StatisticsModel> log)
         {
             this.log = log;
         }

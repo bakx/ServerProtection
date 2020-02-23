@@ -171,7 +171,16 @@ namespace Plugins
         /// <returns></returns>
         public async Task<bool> UnblockEvent(Blocks block)
         {
-            return await Task.FromResult(true);
+            try
+            {
+                await Hub.InvokeAsync("Unblock", block);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
+            }
         }
     }
 }
