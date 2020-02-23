@@ -15,7 +15,12 @@ namespace SP.Core.Interfaces
 
         /// <summary>
         /// </summary>
-        /// <param name="attempt"></param>
-        Task<bool> AnalyzeAttempt(LoginAttempts attempt);
+        /// <param name="loginAttempt"></param>
+        Task<bool> AddLoginAttempt(LoginAttempts loginAttempt);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="loginAttempt"></param>
+        Task<bool> AnalyzeAttempt(LoginAttempts loginAttempt);
     }
 }

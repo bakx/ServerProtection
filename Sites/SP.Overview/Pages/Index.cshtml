@@ -1,0 +1,52 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm"><h2>Live Data</h2></div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm">
+            <h3>Last 5 Login Attempts</h3>
+            <div id="loginAttempts"></div>
+        </div>
+        <div class="col-sm">
+            <h3>Last 5 Blocks</h3>
+            <div id="blocks"></div>
+        </div>
+        <div class="col-sm">
+            <h3>Last 5 Unblocks</h3>
+            <div id="unblocks"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm"><h2>Statistics</h2></div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm">
+            <h3>Top 5 countries</h3>
+            <div id="countries"></div>
+        </div>
+        <div class="col-sm">
+            <h3>Top 5 attempts</h3>
+            <div id="0blocks"></div>
+        </div>
+        <div class="col-sm">
+            <h3>Last 5 Unblocks</h3>
+            <div id="0unblocks"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/reportingHub.js"></script>
+
+

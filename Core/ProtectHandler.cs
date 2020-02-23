@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -10,6 +9,8 @@ namespace SP.Core
 {
     public class ProtectHandler : IProtectHandler
     {
+        private readonly IApiHandler apiHandler;
+
         private readonly int attempts;
         private readonly bool detectIPRange;
 
@@ -23,9 +24,11 @@ namespace SP.Core
         /// </summary>
         /// <param name="log"></param>
         /// <param name="config"></param>
-        public ProtectHandler(ILogger<ProtectHandler> log, IConfigurationRoot config)
+        /// <param name="apiHandler"></param>
+        public ProtectHandler(ILogger<ProtectHandler> log, IConfigurationRoot config, IApiHandler apiHandler)
         {
             this.log = log;
+            this.apiHandler = apiHandler;
 
             attempts = config.GetSection("Blocking:Attempts").Get<int>();
             timeSpanMinutes = config.GetSection("Blocking:TimeSpanMinutes").Get<int>();
@@ -34,49 +37,30 @@ namespace SP.Core
 
         /// <summary>
         /// </summary>
-        /// <param name="attempt"></param>
+        /// <param name="loginAttempt"></param>
         /// <param name="fromTime"></param>
         /// <returns></returns>
-        public async Task<int> GetLoginAttempts(LoginAttempts attempt, DateTime fromTime)
+        public async Task<int> GetLoginAttempts(LoginAttempts loginAttempt, DateTime fromTime)
         {
-            // Open handle to database
-            await using Db db = new Db();
-
-            // Determine if IP Range block is enabled.
-            if (detectIPRange)
-            {
-                // Match on the first 3 blocks
-                return db.LoginAttempts
-                    .Where(l =>
-                        l.IpAddress1 == attempt.IpAddress1 &&
-                        l.IpAddress2 == attempt.IpAddress2 &&
-                        l.IpAddress3 == attempt.IpAddress3)
-                    .AsEnumerable()
-                    .Count(l => l.EventDate > fromTime);
-            }
-
-            // Return results
-            return db.LoginAttempts
-                .Where(l => l.IpAddress == attempt.IpAddress)
-                .AsEnumerable()
-                .Count(l => l.EventDate > fromTime);
+            return await apiHandler.GetLoginAttempts(loginAttempt, detectIPRange, fromTime);
         }
 
         /// <summary>
         /// </summary>
         /// <param name="loginAttempt"></param>
+        public async Task<bool> AddLoginAttempt(LoginAttempts loginAttempt)
+        {
+            // Increase statistics
+            return await apiHandler.AddLoginAttempt(loginAttempt);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="loginAttempt"></param>
+        /// <returns></returns>
         public async Task<bool> AnalyzeAttempt(LoginAttempts loginAttempt)
         {
-            // Open handle to database
-            await using Db db = new Db();
-
-            // Add the login attempt
-            db.LoginAttempts.Add(loginAttempt);
-
-            // Save changes
-            await db.SaveChangesAsync();
-
-            // Check if the amount of login attempts exceeds the configured values
             DateTime previousLogins = DateTime.Now.Subtract(new TimeSpan(0, timeSpanMinutes, 0));
 
             // Determine the block count
