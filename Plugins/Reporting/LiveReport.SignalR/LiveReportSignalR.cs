@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using SP.Models;
 using SP.Plugins;
 
 namespace Plugins
@@ -120,11 +121,21 @@ namespace Plugins
         }
 
         /// <summary>
+        /// Not used by this plug-in
+        /// </summary>
+        /// <param name="blockHandler"></param>
+        /// <returns></returns>
+        public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock blockHandler)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
-        public async Task<bool> LoginAttemptEvent(SP.Models.LoginAttempts loginAttempt)
+        public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
         {
             try
             {
@@ -141,7 +152,7 @@ namespace Plugins
         /// <summary>
         /// 
         /// </summary>
-        public async Task<bool> BlockEvent(SP.Models.Blocks block)
+        public async Task<bool> BlockEvent(Blocks block)
         {
             try
             {
@@ -153,6 +164,16 @@ namespace Plugins
                 log.Error(e.Message);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns></returns>
+        public async Task<bool> UnblockEvent(Blocks block)
+        {
+            return await Task.FromResult(true);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace SP.Core
         private readonly IFirewall firewall;
 
         // Keep top 3 of last blocks
-        private readonly Stack<string> lastBlocks = new Stack<string>();
+        private readonly LinkedList<string> lastBlocks = new LinkedList<string>();
 
         // Diagnostics
         private readonly ILogger<CoreService> log;
@@ -65,6 +65,9 @@ namespace SP.Core
 
             // Block events
             BlockEvent += OnBlockEvent;
+
+            // Unblock events
+            UnblockEvent += OnUnblockEvent;
         }
 
         /// <summary>
@@ -87,6 +90,9 @@ namespace SP.Core
                 {
                     firewall.Unblock(block);
                     block.IsBlocked = 0;
+
+                    // Notify listeners of unblock
+                    UnblockEvent?.Invoke(block);
                 }
 
                 await db.SaveChangesAsync();
@@ -109,7 +115,7 @@ namespace SP.Core
             if (lastBlocks.Count > 3)
             {
                 // Clear out top item
-                lastBlocks.Pop();
+                lastBlocks.RemoveFirst();
             }
 
             // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
@@ -130,8 +136,8 @@ namespace SP.Core
                 return;
             }
 
-            // Add IP to list of last 10 blocks
-            lastBlocks.Push(loginAttempt.IpAddress);
+            // Add IP to list of last 3 blocks
+            lastBlocks.AddLast(loginAttempt.IpAddress);
 
             // Signal block
             BlockEvent?.Invoke(loginAttempt);
@@ -197,9 +203,32 @@ namespace SP.Core
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="block"></param>
+        private async void OnUnblockEvent(Blocks block)
+        {
+            // Notify plug-ins of unblock
+            foreach (IPluginBase pluginBase in plugins)
+            {
+                await Task.Run(() => { pluginBase.UnblockEvent(block); });
+            }
+
+            // Do not proceed if this IP does not exists in the recently block list
+            if (!lastBlocks.Contains(block.IpAddress))
+            {
+                return;
+            }
+
+            // If this IP exists in the recently block list, remove it.
+            log.LogDebug($"Removing {block.IpAddress} from the last block list");
+            lastBlocks.Remove(block.IpAddress);
+        }
+
         // Events
         public event IPluginBase.LoginAttempt LoginAttemptEvent;
         public event IPluginBase.Block BlockEvent;
+        public event IPluginBase.Unblock UnblockEvent;
 
         /// <summary>
         /// </summary>
@@ -228,6 +257,7 @@ namespace SP.Core
                 // Register handlers
                 await plugin.RegisterLoginAttemptHandler(LoginAttemptEvent);
                 await plugin.RegisterBlockHandler(BlockEvent);
+                await plugin.RegisterUnblockHandler(UnblockEvent);
             }
 
             while (!stoppingToken.IsCancellationRequested)
@@ -240,9 +270,10 @@ namespace SP.Core
         /// </summary>
         private void Configure()
         {
+            // List of plug-ins that should be enabled
             enabledPlugins = config.GetSection("Plugins").Get<List<string>>();
 
-            // 
+            // Retrieve the unblock timespan minutes
             unblockTimeSpanMinutes = config.GetSection("Blocking:UnblockTimeSpanMinutes").Get<int>();
 
             // Get IPData configuration items

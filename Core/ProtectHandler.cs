@@ -82,11 +82,16 @@ namespace SP.Core
             // Determine the block count
             int previousAttempts = await GetLoginAttempts(loginAttempt, previousLogins);
 
-            if (previousAttempts > attempts)
+            // Diagnostics
+            log.LogDebug($"{loginAttempt.IpAddress} has {previousAttempts} login attempts");
+
+            // If the amount of attempts exceed the configured value, return true to indicate that this IP should be blocked
+            if (previousAttempts >= attempts)
             {
                 return await Task.FromResult(true);
             }
 
+            // Indicate that the IP does not have to be blocked
             return await Task.FromResult(false);
         }
     }
