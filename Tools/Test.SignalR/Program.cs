@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SP.Models;
 
@@ -11,12 +12,24 @@ namespace Testing
             TestSignalR r = new TestSignalR();
             await r.Initialize(null);
             await r.Configure();
+           
+            for (int i = 0; i < 30; i++)
+            {
+                LoginAttempts attempt = new LoginAttempts
+                {Id = 1, IpAddress = "127.0.0.1", EventDate = DateTime.Now, Details = "Details"};
+            Blocks block = new Blocks
+            {
+                Id = 1, IpAddress = "127.0.0.1", Date = DateTime.Now, Details = "Details", Country = "Country",
+                City = "City", ISP = "ISP", Hostname = "www.hostname.com"
+            };
 
-            LoginAttempts attempt = new LoginAttempts {Id =  1, IpAddress = "127.0.0.1", EventDate = DateTime.Now, Details = "Details"};
-            Blocks block = new Blocks { Id = 1, IpAddress = "127.0.0.1", Date = DateTime.Now, Details = "Details", Country = "Country", City = "City", ISP = "ISP", Hostname = "www.hostname.com"};
+        
+                await r.LoginAttempt(attempt);
+                await r.BlockedEvent(block);
+                await r.UnblockedEvent(block);
 
-            await r.LoginAttempt(attempt);
-            await r.BlockedEvent(block);
+                await Task.Delay(1000);
+            }
         }
     }
 }

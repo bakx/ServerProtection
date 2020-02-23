@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using SP.Models;
 using SP.Plugins;
 
 namespace Plugins
@@ -132,7 +133,15 @@ namespace Plugins
         /// <summary>
         /// Not used by this plugin
         /// </summary>
-        public async Task<bool> LoginAttemptEvent(SP.Models.LoginAttempts loginAttempt)
+        public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock eventHandler)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Not used by this plugin
+        /// </summary>
+        public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
         {
             return await Task.FromResult(true);
         }
@@ -140,16 +149,24 @@ namespace Plugins
         /// <summary>
         /// Report the ip to AbuseIP
         /// </summary>
-        public async Task<bool> BlockEvent(SP.Models.Blocks block)
+        public async Task<bool> BlockEvent(Blocks block)
         {
             return await ReportIP(block);
+        }
+
+        /// <summary>
+        /// Not used by this plugin
+        /// </summary>
+        public async Task<bool> UnblockEvent(Blocks block)
+        {
+            return await Task.FromResult(true);
         }
 
         /// <summary>
         /// </summary>
         /// <param name="block"></param>
         /// <returns></returns>
-        public async Task<bool> ReportIP(SP.Models.Blocks block)
+        public async Task<bool> ReportIP(Blocks block)
         {
             try
             {

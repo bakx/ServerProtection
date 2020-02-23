@@ -1,0 +1,31 @@
+﻿@page
+@model StatisticsModel
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h2>Sta Data</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm">
+            <h3>Last 5 Login Attempts</h3>
+            <div id="loginAttempts"></div>
+        </div>
+        <div class="col-sm">
+            <h3>Last 5 Blocks</h3>
+            <div id="blocks"></div>
+        </div>
+        <div class="col-sm">
+            <h3>Last 5 Unblocks</h3>
+            <div id="unblocks"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/reportingHub.js"></script>

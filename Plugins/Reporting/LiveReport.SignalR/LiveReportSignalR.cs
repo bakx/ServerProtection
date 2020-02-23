@@ -4,18 +4,22 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using SP.Models;
 using SP.Plugins;
 
 namespace Plugins
 {
     public class LiveReportSignalR : IPluginBase
     {
-        private string reportingHubUrl;
-
         // Diagnostics
         private ILogger log;
+
+        // Configuration items
+        private string reportingHubUrl;
+
+        // SignalR hub
+        public HubConnection Hub { get; set; }
 
         /// <summary>
         /// </summary>
@@ -72,7 +76,7 @@ namespace Plugins
             {
                 Hub = new HubConnectionBuilder()
                     .WithUrl(reportingHubUrl)
-                    .AddMessagePackProtocol()
+                    //.AddMessagePackProtocol()
                     .Build();
 
                 Hub.Closed += async error =>
@@ -97,8 +101,6 @@ namespace Plugins
             }
         }
 
-        public HubConnection Hub { get; set; }
-
         /// <summary>
         /// Not used by this plug-in
         /// </summary>
@@ -120,11 +122,20 @@ namespace Plugins
         }
 
         /// <summary>
-        /// 
+        /// Not used by this plug-in
+        /// </summary>
+        /// <param name="blockHandler"></param>
+        /// <returns></returns>
+        public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock blockHandler)
+        {
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
         /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
-        public async Task<bool> LoginAttemptEvent(SP.Models.LoginAttempts loginAttempt)
+        public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
         {
             try
             {
@@ -139,13 +150,30 @@ namespace Plugins
         }
 
         /// <summary>
-        /// 
         /// </summary>
-        public async Task<bool> BlockEvent(SP.Models.Blocks block)
+        public async Task<bool> BlockEvent(Blocks block)
         {
             try
             {
                 await Hub.InvokeAsync("Block", block);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns></returns>
+        public async Task<bool> UnblockEvent(Blocks block)
+        {
+            try
+            {
+                await Hub.InvokeAsync("Unblock", block);
                 return true;
             }
             catch (Exception e)

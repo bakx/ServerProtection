@@ -1,6 +1,16 @@
 # What is Service Protect?
 Service Protect monitors various system resources to detect brute force login attempts. 
 
+## Sites
+It's using a plugin architecture and comes with the following plugins.
+
+### SP.API
+The API project contains the database that's used to store all data related to the project. It's essential for the Core project to operate.
+
+### SP.Overview
+Provides an overview of the login attempts made on this server. It includes live data (if the LiveReport.SignalR plug-in is enabled) and various statistics 
+related to the login attempts.
+
 ## Plugins
 It's using a plugin architecture and comes with the following plugins.
 

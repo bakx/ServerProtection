@@ -12,10 +12,11 @@ namespace Testing
 {
     public class TestSignalR
     {
-        private string reportingHubUrl;
-
         // Diagnostics
         private ILogger log;
+        private string reportingHubUrl;
+
+        public HubConnection Hub { get; set; }
 
         /// <summary>
         /// </summary>
@@ -71,7 +72,7 @@ namespace Testing
             try
             {
                 // Login attempts hub
-  
+
                 Hub = new HubConnectionBuilder()
                     .WithUrl(reportingHubUrl)
                     //                    .AddMessagePackProtocol()
@@ -100,10 +101,7 @@ namespace Testing
             }
         }
 
-        public HubConnection Hub { get; set; }
-
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
@@ -122,13 +120,28 @@ namespace Testing
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public async Task<bool> BlockedEvent(Blocks block)
         {
             try
             {
                 await Hub.InvokeAsync("Block", block);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// </summary>
+        public async Task<bool> UnblockedEvent(Blocks block)
+        {
+            try
+            {
+                await Hub.InvokeAsync("Unblock", block);
                 return true;
             }
             catch (Exception e)

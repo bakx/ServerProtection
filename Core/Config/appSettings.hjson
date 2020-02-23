@@ -1,6 +1,14 @@
 {
   Plugins: ["eventmonitor", "abuseip", "livereport.signalr"]
 
+  Api: {
+      # Url of the API service
+      Url: "your-api-url"
+
+      # Access Token
+      Token: "your-access-token"
+  }
+
   Firewall: {
     Rules: {
       # Name of the firewall rule that will be generated

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,12 +19,14 @@ namespace SP.Core
 {
     public class CoreService : BackgroundService
     {
+        private readonly IApiHandler apiHandler;
+
         // Configuration object
         private readonly IConfigurationRoot config;
         private readonly IFirewall firewall;
 
         // Keep top 3 of last blocks
-        private readonly Stack<string> lastBlocks = new Stack<string>();
+        private readonly LinkedList<string> lastBlocks = new LinkedList<string>();
 
         // Diagnostics
         private readonly ILogger<CoreService> log;
@@ -36,11 +37,10 @@ namespace SP.Core
         // Handlers
         private readonly IProtectHandler protectHandler;
 
-        // Unblock Timer
-        public Timer UnblockTimer { get; private set; }
-
         // Configuration items
         private List<string> enabledPlugins;
+
+
         private bool ipDataEnabled;
         private string ipDataKey;
         private string ipDataUrl;
@@ -52,44 +52,51 @@ namespace SP.Core
         /// <param name="config"></param>
         /// <param name="firewall"></param>
         /// <param name="protectHandler"></param>
+        /// <param name="apiHandler"></param>
         public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IFirewall firewall,
-            IProtectHandler protectHandler)
+            IProtectHandler protectHandler, IApiHandler apiHandler)
         {
             this.log = log;
             this.config = config;
             this.firewall = firewall;
             this.protectHandler = protectHandler;
+            this.apiHandler = apiHandler;
 
             // Login Attempts
             LoginAttemptEvent += OnLoginAttemptEvent;
 
             // Block events
             BlockEvent += OnBlockEvent;
+
+            // Unblock events
+            UnblockEvent += OnUnblockEvent;
         }
+
+        // Unblock Timer
+        public Timer UnblockTimer { get; private set; }
 
         /// <summary>
         /// </summary>
-        /// <param name="state"></param>
-        protected async Task DoWork(object state)
+        protected async Task DoWork(object _)
         {
-            // Open handle to database
-            await using Db db = new Db();
+            List<Blocks> unblockList = await apiHandler.GetUnblock(unblockTimeSpanMinutes);
 
-            List<Blocks> unblockList = db.Blocks.Where(b => b.IsBlocked == 1)
-                .ToListAsync().Result.Where(b =>
-                    b.Date < DateTime.Now.Subtract(new TimeSpan(0, unblockTimeSpanMinutes, 0)) &&
-                    b.IsBlocked == 1
-                ).ToList();
-
-            if (unblockList.Any())
+            if (unblockList != null)
             {
-                foreach (Blocks block in unblockList)
+                if (unblockList.Any())
                 {
-                    firewall.Unblock(block);
-                    block.IsBlocked = 0;
-                }
+                    foreach (Blocks block in unblockList)
+                    {
+                        firewall.Unblock(block);
+                        block.IsBlocked = 0;
 
-                await db.SaveChangesAsync();
+                        // Notify listeners of unblock
+                        UnblockEvent?.Invoke(block);
+
+                        // Update block
+                        await apiHandler.UpdateBlock(block);
+                    }
+                }
             }
         }
 
@@ -109,7 +116,7 @@ namespace SP.Core
             if (lastBlocks.Count > 3)
             {
                 // Clear out top item
-                lastBlocks.Pop();
+                lastBlocks.RemoveFirst();
             }
 
             // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
@@ -120,7 +127,10 @@ namespace SP.Core
                 return;
             }
 
-            // Pass the event to the protect handler
+            // Add the login attempt
+            await protectHandler.AddLoginAttempt(loginAttempt);
+
+            // Analyze the login attempt to see if a block should be applied
             bool block = await protectHandler.AnalyzeAttempt(loginAttempt);
 
             // Block IP?
@@ -130,8 +140,8 @@ namespace SP.Core
                 return;
             }
 
-            // Add IP to list of last 10 blocks
-            lastBlocks.Push(loginAttempt.IpAddress);
+            // Add IP to list of last 3 blocks
+            lastBlocks.AddLast(loginAttempt.IpAddress);
 
             // Signal block
             BlockEvent?.Invoke(loginAttempt);
@@ -180,15 +190,16 @@ namespace SP.Core
             }
 
             // Increase statistics
-            await Statistics.UpdateBlocks(block);
+            await apiHandler.StatisticsUpdateBlocks(block);
 
             // Block IP in Firewall
             firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
 
-            // Save to database
-            await using Db db = new Db();
-            db.Blocks.Add(block);
-            await db.SaveChangesAsync();
+            // Report block
+            if (!await apiHandler.AddBlock(block))
+            {
+                log.LogInformation("An error occured while reporting the block to the api.");
+            }
 
             // Notify plug-ins of block
             foreach (IPluginBase pluginBase in plugins)
@@ -197,9 +208,32 @@ namespace SP.Core
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="block"></param>
+        private async void OnUnblockEvent(Blocks block)
+        {
+            // Notify plug-ins of unblock
+            foreach (IPluginBase pluginBase in plugins)
+            {
+                await Task.Run(() => { pluginBase.UnblockEvent(block); });
+            }
+
+            // Do not proceed if this IP does not exists in the recently block list
+            if (!lastBlocks.Contains(block.IpAddress))
+            {
+                return;
+            }
+
+            // If this IP exists in the recently block list, remove it.
+            log.LogDebug($"Removing {block.IpAddress} from the last block list");
+            lastBlocks.Remove(block.IpAddress);
+        }
+
         // Events
         public event IPluginBase.LoginAttempt LoginAttemptEvent;
         public event IPluginBase.Block BlockEvent;
+        public event IPluginBase.Unblock UnblockEvent;
 
         /// <summary>
         /// </summary>
@@ -228,6 +262,7 @@ namespace SP.Core
                 // Register handlers
                 await plugin.RegisterLoginAttemptHandler(LoginAttemptEvent);
                 await plugin.RegisterBlockHandler(BlockEvent);
+                await plugin.RegisterUnblockHandler(UnblockEvent);
             }
 
             while (!stoppingToken.IsCancellationRequested)
@@ -240,9 +275,10 @@ namespace SP.Core
         /// </summary>
         private void Configure()
         {
+            // List of plug-ins that should be enabled
             enabledPlugins = config.GetSection("Plugins").Get<List<string>>();
 
-            // 
+            // Retrieve the unblock timespan minutes
             unblockTimeSpanMinutes = config.GetSection("Blocking:UnblockTimeSpanMinutes").Get<int>();
 
             // Get IPData configuration items
@@ -251,7 +287,6 @@ namespace SP.Core
             ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
 
             // Unblock timer
-            // ReSharper disable once UnusedVariable
             UnblockTimer = new Timer(async state => await DoWork(state), null, TimeSpan.Zero,
                 TimeSpan.FromMinutes(5));
         }
