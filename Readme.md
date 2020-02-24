@@ -1,5 +1,5 @@
-# What is Service Protect?
-Service Protect monitors various system resources to detect brute force login attempts. 
+# What is Server Protect?
+Server Protect monitors various system resources to detect brute force login attempts. 
 It's using a plugin architecture and comes with the following plugins.
 
 ## Sites
