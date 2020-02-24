@@ -4,28 +4,34 @@
     ViewData["Title"] = "Statistics";
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm">
-            <h2>Sta Data</h2>
+            <h2>Statistics</h2>
         </div>
     </div>
 
     <div class="row">
         <div class="col-sm">
-            <h3>Last 5 Login Attempts</h3>
-            <div id="loginAttempts"></div>
+            <h3>Top 10 countries</h3>
+            <div>
+                <canvas id="countriesChart"></canvas>
+            </div>
         </div>
         <div class="col-sm">
-            <h3>Last 5 Blocks</h3>
-            <div id="blocks"></div>
+            <h3>Top 10 cities</h3>
+            <div>
+                <canvas id="citiesChart"></canvas>
+            </div>
         </div>
         <div class="col-sm">
-            <h3>Last 5 Unblocks</h3>
-            <div id="unblocks"></div>
+            <h3>Top 10 IPs</h3>
+            <div>
+                <canvas id="ipChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
-<script src="~/js/reportingHub.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+<script src="~/js/statistics.js"></script>
