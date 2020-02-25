@@ -7,7 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Create Release.bat = Create Release.bat
 		DevNotes.txt = DevNotes.txt
+		Install Service.bat = Install Service.bat
 		Readme.md = Readme.md
+		Remove Service.bat = Remove Service.bat
+		Stop Service.bat = Stop Service.bat
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{9293EE60-1E25-4EC9-8A0E-379CA97968E7}"
@@ -39,6 +42,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SP.API", "Sites\SP.API\SP.API.csproj", "{428D80DF-A33B-490C-B9FC-2EF2007BBB4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SP.Overview", "Sites\SP.Overview\SP.Overview.csproj", "{2B954E2B-6D1A-4619-8881-1A9991593B36}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service Installation", "Service Installation", "{3450DA87-B1A2-4BF5-BE57-4C66271FA5B9}"
+	ProjectSection(SolutionItems) = preProject
+		Install Service.bat = Install Service.bat
+		Remove Service.bat = Remove Service.bat
+		Stop Service.bat = Stop Service.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +111,7 @@ Global
 		{A88F3F01-A0EE-4D78-8200-57917AD2AD85} = {1BC123A2-388C-4DDF-A36B-2E9758E13546}
 		{428D80DF-A33B-490C-B9FC-2EF2007BBB4F} = {FABB4AC0-C403-437B-ABDB-6E841BAA59FD}
 		{2B954E2B-6D1A-4619-8881-1A9991593B36} = {FABB4AC0-C403-437B-ABDB-6E841BAA59FD}
+		{3450DA87-B1A2-4BF5-BE57-4C66271FA5B9} = {2636D675-E239-4553-918A-1B7BA4C6BF22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4837EBBA-68D4-4C02-96CD-59A89BD6B8EE}
