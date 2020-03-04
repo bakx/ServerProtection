@@ -51,7 +51,7 @@ connection.on("ReportLoginAttempt",
     });
 
 connection.on("ReportBlock",
-    function (blockId, blockIpAddress, blockCity, blockCountry, blockISP) {
+    function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
         // Get reference to login attempts
         var elem = document.getElementById("blocks");
@@ -74,14 +74,28 @@ connection.on("ReportBlock",
         // Subtitle
         var subtitle = document.createElement("h6");
         subtitle.className = "card-subtitle mb-2 text-muted";
-        subtitle.appendChild(document.createTextNode(blockIpAddress));
+        subtitle.appendChild(document.createTextNode(blockDate));
 
         cardBody.appendChild(subtitle);
+
+        // IP
+        var ip = document.createElement("p");
+        ip.className = "card-text";
+        ip.appendChild(document.createTextNode(blockIpAddress));
+
+        cardBody.appendChild(ip);
 
         // Details
         var details = document.createElement("p");
         details.className = "card-text";
-        details.appendChild(document.createTextNode(blockISP));
+        details.appendChild(document.createTextNode(blockDetails));
+
+        cardBody.appendChild(details);
+
+        // ISP
+        var isp = document.createElement("p");
+        isp.className = "card-text";
+        isp.appendChild(document.createTextNode(blockISP));
 
         cardBody.appendChild(details);
 
@@ -99,7 +113,7 @@ connection.on("ReportBlock",
     });
 
 connection.on("ReportUnblock",
-    function (blockId, blockIpAddress, blockCity, blockCountry, blockISP) {
+    function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
         // Get reference to login attempts
         var elem = document.getElementById("unblocks");
@@ -122,14 +136,28 @@ connection.on("ReportUnblock",
         // Subtitle
         var subtitle = document.createElement("h6");
         subtitle.className = "card-subtitle mb-2 text-muted";
-        subtitle.appendChild(document.createTextNode(blockIpAddress));
+        subtitle.appendChild(document.createTextNode(blockDate));
 
         cardBody.appendChild(subtitle);
+
+        // IP
+        var ip = document.createElement("p");
+        ip.className = "card-text";
+        ip.appendChild(document.createTextNode(blockIpAddress));
+
+        cardBody.appendChild(ip);
 
         // Details
         var details = document.createElement("p");
         details.className = "card-text";
-        details.appendChild(document.createTextNode(blockISP));
+        details.appendChild(document.createTextNode(blockDetails));
+
+        cardBody.appendChild(details);
+
+        // ISP
+        var isp = document.createElement("p");
+        isp.className = "card-text";
+        isp.appendChild(document.createTextNode(blockISP));
 
         cardBody.appendChild(details);
 

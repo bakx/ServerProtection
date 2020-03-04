@@ -3,10 +3,8 @@ Server Protect monitors various system resources to detect brute force login att
 It's using a plugin architecture and comes with the following plugins.
 
 ## Sites
-To support attacks on a complete server park, Server Protect communicates through the SP.API project. This allows system administrators to protect multiple servers simultanously 
-when an attack is detected.
-
 For a live attack overview, as well as various statistics the SP.Overview project can be used. This project is not mandatory.
+To provide diagnostics and offer central reporting, this project comes with an API and an overview page that displays various statistics.
 
 ### SP.API
 The API project contains the database that's used to store all data related to the project. It's essential for the Core project to operate.
@@ -30,6 +28,10 @@ Reports the hacking attempt to the SignalR site that's part of this solution
 
 ## Developer notes
 This project is using SQLite in combination with EF Core. More details at : https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
+
+### Future goals - Not implemented
+To support attacks on a complete server park, Server Protect communicates through the SP.API project. This allows system administrators to protect multiple servers simultanously 
+when an attack is detected.
 
 ## Acknowledgements
 Shield icon taken from http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/shield-icon.html

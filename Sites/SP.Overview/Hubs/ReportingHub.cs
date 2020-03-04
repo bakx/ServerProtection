@@ -27,7 +27,7 @@ namespace SP.Overview.Hubs
         public async Task Block(Blocks block)
         {
             await Clients.All.SendCoreAsync("ReportBlock",
-                new object[] {block.Id, block.IpAddress, block.City, block.Country, block.ISP}, CancellationToken.None);
+                new object[] {block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP}, CancellationToken.None);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SP.Overview.Hubs
         public async Task Unblock(Blocks block)
         {
             await Clients.All.SendCoreAsync("ReportUnblock",
-                new object[] { block.Id, block.IpAddress, block.City, block.Country, block.ISP }, CancellationToken.None);
+                new object[] { block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP }, CancellationToken.None);
         }
     }
 }
