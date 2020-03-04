@@ -14,13 +14,15 @@ namespace SP.Core
 {
     internal static class Program
     {
+        private static readonly string BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+
         public static void Main(string[] args)
         {
 #if DEBUG
-            HjsonValue.Save(HjsonValue.Load("config/appSettings.development.hjson").Qo(),
+        HjsonValue.Save(HjsonValue.Load(Path.Combine(BasePath, "config/appSettings.development.hjson")).Qo(),
                 "config/appSettings.development.json");
 #else
-            HjsonValue.Save(HjsonValue.Load("config/appSettings.hjson").Qo(), "config/appSettings.json");
+            HjsonValue.Save(HjsonValue.Load(Path.Combine(BasePath, "config/appSettings.hjson")).Qo(), "config/appSettings.json");
 #endif
 
             CreateHostBuilder(args).Build().Run();
@@ -30,7 +32,7 @@ namespace SP.Core
         {
             // Initiate the configuration
             IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
+                .SetBasePath(BasePath)
 #if DEBUG
                 .AddJsonFile("config/appSettings.development.json", false, true)
 #else
