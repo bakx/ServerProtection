@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -25,13 +26,19 @@ namespace SP.Core
         private readonly IConfigurationRoot config;
         private readonly IFirewall firewall;
 
-        // Keep top 3 of last blocks
-        private readonly LinkedList<string> lastBlocks = new LinkedList<string>();
+        // Cached entries of last blocks
+        private readonly MemoryCache lastBlocks = new MemoryCache("LastBlocks");
+
+        // Cached entries of last attempts
+        private readonly MemoryCache lastAttempts = new MemoryCache("LastAttempts");
+
+        // Caches entries of the IPData related objects
+        private readonly MemoryCache ipDataCache = new MemoryCache("IpDataCache");
 
         // Diagnostics
         private readonly ILogger<CoreService> log;
 
-        // Contains all plugins that are loaded.
+        // Contains all plugins that are loaded
         private readonly List<IPluginBase> plugins = new List<IPluginBase>();
 
         // Handlers
@@ -112,13 +119,6 @@ namespace SP.Core
                 await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
             }
 
-            // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
-            if (lastBlocks.Count > 3)
-            {
-                // Clear out top item
-                lastBlocks.RemoveFirst();
-            }
-
             // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
             // prevents that duplicate firewall rules or reports are being made.
             if (lastBlocks.Contains(loginAttempt.IpAddress))
@@ -127,21 +127,51 @@ namespace SP.Core
                 return;
             }
 
-            // Add the login attempt
-            await protectHandler.AddLoginAttempt(loginAttempt);
+            // Cached login attempts
+            int cachedLoginAttempts = 0;
 
-            // Analyze the login attempt to see if a block should be applied
-            bool block = await protectHandler.AnalyzeAttempt(loginAttempt);
+            // Is this attempt in the cache?
+            if (lastAttempts.Contains(loginAttempt.IpAddress))
+            {
+                int? attempts = (int?)lastAttempts.GetCacheItem(loginAttempt.IpAddress)?.Value;
+                if (attempts != null)
+                {
+                    cachedLoginAttempts = attempts.Value + 1;
+                    lastAttempts.Set(loginAttempt.IpAddress, cachedLoginAttempts, DateTime.Now.AddMinutes(5));
+                }
+            }
+            else
+            {
+                cachedLoginAttempts = 1;
+                lastAttempts.Add(loginAttempt.IpAddress, 1, DateTime.Now.AddMinutes(5));
+            }
+
+            // Default block rule
+            bool block = false;
+
+            // Attempt to contact the API 
+            try
+            {
+                // Add the login attempt
+                await protectHandler.AddLoginAttempt(loginAttempt);
+
+                // Analyze the login attempt to see if a block should be applied
+                block = await protectHandler.AnalyzeAttempt(loginAttempt);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex.Message);
+            }
 
             // Block IP?
-            if (!block)
+            if (!block && cachedLoginAttempts < 5)
             {
                 log.LogDebug($"{loginAttempt.IpAddress} will not be blocked.");
                 return;
             }
 
-            // Add IP to list of last 3 blocks
-            lastBlocks.AddLast(loginAttempt.IpAddress);
+            // Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
+            lastBlocks.Add(loginAttempt.IpAddress, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
 
             // Signal block
             BlockEvent?.Invoke(loginAttempt);
@@ -164,17 +194,33 @@ namespace SP.Core
             // Use IPData to get additional information about the IP
             if (ipDataEnabled)
             {
-                try
+                DataModel dataModel = null;
+
+                if (ipDataCache.Contains(loginAttempt.IpAddress))
                 {
-                    DataModel dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
+                    dataModel = (DataModel) ipDataCache.GetCacheItem(loginAttempt.IpAddress)?.Value;
+                }
+
+                // If unable to retrieve the data from cache, retrieve it from the web service
+                if (dataModel == null)
+                {
+                    try
+                    {
+                        dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.LogError(
+                            $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
+                    }
+                }
+
+                // Final check to ensure the request was successful
+                if (dataModel != null)
+                {
                     block.Country = dataModel.Country;
                     block.City = dataModel.City;
                     block.ISP = dataModel.ISP;
-                }
-                catch (Exception ex)
-                {
-                    log.LogError(
-                        $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
                 }
             }
 

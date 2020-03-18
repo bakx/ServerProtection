@@ -37,14 +37,12 @@ namespace SP.API.Controllers
                         l.IpAddress1 == loginAttempt.IpAddress1 &&
                         l.IpAddress2 == loginAttempt.IpAddress2 &&
                         l.IpAddress3 == loginAttempt.IpAddress3)
-                    .AsEnumerable()
                     .Count(l => l.EventDate > fromTime);
             }
 
             // Return results
             return db.LoginAttempts
                 .Where(l => l.IpAddress == loginAttempt.IpAddress)
-                .AsEnumerable()
                 .Count(l => l.EventDate > fromTime);
         }
 
