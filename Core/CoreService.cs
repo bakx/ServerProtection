@@ -146,6 +146,9 @@ namespace SP.Core
                 lastAttempts.Add(loginAttempt.IpAddress, 1, DateTime.Now.AddMinutes(5));
             }
 
+            // Diagnostics
+            log.LogDebug($"{loginAttempt.IpAddress} is at {cachedLoginAttempts} cached login attempts.");
+
             // Default block rule
             bool block = false;
 
@@ -170,11 +173,18 @@ namespace SP.Core
                 return;
             }
 
-            // Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
-            lastBlocks.Add(loginAttempt.IpAddress, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+            // Block the IP if it wasn't blocked in the last NN minutes
+            if (!lastBlocks.Contains(loginAttempt.IpAddress))
+            {
+                // Diagnostics
+                log.LogDebug($"{loginAttempt.IpAddress} did not exists in cached last blocks. Being added now.");
 
-            // Signal block
-            BlockEvent?.Invoke(loginAttempt);
+                // Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
+                lastBlocks.Add(loginAttempt.IpAddress, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+
+                // Signal block
+                BlockEvent?.Invoke(loginAttempt);
+            }
         }
 
         /// <summary>
