@@ -217,6 +217,7 @@ namespace SP.Core
                     try
                     {
                         dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
+                        ipDataCache.Set(loginAttempt.IpAddress, dataModel, DateTime.Now.AddDays(2));
                     }
                     catch (Exception ex)
                     {
@@ -248,8 +249,12 @@ namespace SP.Core
             // Increase statistics
             await apiHandler.StatisticsUpdateBlocks(block);
 
+#if DEBUG
+            log.LogDebug($"Skipping call to {nameof(Firewall)} due debug mode");
+#else
             // Block IP in Firewall
             firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
+#endif
 
             // Report block
             if (!await apiHandler.AddBlock(block))
