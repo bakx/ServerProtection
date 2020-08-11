@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,8 +26,8 @@ namespace SP.Core
         private readonly IConfigurationRoot config;
         private readonly IFirewall firewall;
 
-        // Keep top 3 of last blocks
-        private readonly LinkedList<string> lastBlocks = new LinkedList<string>();
+        // Keep logs of last blocks that occurred during the following timespan Blocking.TimeSpanMinutes
+        private readonly ConcurrentDictionary<string, DateTime> lastBlocks = new ConcurrentDictionary<string, DateTime>();
 
         // Diagnostics
         private readonly ILogger<CoreService> log;
@@ -75,9 +76,12 @@ namespace SP.Core
         // Unblock Timer
         public Timer UnblockTimer { get; private set; }
 
+        // Recent Block Cache Timer
+        public Timer RecentBlockCacheTimer { get; private set; }
+
         /// <summary>
         /// </summary>
-        protected async Task DoWork(object _)
+        protected async Task UnblockTask(object state)
         {
             List<Blocks> unblockList = await apiHandler.GetUnblock(unblockTimeSpanMinutes);
 
@@ -102,6 +106,23 @@ namespace SP.Core
 
         /// <summary>
         /// </summary>
+        protected async Task CleanCacheTask(object state)
+        {
+	        await Task.Run(() =>
+	        {
+		        List<KeyValuePair<string, DateTime>> keys = lastBlocks
+			        .Where(l => l.Value.Ticks < DateTime.Now.Subtract(new TimeSpan(0, unblockTimeSpanMinutes, 0)).Ticks)
+			        .ToList();
+
+		        foreach (KeyValuePair<string, DateTime> keyValuePair in keys)
+		        {
+			        lastBlocks.TryRemove(keyValuePair.Key, out _);
+		        }
+	        });
+        }
+
+        /// <summary>
+        /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
         private async void OnLoginAttemptEvent(LoginAttempts loginAttempt)
@@ -112,16 +133,9 @@ namespace SP.Core
                 await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
             }
 
-            // Initial attempt on caching the last blocks to prevent duplicate reports/blocks
-            if (lastBlocks.Count > 3)
-            {
-                // Clear out top item
-                lastBlocks.RemoveFirst();
-            }
-
             // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
             // prevents that duplicate firewall rules or reports are being made.
-            if (lastBlocks.Contains(loginAttempt.IpAddress))
+            if (lastBlocks.ContainsKey(loginAttempt.IpAddress))
             {
                 log.LogDebug($"{loginAttempt.IpAddress} was recently blocked. Ignoring.");
                 return;
@@ -141,7 +155,7 @@ namespace SP.Core
             }
 
             // Add IP to list of last 3 blocks
-            lastBlocks.AddLast(loginAttempt.IpAddress);
+            lastBlocks.TryAdd(loginAttempt.IpAddress, DateTime.Now);
 
             // Signal block
             BlockEvent?.Invoke(loginAttempt);
@@ -181,7 +195,7 @@ namespace SP.Core
             // Attempt to get the hostname
             try
             {
-                IPHostEntry hostInfo = Dns.GetHostEntry(block.IpAddress);
+                IPHostEntry hostInfo = await Dns.GetHostEntryAsync(block.IpAddress);
                 block.Hostname = hostInfo.HostName;
             }
             catch
@@ -220,14 +234,14 @@ namespace SP.Core
             }
 
             // Do not proceed if this IP does not exists in the recently block list
-            if (!lastBlocks.Contains(block.IpAddress))
+            if (!lastBlocks.ContainsKey(block.IpAddress))
             {
                 return;
             }
 
             // If this IP exists in the recently block list, remove it.
             log.LogDebug($"Removing {block.IpAddress} from the last block list");
-            lastBlocks.Remove(block.IpAddress);
+            lastBlocks.TryRemove(block.IpAddress, out _);
         }
 
         // Events
@@ -287,8 +301,12 @@ namespace SP.Core
             ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
 
             // Unblock timer
-            UnblockTimer = new Timer(async state => await DoWork(state), null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(5));
+            UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
+                TimeSpan.FromMinutes(15));
+
+            // Clear last block cache older than 15 minutes
+            RecentBlockCacheTimer = new Timer(async state => await CleanCacheTask(state), null, TimeSpan.Zero,
+	            TimeSpan.FromMinutes(15));
         }
 
         /// <summary>
@@ -300,7 +318,7 @@ namespace SP.Core
             // Paths that contain plugins.
             string[] pluginPaths =
             {
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins")
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? string.Empty, "plugins")
             };
 
             // Loop through all plugin paths and retrieve all plugins that match the naming requirements.
