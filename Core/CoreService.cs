@@ -132,9 +132,11 @@ namespace SP.Core
 			        .Where(l => l.Value.Ticks < DateTime.Now.Subtract(new TimeSpan(0, unblockTimeSpanMinutes, 0)).Ticks)
 			        .ToList();
 
-		        foreach (KeyValuePair<string, DateTime> keyValuePair in keys)
+		        foreach ((string key, DateTime value) in keys)
 		        {
-			        lastBlocks.TryRemove(keyValuePair.Key, out _);
+			        log.LogDebug($"Clearing {key} with expiry date of {value} from {nameof(lastBlocks)} cache.");
+
+                    lastBlocks.TryRemove(key, out _);
 		        }
 	        });
         }
@@ -149,14 +151,6 @@ namespace SP.Core
             foreach (IPluginBase pluginBase in plugins)
             {
                 await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
-            }
-
-            // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
-            // prevents that duplicate firewall rules or reports are being made.
-            if (lastBlocks.ContainsKey(loginAttempt.IpAddress))
-            {
-                log.LogDebug($"{loginAttempt.IpAddress} was recently blocked. Ignoring.");
-                return;
             }
 
             // Add the login attempt
@@ -174,14 +168,14 @@ namespace SP.Core
 
             // In some cases, it's possible due a massive attack there are multiple events fired at the same time.
             // This part attempts to prevent duplicate firewall rules.
-            if (lastBlocks.ContainsKey(loginAttempt.IpAddress))
+            if (lastBlocks.ContainsKey(loginAttempt.IpAddressRange))
             {
-	            log.LogDebug($"{loginAttempt.IpAddress} found in cache and should already have been blocked at this point.");
+	            log.LogDebug($"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
 	            return;
             }
 
             // Add IP to list of last 3 blocks
-            lastBlocks.TryAdd(loginAttempt.IpAddress, DateTime.Now);
+            lastBlocks.TryAdd(loginAttempt.IpAddressRange, DateTime.Now);
 
             // Signal block
             BlockEvent?.Invoke(loginAttempt);
