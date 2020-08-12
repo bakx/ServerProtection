@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SP.Models;
 using SP.Models.Statistics;
@@ -12,13 +13,16 @@ namespace SP.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ResponseCache(Duration = 60)]
     public class StatisticsController : ControllerBase
     {
         private readonly ILogger<StatisticsController> log;
+        private readonly DbContextOptions<Db> db;
 
-        public StatisticsController(ILogger<StatisticsController> log)
+        public StatisticsController(ILogger<StatisticsController> log, DbContextOptions<Db> db)
         {
             this.log = log;
+            this.db = db;
         }
 
         [HttpGet]
@@ -30,10 +34,11 @@ namespace SP.API.Controllers
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetTopCountries)}.");
 
             // Open handle to database
-            await using Db db = new Db();
+            await using Db database = new Db(db);
 
             // Return object
-            return db.StatisticsBlocks
+            return database.StatisticsBlocks
+                .Where(s => s.Country != null)
                 .AsEnumerable()
                 .GroupBy(s => s.Country)
                 .Select(cl => new TopCountries
@@ -53,12 +58,13 @@ namespace SP.API.Controllers
         {
             log.LogDebug(
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetTopCities)}.");
-
+            
             // Open handle to database
-            await using Db db = new Db();
+            await using Db database = new Db(db);
 
             // Return object
-            return db.StatisticsBlocks
+            return database.StatisticsBlocks
+                .Where(s => s.City != null)
                 .AsEnumerable()
                 .GroupBy(s => s.City)
                 .Select(cl => new TopCities
@@ -80,11 +86,11 @@ namespace SP.API.Controllers
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetTopCities)}.");
 
             // Open handle to database
-            await using Db db = new Db();
+            await using Db database = new Db(db);
 
             //
-            return db.LoginAttempts
-                .AsEnumerable()
+            return (database.LoginAttempts
+                .AsEnumerable() ?? throw new InvalidOperationException())
                 .GroupBy(s => s.IpAddress)
                 .Select(cl => new TopIps
                 {
@@ -92,34 +98,32 @@ namespace SP.API.Controllers
                     Attempts = cl.Count()
                 })
                 .OrderByDescending(s => s.Attempts)
-                .Take(10)
+                .Take(top)
                 .ToList();
         }
 
         [HttpGet]
         [Route(nameof(GetAttemptsPerHour))]
-        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
+        [ResponseCache(Duration = 3600, NoStore = false, CacheProfileName = nameof(GetAttemptsPerHour))]
         public async Task<IEnumerable<StatsPerHour>> GetAttemptsPerHour(int days = 30)
         {
             log.LogDebug(
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetAttemptsPerHour)}.");
 
             // Open handle to database
-            await using Db db = new Db();
+            await using Db database = new Db(db);
 
             // Get last NN days
             DateTime lastDays = DateTime.Now.AddDays(days * -1);
 
-            //
-            return db.LoginAttempts
-                .Where(d => d.EventDate > lastDays)
+            return database.LoginAttempts
+                .Where(d => d.EventDate > lastDays && d.EventDate < DateTime.Now)
                 .AsEnumerable()
-                .OrderByDescending(l => l.Id)
+                .GroupBy(l => l.EventDate.ToString("HH"))
                 .ToList()
-                .GroupBy(l => DateTime.Parse(Convert.ToString(l.EventDate, CultureInfo.InvariantCulture)).Hour)
                 .Select(l => new StatsPerHour
                 {
-                    Key = l.Key,
+                    Key = Convert.ToInt32(l.Key),
                     Attempts = l.LongCount()
                 })
                 .OrderBy(l => l.Key);
@@ -127,32 +131,30 @@ namespace SP.API.Controllers
 
         [HttpGet]
         [Route(nameof(GetAttemptsPerDay))]
-        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
-        public async Task<IEnumerable<StatsPerHour>> GetAttemptsPerDay(int top = 2500)
+        [ResponseCache(Duration = 3600, NoStore = false, CacheProfileName = nameof(GetAttemptsPerDay))]
+        public async Task<IEnumerable<StatsPerDay>> GetAttemptsPerDay(int top = 500000)
         {
             log.LogDebug(
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetAttemptsPerDay)}.");
 
-            // Open handle to database
-            await using Db db = new Db();
-
             // Get last month
             DateTime lastMonth = DateTime.Now.AddMonths(-1);
 
+            // Open handle to database
+            await using Db database = new Db(db);
+
             //
-            return db.LoginAttempts
-                .Where(d => d.EventDate.Month == lastMonth.Month && d.EventDate.Year == lastMonth.Year)
+            return database.LoginAttempts
+                .Where(d => d.EventDate > lastMonth && d.EventDate < DateTime.Now)
                 .AsEnumerable()
-                .OrderByDescending(l => l.Id)
-                .Take(top)
+                .GroupBy(l => l.EventDate.ToString("M"))
                 .ToList()
-                .GroupBy(l => DateTime.Parse(Convert.ToString(l.EventDate, CultureInfo.InvariantCulture)).Hour)
-                .Select(l => new StatsPerHour
+                .Select(l => new StatsPerDay
                 {
                     Key = l.Key,
                     Attempts = l.LongCount()
                 })
-                .OrderBy(l => l.Key);
+                .OrderBy(l => DateTime.Parse(l.Key));
         }
 
         [HttpGet]
@@ -163,14 +165,14 @@ namespace SP.API.Controllers
             log.LogDebug(
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetBlocksPerHour)}.");
 
-            // Open handle to database
-            await using Db db = new Db();
-
             // Get last NN days
             DateTime lastDays = DateTime.Now.AddDays(days * -1);
 
-            //
-            return db.Blocks
+            // Open handle to database
+            await using Db database = new Db(db);
+
+//
+            return database.Blocks
                 .Where(d => d.Date > lastDays)
                 .AsEnumerable()
                 .OrderByDescending(l => l.Id)
@@ -192,19 +194,19 @@ namespace SP.API.Controllers
             log.LogDebug(
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetBlocksPerDay)}.");
 
-            // Open handle to database
-            await using Db db = new Db();
-
             // Get last month
             DateTime lastMonth = DateTime.Now.AddMonths(-1);
 
+            // Open handle to database
+            await using Db database = new Db(db);
+
             //
-            return db.Blocks
+            return database.Blocks
                 .Where(d => d.Date.Month == lastMonth.Month && d.Date.Year == lastMonth.Year)
                 .AsEnumerable()
                 .OrderByDescending(l => l.Id)
                 .ToList()
-                .GroupBy(l => DateTime.Parse(Convert.ToString(l.Date, CultureInfo.InvariantCulture)).Day)
+                .GroupBy(l => l.Date.Day)
                 .Select(l => new StatsPerHour
                 {
                     Key = l.Key,
@@ -221,10 +223,10 @@ namespace SP.API.Controllers
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
 
             // Open handle to database
-            await using Db db = new Db();
-
+            await using Db database = new Db(db);
+            
             // Determine if this country has been blocked before
-            StatisticsBlocks blocks = db.StatisticsBlocks.FirstOrDefault(s =>
+            StatisticsBlocks blocks = database.StatisticsBlocks.FirstOrDefault(s =>
                 s.Country == block.Country && s.City == block.City && s.ISP == block.ISP);
 
             if (blocks != null)
@@ -241,11 +243,11 @@ namespace SP.API.Controllers
                     Attempts = 1
                 };
 
-                db.StatisticsBlocks.Add(statisticsBlocks);
+                database.StatisticsBlocks.Add(statisticsBlocks);
             }
 
             // Save changes
-            return await db.SaveChangesAsync() > 0;
+            return await database.SaveChangesAsync() > 0;
         }
     }
 }

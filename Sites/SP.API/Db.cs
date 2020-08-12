@@ -3,19 +3,27 @@ using SP.Models;
 
 namespace SP.API
 {
-    internal class Db : DbContext
+    public class Db : DbContext
     {
         public DbSet<Blocks> Blocks { get; set; }
         public DbSet<LoginAttempts> LoginAttempts { get; set; }
         public DbSet<StatisticsBlocks> StatisticsBlocks { get; set; }
+        public static bool EnsureCreated;
+
+        public Db(DbContextOptions options)
+            : base(options)
+        {
+            if (EnsureCreated)
+            {
+                return;
+            }
+
+            base.Database.EnsureCreated();
+            EnsureCreated = true;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-#if DEBUG
-            options.UseSqlite("Data Source=Data\\sqlite.development.db");
-#else
-            options.UseSqlite("Data Source=Data\\sqlite.db");
-#endif
         }
     }
 }

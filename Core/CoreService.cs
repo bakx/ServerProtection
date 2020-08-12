@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +36,7 @@ namespace SP.Core
         // Diagnostics
         private readonly ILogger<CoreService> log;
 
-        // Contains all plugins that are loaded.
+        // Contains all plugins that are loaded
         private readonly List<IPluginBase> plugins = new List<IPluginBase>();
 
         // Handlers
@@ -156,11 +157,22 @@ namespace SP.Core
             // Add the login attempt
             await protectHandler.AddLoginAttempt(loginAttempt);
 
-            // Analyze the login attempt to see if a block should be applied
-            bool block = await protectHandler.AnalyzeAttempt(loginAttempt);
+            // Attempt to contact the API 
+            try
+            {
+                // Add the login attempt
+                await protectHandler.AddLoginAttempt(loginAttempt);
+
+                // Analyze the login attempt to see if a block should be applied
+                block = await protectHandler.AnalyzeAttempt(loginAttempt);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex.Message);
+            }
 
             // Block IP?
-            if (!block)
+            if (!block && cachedLoginAttempts < 5)
             {
                 log.LogDebug($"{loginAttempt.IpAddress} will not be blocked.");
                 return;
@@ -177,8 +189,12 @@ namespace SP.Core
             // Add IP to list of last 3 blocks
             lastBlocks.TryAdd(loginAttempt.IpAddressRange, DateTime.Now);
 
-            // Signal block
-            BlockEvent?.Invoke(loginAttempt);
+             // Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
+             lastBlocks.Add(loginAttempt.IpAddress, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+
+             // Signal block
+             BlockEvent?.Invoke(loginAttempt);
+            }
         }
 
         /// <summary>
@@ -225,7 +241,7 @@ namespace SP.Core
 	                block.Country = dataModel.Country;
 	                block.City = dataModel.City;
 	                block.ISP = dataModel.ISP;
-                }
+               }
             }
 
             // Attempt to get the hostname
@@ -242,8 +258,12 @@ namespace SP.Core
             // Increase statistics
             await apiHandler.StatisticsUpdateBlocks(block);
 
+#if DEBUG
+            log.LogDebug($"Skipping call to {nameof(Firewall)} due debug mode");
+#else
             // Block IP in Firewall
             firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
+#endif
 
             // Report block
             if (!await apiHandler.AddBlock(block))
