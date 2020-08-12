@@ -243,7 +243,7 @@ namespace SP.API.Controllers
                     Attempts = 1
                 };
 
-                database.StatisticsBlocks.Add(statisticsBlocks);
+                await database.StatisticsBlocks.AddAsync(statisticsBlocks);
             }
 
             // Save changes

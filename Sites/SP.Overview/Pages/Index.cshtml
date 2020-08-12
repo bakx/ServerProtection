@@ -4,29 +4,34 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm">
-            <h2>Live Data</h2>
-            <div class="alert alert-info" role="alert">
-                This page will show up to the latest 5 login attempts, blocks and unblocks. It's real time data loaded through SignalR. 
-                No previous entries are loaded. Leave the page open to see this page populated on login attempts.
-            </div>
+<div class="ui info message">
+    This page will show up to the latest login attempts, blocks and unblocks. It's real time data loaded through SignalR.
+    No previous entries are loaded. Leave the page open to see this page populated on login attempts.
+</div>
+
+<div class="ui three column stackable grid">
+    <div class="column">
+        <h4>Latest attempts</h4>
+        <div id="loginAttempts" class="ui segment">
+            <div class="ui hidden divider"></div>
+            <div class="ui active slow blue double loader"></div>
+            <div class="ui hidden divider"></div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-sm">
-            <h3>Last 5 Login Attempts</h3>
-            <div id="loginAttempts"></div>
+    <div class="column">
+        <h4>Latest blocks</h4>
+        <div id="blocks" class="ui segment">
+            <div class="ui hidden divider"></div>
+            <div class="ui active slow blue double loader"></div>
+            <div class="ui hidden divider"></div>
         </div>
-        <div class="col-sm">
-            <h3>Last 5 Blocks</h3>
-            <div id="blocks"></div>
-        </div>
-        <div class="col-sm">
-            <h3>Last 5 Unblocks</h3>
-            <div id="unblocks"></div>
+    </div>
+    <div class="column">
+        <h4>Latest unblocks</h4>
+        <div id="unblocks" class="ui segment">
+            <div class="ui hidden divider"></div>
+            <div class="ui active slow blue double loader"></div>
+            <div class="ui hidden divider"></div>
         </div>
     </div>
 </div>

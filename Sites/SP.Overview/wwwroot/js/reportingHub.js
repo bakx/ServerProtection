@@ -1,41 +1,57 @@
 ﻿"use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/reportingHub").build();
-var maxLength = 5;
+var maxLength = 25;
+
+var hasLoginAttempt = false;
+var hasBlock = false;
+var hasUnblock = false;
 
 connection.on("ReportLoginAttempt",
     function (attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
+
+        if (!hasLoginAttempt) {
+            document.getElementById("loginAttempts").innerHTML = "";
+            hasLoginAttempt = true;
+        }
 
         // Get reference to login attempts
         var elem = document.getElementById("loginAttempts");
 
         var card = document.createElement("div");
-        card.className = "card text-white bg-dark mb-3";
-        card.style = "width: 18rem;";
+        card.className = "ui card";
         card.alt = attemptId;
 
-        var cardBody = document.createElement("div");
-        cardBody.className = "card-body";
-
         // Create title
-        var title = document.createElement("h5");
-        title.className = "card-title";
-        title.appendChild(document.createTextNode(attemptIpAddress));
+        var title = document.createElement("div");
+        title.className = "content";
 
-        cardBody.appendChild(title);
+        var titleHeader = document.createElement("div");
+        titleHeader.className = "header";
+        titleHeader.appendChild(document.createTextNode(attemptIpAddress));
+        title.appendChild(titleHeader);
 
-        // Subtitle
-        var subtitle = document.createElement("h6");
-        subtitle.className = "card-subtitle mb-2 text-muted";
+        card.appendChild(title);
+
+        // Create body
+        var cardBody = document.createElement("div");
+        cardBody.className = "content";
+
+        // Add subtitle
+        var subtitle = document.createElement("h4");
+        subtitle.className = "ui sub header";
         subtitle.appendChild(document.createTextNode(attemptEventDate));
 
         cardBody.appendChild(subtitle);
 
-        // Details
-        var details = document.createElement("p");
-        details.className = "card-text";
-        details.appendChild(document.createTextNode(attemptDetails));
+        // Add feed
+        var cardFeed = document.createElement("div");
+        cardFeed.className = "ui small feed";
 
-        cardBody.appendChild(details);
+        // Details
+        cardFeed.appendChild(createEventCard(attemptDetails));
+
+        // Add feed to body
+        cardBody.appendChild(cardFeed);
 
         // Add body to card
         card.appendChild(cardBody);
@@ -50,54 +66,77 @@ connection.on("ReportLoginAttempt",
         }
     });
 
+function createEventCard(content)
+{
+    // Add feed
+    var cardEvent = document.createElement("div");
+    cardEvent.className = "event";
+
+    var cardEventContent = document.createElement("div");
+    cardEventContent.className = "content";
+
+    var cardEventSummary = document.createElement("div");
+    cardEventSummary.className = "summary";
+    cardEventSummary.appendChild(document.createTextNode(content));
+
+    cardEventContent.appendChild(cardEventSummary);
+    cardEvent.appendChild(cardEventContent);
+
+    return cardEvent;
+}
+
 connection.on("ReportBlock",
     function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
+
+        if (!hasBlock) {
+            document.getElementById("blockLoader").innerHTML = "";
+            hasBlock = true;
+        }
 
         // Get reference to login attempts
         var elem = document.getElementById("blocks");
 
         var card = document.createElement("div");
-        card.className = "card text-white bg-dark mb-3";
-        card.style = "width: 18rem;";
+        card.className = "ui card";
         card.alt = blockId;
 
-        var cardBody = document.createElement("div");
-        cardBody.className = "card-body";
-
         // Create title
-        var title = document.createElement("h5");
-        title.className = "card-title";
-        title.appendChild(document.createTextNode(blockCountry + ", " + blockCity));
+        var title = document.createElement("div");
+        title.className = "content";
 
-        cardBody.appendChild(title);
+        var titleHeader = document.createElement("div");
+        titleHeader.className = "header";
+        titleHeader.appendChild(document.createTextNode(blockCountry + ", " + blockCity));
+        title.appendChild(titleHeader);
 
-        // Subtitle
-        var subtitle = document.createElement("h6");
-        subtitle.className = "card-subtitle mb-2 text-muted";
+        card.appendChild(title);
+
+        // Create body
+        var cardBody = document.createElement("div");
+        cardBody.className = "content";
+
+        // Add subtitle
+        var subtitle = document.createElement("h4");
+        subtitle.className = "ui sub header";
         subtitle.appendChild(document.createTextNode(blockDate));
 
         cardBody.appendChild(subtitle);
 
-        // IP
-        var ip = document.createElement("p");
-        ip.className = "card-text";
-        ip.appendChild(document.createTextNode(blockIpAddress));
+        // Add feed
+        var cardFeed = document.createElement("div");
+        cardFeed.className = "ui small feed";
 
-        cardBody.appendChild(ip);
+        // IP
+        cardFeed.appendChild(createEventCard(blockIpAddress));
 
         // Details
-        var details = document.createElement("p");
-        details.className = "card-text";
-        details.appendChild(document.createTextNode(blockDetails));
-
-        cardBody.appendChild(details);
+        cardFeed.appendChild(createEventCard(blockDetails));
 
         // ISP
-        var isp = document.createElement("p");
-        isp.className = "card-text";
-        isp.appendChild(document.createTextNode(blockISP));
+        cardFeed.appendChild(createEventCard(blockISP));
 
-        cardBody.appendChild(details);
+        // Add feed to body
+        cardBody.appendChild(cardFeed);
 
         // Add body to card
         card.appendChild(cardBody);
@@ -115,51 +154,55 @@ connection.on("ReportBlock",
 connection.on("ReportUnblock",
     function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
+        if (!hasUnblock) {
+            document.getElementById("unblockLoader").innerHTML = "";
+            hasUnblock = true;
+        }
+
         // Get reference to login attempts
         var elem = document.getElementById("unblocks");
 
         var card = document.createElement("div");
-        card.className = "card text-white bg-dark mb-3";
-        card.style = "width: 18rem;";
+        card.className = "ui card";
         card.alt = blockId;
 
-        var cardBody = document.createElement("div");
-        cardBody.className = "card-body";
-
         // Create title
-        var title = document.createElement("h5");
-        title.className = "card-title";
-        title.appendChild(document.createTextNode(blockCountry + ", " + blockCity));
+        var title = document.createElement("div");
+        title.className = "content";
 
-        cardBody.appendChild(title);
+        var titleHeader = document.createElement("div");
+        titleHeader.className = "header";
+        titleHeader.appendChild(document.createTextNode(blockCountry + ", " + blockCity));
+        title.appendChild(titleHeader);
 
-        // Subtitle
-        var subtitle = document.createElement("h6");
-        subtitle.className = "card-subtitle mb-2 text-muted";
+        card.appendChild(title);
+
+        // Create body
+        var cardBody = document.createElement("div");
+        cardBody.className = "content";
+
+        // Add subtitle
+        var subtitle = document.createElement("h4");
+        subtitle.className = "ui sub header";
         subtitle.appendChild(document.createTextNode(blockDate));
 
         cardBody.appendChild(subtitle);
 
-        // IP
-        var ip = document.createElement("p");
-        ip.className = "card-text";
-        ip.appendChild(document.createTextNode(blockIpAddress));
+        // Add feed
+        var cardFeed = document.createElement("div");
+        cardFeed.className = "ui small feed";
 
-        cardBody.appendChild(ip);
+        // IP
+        cardFeed.appendChild(createEventCard(blockIpAddress));
 
         // Details
-        var details = document.createElement("p");
-        details.className = "card-text";
-        details.appendChild(document.createTextNode(blockDetails));
-
-        cardBody.appendChild(details);
+        cardFeed.appendChild(createEventCard(blockDetails));
 
         // ISP
-        var isp = document.createElement("p");
-        isp.className = "card-text";
-        isp.appendChild(document.createTextNode(blockISP));
+        cardFeed.appendChild(createEventCard(blockISP));
 
-        cardBody.appendChild(details);
+        // Add feed to body
+        cardBody.appendChild(cardFeed);
 
         // Add body to card
         card.appendChild(cardBody);
