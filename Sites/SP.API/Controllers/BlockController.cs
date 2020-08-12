@@ -14,10 +14,12 @@ namespace SP.API.Controllers
     public class BlockController : ControllerBase
     {
         private readonly ILogger<BlockController> log;
+        private readonly DbContextOptions<Db> db;
 
-        public BlockController(ILogger<BlockController> log)
+        public BlockController(ILogger<BlockController> log, DbContextOptions<Db> db)
         {
             this.log = log;
+            this.db = db;
         }
 
         /// <summary>
@@ -32,9 +34,9 @@ namespace SP.API.Controllers
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetUnblocks)}. Parameters: minutes {minutes} ");
 
             // Open handle to database
-            await using Db db = new Db();
+            await using Db database = new Db(db);
 
-            return db.Blocks.Where(b => b.IsBlocked == 1)
+            return database.Blocks.Where(b => b.IsBlocked == 1)
                 .ToListAsync().Result.Where(b =>
                     b.Date < DateTime.Now.Subtract(new TimeSpan(0, minutes, 0)) &&
                     b.IsBlocked == 1
@@ -48,9 +50,10 @@ namespace SP.API.Controllers
             log.LogDebug($"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(AddBlock)}.");
 
             // Open handle to database
-            await using Db db = new Db();
-            db.Blocks.Add(block);
-            return await db.SaveChangesAsync() > 0;
+            await using Db database = new Db(db);
+
+            database.Blocks.Add(block);
+            return await database.SaveChangesAsync() > 0;
         }
 
         [HttpPost]
@@ -61,9 +64,9 @@ namespace SP.API.Controllers
                 $"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
 
             // Open handle to database
-            await using Db db = new Db();
+            await using Db database = new Db(db);
 
-            Blocks blocks = db.Blocks.Single(b => b.Id == block.Id);
+            Blocks blocks = database.Blocks.Single(b => b.Id == block.Id);
 
             // If the entry cannot be found, ignore the update
             if (blocks == null)
@@ -85,7 +88,7 @@ namespace SP.API.Controllers
             blocks.FirewallRuleName = block.FirewallRuleName;
             blocks.IsBlocked = block.IsBlocked;
 
-            return await db.SaveChangesAsync() > 0;
+            return await database.SaveChangesAsync() > 0;
         }
     }
 }
