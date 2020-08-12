@@ -148,7 +148,7 @@ namespace SP.Core
 			if (lastBlocks.Contains(loginAttempt.IpAddressRange))
 			{
 				log.LogDebug($"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
-				return;
+			//	return;
 			}
 
 			// Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
@@ -171,6 +171,9 @@ namespace SP.Core
 				Date = loginAttempt.EventDate,
 				Details = loginAttempt.Details
 			};
+
+			// Diagnostics
+			log.LogDebug($"In routine to block {loginAttempt.IpAddress}");
 
 			// Use IPData to get additional information about the IP
 			if (ipDataEnabled)
@@ -216,28 +219,27 @@ namespace SP.Core
 				log.LogDebug($"Unable to get host name for {block.IpAddress}");
 			}
 
-			// Increase statistics
-			await apiHandler.StatisticsUpdateBlocks(block);
-
 #if DEBUG
 			log.LogDebug($"Skipping call to {nameof(Firewall)} due debug mode");
-			System.Diagnostics.Debugger.Break();
 #else
             // Block IP in Firewall
             firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
 #endif
-
-			// Report block
-			if (!await apiHandler.AddBlock(block))
-			{
-				log.LogInformation("An error occured while reporting the block to the api.");
-			}
 
 			// Notify plug-ins of block
 			foreach (IPluginBase pluginBase in plugins)
 			{
 				await Task.Run(() => { pluginBase.BlockEvent(block); });
 			}
+
+			// Report block
+			if (!await apiHandler.AddBlock(block))
+			{
+				log.LogError("An error occured while reporting the block to the api.");
+			}
+
+			// Increase statistics
+			await apiHandler.StatisticsUpdateBlocks(block);
 		}
 
 		/// <summary>

@@ -12,13 +12,6 @@ namespace SP.API
     {
         public static void Main(string[] args)
         {
-#if DEBUG
-            HjsonValue.Save(HjsonValue.Load("config/appSettings.development.hjson").Qo(),
-                "config/appSettings.development.json");
-#else
-            HjsonValue.Save(HjsonValue.Load("config/appSettings.hjson").Qo(), "config/appSettings.json");
-#endif
-
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -26,11 +19,6 @@ namespace SP.API
         {
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
-#if DEBUG
-                .AddJsonFile("config/appSettings.development.json", false, true)
-#else
-            .AddJsonFile("config/appSettings.json", false, true)
-#endif
                 .AddJsonFile("config/logSettings.json", false, true)
                 .Build();
 

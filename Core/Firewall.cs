@@ -52,12 +52,12 @@ namespace SP.Core
             if (addRule != null && fwPolicy2 != null)
             {
 	            addRule.Profiles = fwPolicy2.CurrentProfileTypes;
-                
+
 	            // Ip Address to block
 	            string blockIp = blockIPRange
-		            ? $"{block.IpAddress1}.{block.IpAddress2}.{block.IpAddress3}.0/24"
+		            ? block.IpAddressRange
 		            : block.IpAddress;
-                
+
 	            // Create Rule Name
 	            block.FirewallRuleName = string.Format(nameTemplate, blockIp);
 
@@ -75,10 +75,19 @@ namespace SP.Core
 	            addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
 	            addRule.Enabled = true;
 
-	            fwPolicy2.Rules.Add(addRule);
+	            try
+	            {
+		            fwPolicy2.Rules.Add(addRule);
 
-	            // Diagnostics
-	            log.LogInformation($"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
+		            // Diagnostics
+		            log.LogInformation(
+			            $"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
+	            }
+	            catch (Exception e)
+	            {
+		            // Diagnostics
+		            log.LogError($"Unable to create firewall rule {block.FirewallRuleName}: {e.Message}");
+                }
             }
             else
             {

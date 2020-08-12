@@ -9,16 +9,18 @@ var hasUnblock = false;
 connection.on("ReportLoginAttempt",
     function (attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
 
-        if (!hasLoginAttempt) {
-            document.getElementById("loginAttempts").innerHTML = "";
-            hasLoginAttempt = true;
-        }
-
         // Get reference to login attempts
         var elem = document.getElementById("loginAttempts");
 
+        // Clear loading block
+        if (!hasLoginAttempt) {
+            elem.innerHTML = "";
+            hasLoginAttempt = true;
+        }
+
+        // Create card
         var card = document.createElement("div");
-        card.className = "ui card";
+        card.className = "ui card fluid";
         card.alt = attemptId;
 
         // Create title
@@ -66,38 +68,21 @@ connection.on("ReportLoginAttempt",
         }
     });
 
-function createEventCard(content)
-{
-    // Add feed
-    var cardEvent = document.createElement("div");
-    cardEvent.className = "event";
-
-    var cardEventContent = document.createElement("div");
-    cardEventContent.className = "content";
-
-    var cardEventSummary = document.createElement("div");
-    cardEventSummary.className = "summary";
-    cardEventSummary.appendChild(document.createTextNode(content));
-
-    cardEventContent.appendChild(cardEventSummary);
-    cardEvent.appendChild(cardEventContent);
-
-    return cardEvent;
-}
-
 connection.on("ReportBlock",
     function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
+        // Get reference to blocks
+        var elem = document.getElementById("blocks");
+
+        // Clear loading block
         if (!hasBlock) {
-            document.getElementById("blockLoader").innerHTML = "";
+            elem.innerHTML = "";
             hasBlock = true;
         }
 
-        // Get reference to login attempts
-        var elem = document.getElementById("blocks");
-
+        // Create card
         var card = document.createElement("div");
-        card.className = "ui card";
+        card.className = "ui card fluid";
         card.alt = blockId;
 
         // Create title
@@ -154,16 +139,18 @@ connection.on("ReportBlock",
 connection.on("ReportUnblock",
     function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
+        // Get reference to unblocks
+        var elem = document.getElementById("unblocks");
+
+        // Clear loading block
         if (!hasUnblock) {
-            document.getElementById("unblockLoader").innerHTML = "";
+            elem.innerHTML = "";
             hasUnblock = true;
         }
 
-        // Get reference to login attempts
-        var elem = document.getElementById("unblocks");
-
+        // Create card
         var card = document.createElement("div");
-        card.className = "ui card";
+        card.className = "ui card fluid";
         card.alt = blockId;
 
         // Create title
@@ -222,3 +209,22 @@ connection.start().then(function () {
 }).catch(function (err) {
     return console.error(err.toString());
 });
+
+
+/* */
+function createEventCard(content) {
+    var cardEvent = document.createElement("div");
+    cardEvent.className = "event";
+
+    var cardEventContent = document.createElement("div");
+    cardEventContent.className = "content";
+
+    var cardEventSummary = document.createElement("div");
+    cardEventSummary.className = "summary";
+    cardEventSummary.appendChild(document.createTextNode(content));
+
+    cardEventContent.appendChild(cardEventSummary);
+    cardEvent.appendChild(cardEventContent);
+
+    return cardEvent;
+}

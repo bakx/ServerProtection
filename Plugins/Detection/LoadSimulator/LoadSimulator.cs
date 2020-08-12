@@ -97,7 +97,7 @@ namespace Plugins
         private void Callback(object state)
         {
             // Disable timer
-            timer.Change(0, 5);
+            timer.Change(0, 100);
 
             Parallel.For((long)1, parallelThreads, (i, res) =>
             {
