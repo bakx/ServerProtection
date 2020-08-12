@@ -37,7 +37,7 @@ namespace SP.API.Controllers
             await using Db database = new Db(db);
 
             // Return object
-            return db.StatisticsBlocks
+            return database.StatisticsBlocks
                 .Where(s => s.Country != null)
                 .AsEnumerable()
                 .GroupBy(s => s.Country)
@@ -63,7 +63,7 @@ namespace SP.API.Controllers
             await using Db database = new Db(db);
 
             // Return object
-            return db.StatisticsBlocks
+            return database.StatisticsBlocks
                 .Where(s => s.City != null)
                 .AsEnumerable()
                 .GroupBy(s => s.City)
@@ -89,7 +89,7 @@ namespace SP.API.Controllers
             await using Db database = new Db(db);
 
             //
-            return (db.LoginAttempts
+            return (database.LoginAttempts
                 .AsEnumerable() ?? throw new InvalidOperationException())
                 .GroupBy(s => s.IpAddress)
                 .Select(cl => new TopIps
@@ -171,7 +171,7 @@ namespace SP.API.Controllers
             // Open handle to database
             await using Db database = new Db(db);
 
-            //
+//
             return database.Blocks
                 .Where(d => d.Date > lastDays)
                 .AsEnumerable()
