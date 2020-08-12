@@ -23,7 +23,7 @@ namespace SP.Core
 
             if (list == null)
             {
-	            Console.WriteLine($"Unable to find any rules");
+	            Console.WriteLine("Unable to find any rules");
 
 	            return;
             }

@@ -29,6 +29,9 @@ namespace SP.Core
         // Keep logs of last blocks that occurred during the following timespan Blocking.TimeSpanMinutes
         private readonly ConcurrentDictionary<string, DateTime> lastBlocks = new ConcurrentDictionary<string, DateTime>();
 
+        // Keep cache of IPData requests (if enabled)
+        private readonly ConcurrentDictionary<string, DataModel> ipdataCache = new ConcurrentDictionary<string, DataModel>();
+
         // Diagnostics
         private readonly ILogger<CoreService> log;
 
@@ -71,6 +74,21 @@ namespace SP.Core
 
             // Unblock events
             UnblockEvent += OnUnblockEvent;
+
+            /* This allows testing of the login attempt handler
+            LoginAttempts attempt = new LoginAttempts();
+            attempt.IpAddress = "192.130.131.132";
+            attempt.EventDate = DateTime.Now;
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            */
         }
 
         // Unblock Timer
@@ -154,6 +172,14 @@ namespace SP.Core
                 return;
             }
 
+            // In some cases, it's possible due a massive attack there are multiple events fired at the same time.
+            // This part attempts to prevent duplicate firewall rules.
+            if (lastBlocks.ContainsKey(loginAttempt.IpAddress))
+            {
+	            log.LogDebug($"{loginAttempt.IpAddress} found in cache and should already have been blocked at this point.");
+	            return;
+            }
+
             // Add IP to list of last 3 blocks
             lastBlocks.TryAdd(loginAttempt.IpAddress, DateTime.Now);
 
@@ -178,17 +204,33 @@ namespace SP.Core
             // Use IPData to get additional information about the IP
             if (ipDataEnabled)
             {
-                try
-                {
-                    DataModel dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
-                    block.Country = dataModel.Country;
-                    block.City = dataModel.City;
-                    block.ISP = dataModel.ISP;
+	            DataModel dataModel = null;
+
+                if (ipdataCache.ContainsKey(loginAttempt.IpAddress))
+	            {
+		            dataModel = ipdataCache[loginAttempt.IpAddress];
                 }
-                catch (Exception ex)
+	            else
+	            {
+		            try
+		            {
+			            dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
+			            ipdataCache.TryAdd(loginAttempt.IpAddress, dataModel);
+
+		            }
+		            catch (Exception ex)
+		            {
+			            log.LogError(
+				            $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
+		            }
+	            }
+
+                // Only on successful retrieval of dataModel populate the block object
+                if (dataModel != null)
                 {
-                    log.LogError(
-                        $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
+	                block.Country = dataModel.Country;
+	                block.City = dataModel.City;
+	                block.ISP = dataModel.ISP;
                 }
             }
 

@@ -46,18 +46,18 @@ namespace SP.Core
         /// <param name="block"></param>
         public void Block(NET_FW_IP_PROTOCOL_ protocol, Blocks block)
         {
-            INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
-            INetFwRule addRule = (INetFwRule) Activator.CreateInstance(TypeFwRule);
+	        INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
+	        INetFwRule addRule = (INetFwRule) Activator.CreateInstance(TypeFwRule);
 
             if (addRule != null && fwPolicy2 != null)
             {
 	            addRule.Profiles = fwPolicy2.CurrentProfileTypes;
-
+                
 	            // Ip Address to block
 	            string blockIp = blockIPRange
 		            ? $"{block.IpAddress1}.{block.IpAddress2}.{block.IpAddress3}.0/24"
 		            : block.IpAddress;
-
+                
 	            // Create Rule Name
 	            block.FirewallRuleName = string.Format(nameTemplate, blockIp);
 
