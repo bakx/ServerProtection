@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,14 +27,11 @@ namespace SP.Core
         private readonly IConfigurationRoot config;
         private readonly IFirewall firewall;
 
-        // Cached entries of last blocks
-        private readonly MemoryCache lastBlocks = new MemoryCache("LastBlocks");
+        // Keep logs of last blocks that occurred during the following timespan Blocking.TimeSpanMinutes
+        private readonly ConcurrentDictionary<string, DateTime> lastBlocks = new ConcurrentDictionary<string, DateTime>();
 
-        // Cached entries of last attempts
-        private readonly MemoryCache lastAttempts = new MemoryCache("LastAttempts");
-
-        // Caches entries of the IPData related objects
-        private readonly MemoryCache ipDataCache = new MemoryCache("IpDataCache");
+        // Keep cache of IPData requests (if enabled)
+        private readonly ConcurrentDictionary<string, DataModel> ipdataCache = new ConcurrentDictionary<string, DataModel>();
 
         // Diagnostics
         private readonly ILogger<CoreService> log;
@@ -77,14 +75,32 @@ namespace SP.Core
 
             // Unblock events
             UnblockEvent += OnUnblockEvent;
+
+            /* This allows testing of the login attempt handler
+            LoginAttempts attempt = new LoginAttempts();
+            attempt.IpAddress = "192.130.131.132";
+            attempt.EventDate = DateTime.Now;
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            LoginAttemptEvent.Invoke(attempt);
+            */
         }
 
         // Unblock Timer
         public Timer UnblockTimer { get; private set; }
 
+        // Recent Block Cache Timer
+        public Timer RecentBlockCacheTimer { get; private set; }
+
         /// <summary>
         /// </summary>
-        protected async Task DoWork(object _)
+        protected async Task UnblockTask(object state)
         {
             List<Blocks> unblockList = await apiHandler.GetUnblock(unblockTimeSpanMinutes);
 
@@ -109,6 +125,25 @@ namespace SP.Core
 
         /// <summary>
         /// </summary>
+        protected async Task CleanCacheTask(object state)
+        {
+	        await Task.Run(() =>
+	        {
+		        List<KeyValuePair<string, DateTime>> keys = lastBlocks
+			        .Where(l => l.Value.Ticks < DateTime.Now.Subtract(new TimeSpan(0, unblockTimeSpanMinutes, 0)).Ticks)
+			        .ToList();
+
+		        foreach ((string key, DateTime value) in keys)
+		        {
+			        log.LogDebug($"Clearing {key} with expiry date of {value} from {nameof(lastBlocks)} cache.");
+
+                    lastBlocks.TryRemove(key, out _);
+		        }
+	        });
+        }
+
+        /// <summary>
+        /// </summary>
         /// <param name="loginAttempt"></param>
         /// <returns></returns>
         private async void OnLoginAttemptEvent(LoginAttempts loginAttempt)
@@ -119,38 +154,8 @@ namespace SP.Core
                 await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
             }
 
-            // If an attack is happening, it's possible that 100s of events fire in seconds, this logic
-            // prevents that duplicate firewall rules or reports are being made.
-            if (lastBlocks.Contains(loginAttempt.IpAddress))
-            {
-                log.LogDebug($"{loginAttempt.IpAddress} was recently blocked. Ignoring.");
-                return;
-            }
-
-            // Cached login attempts
-            int cachedLoginAttempts = 0;
-
-            // Is this attempt in the cache?
-            if (lastAttempts.Contains(loginAttempt.IpAddress))
-            {
-                int? attempts = (int?)lastAttempts.GetCacheItem(loginAttempt.IpAddress)?.Value;
-                if (attempts != null)
-                {
-                    cachedLoginAttempts = attempts.Value + 1;
-                    lastAttempts.Set(loginAttempt.IpAddress, cachedLoginAttempts, DateTime.Now.AddMinutes(5));
-                }
-            }
-            else
-            {
-                cachedLoginAttempts = 1;
-                lastAttempts.Add(loginAttempt.IpAddress, 1, DateTime.Now.AddMinutes(5));
-            }
-
-            // Diagnostics
-            log.LogDebug($"{loginAttempt.IpAddress} is at {cachedLoginAttempts} cached login attempts.");
-
-            // Default block rule
-            bool block = false;
+            // Add the login attempt
+            await protectHandler.AddLoginAttempt(loginAttempt);
 
             // Attempt to contact the API 
             try
@@ -173,17 +178,22 @@ namespace SP.Core
                 return;
             }
 
-            // Block the IP if it wasn't blocked in the last NN minutes
-            if (!lastBlocks.Contains(loginAttempt.IpAddress))
+            // In some cases, it's possible due a massive attack there are multiple events fired at the same time.
+            // This part attempts to prevent duplicate firewall rules.
+            if (lastBlocks.ContainsKey(loginAttempt.IpAddressRange))
             {
-                // Diagnostics
-                log.LogDebug($"{loginAttempt.IpAddress} did not exists in cached last blocks. Being added now.");
+	            log.LogDebug($"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
+	            return;
+            }
 
-                // Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
-                lastBlocks.Add(loginAttempt.IpAddress, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+            // Add IP to list of last 3 blocks
+            lastBlocks.TryAdd(loginAttempt.IpAddressRange, DateTime.Now);
 
-                // Signal block
-                BlockEvent?.Invoke(loginAttempt);
+             // Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
+             lastBlocks.Add(loginAttempt.IpAddress, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+
+             // Signal block
+             BlockEvent?.Invoke(loginAttempt);
             }
         }
 
@@ -204,41 +214,40 @@ namespace SP.Core
             // Use IPData to get additional information about the IP
             if (ipDataEnabled)
             {
-                DataModel dataModel = null;
+	            DataModel dataModel = null;
 
-                if (ipDataCache.Contains(loginAttempt.IpAddress))
-                {
-                    dataModel = (DataModel) ipDataCache.GetCacheItem(loginAttempt.IpAddress)?.Value;
+                if (ipdataCache.ContainsKey(loginAttempt.IpAddress))
+	            {
+		            dataModel = ipdataCache[loginAttempt.IpAddress];
                 }
+	            else
+	            {
+		            try
+		            {
+			            dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
+			            ipdataCache.TryAdd(loginAttempt.IpAddress, dataModel);
 
-                // If unable to retrieve the data from cache, retrieve it from the web service
-                if (dataModel == null)
-                {
-                    try
-                    {
-                        dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
-                        ipDataCache.Set(loginAttempt.IpAddress, dataModel, DateTime.Now.AddDays(2));
-                    }
-                    catch (Exception ex)
-                    {
-                        log.LogError(
-                            $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
-                    }
-                }
+		            }
+		            catch (Exception ex)
+		            {
+			            log.LogError(
+				            $"Unable to get additional details about ip {block.IpAddress}. Service response: {ex.Message}");
+		            }
+	            }
 
-                // Final check to ensure the request was successful
+                // Only on successful retrieval of dataModel populate the block object
                 if (dataModel != null)
                 {
-                    block.Country = dataModel.Country;
-                    block.City = dataModel.City;
-                    block.ISP = dataModel.ISP;
-                }
+	                block.Country = dataModel.Country;
+	                block.City = dataModel.City;
+	                block.ISP = dataModel.ISP;
+               }
             }
 
             // Attempt to get the hostname
             try
             {
-                IPHostEntry hostInfo = Dns.GetHostEntry(block.IpAddress);
+                IPHostEntry hostInfo = await Dns.GetHostEntryAsync(block.IpAddress);
                 block.Hostname = hostInfo.HostName;
             }
             catch
@@ -281,14 +290,14 @@ namespace SP.Core
             }
 
             // Do not proceed if this IP does not exists in the recently block list
-            if (!lastBlocks.Contains(block.IpAddress))
+            if (!lastBlocks.ContainsKey(block.IpAddress))
             {
                 return;
             }
 
             // If this IP exists in the recently block list, remove it.
             log.LogDebug($"Removing {block.IpAddress} from the last block list");
-            lastBlocks.Remove(block.IpAddress);
+            lastBlocks.TryRemove(block.IpAddress, out _);
         }
 
         // Events
@@ -348,8 +357,12 @@ namespace SP.Core
             ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
 
             // Unblock timer
-            UnblockTimer = new Timer(async state => await DoWork(state), null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(5));
+            UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
+                TimeSpan.FromMinutes(15));
+
+            // Clear last block cache older than 15 minutes
+            RecentBlockCacheTimer = new Timer(async state => await CleanCacheTask(state), null, TimeSpan.Zero,
+	            TimeSpan.FromMinutes(15));
         }
 
         /// <summary>
@@ -361,7 +374,7 @@ namespace SP.Core
             // Paths that contain plugins.
             string[] pluginPaths =
             {
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins")
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? string.Empty, "plugins")
             };
 
             // Loop through all plugin paths and retrieve all plugins that match the naming requirements.

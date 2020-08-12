@@ -26,6 +26,8 @@ namespace SP.Models
             }
         }
 
+        public string IpAddressRange => $"{IpAddress1}.{IpAddress2}.{IpAddress3}.0";
+
         /// <summary>
         /// Used to split up performance for IP range scanning.
         /// </summary>
