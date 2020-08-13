@@ -41,8 +41,8 @@ connection.on("ReportLoginAttempt",
         // Add subtitle
         var subtitle = document.createElement("h4");
         subtitle.className = "ui sub header";
-        subtitle.appendChild(document.createTextNode(attemptEventDate));
-
+        subtitle.appendChild(document.createTextNode(new Date(attemptEventDate).toLocaleString()));
+        
         cardBody.appendChild(subtitle);
 
         // Add feed
@@ -91,7 +91,7 @@ connection.on("ReportBlock",
 
         var titleHeader = document.createElement("div");
         titleHeader.className = "header";
-        titleHeader.appendChild(document.createTextNode(blockCountry + ", " + blockCity));
+        titleHeader.appendChild(document.createTextNode(blockIpAddress));
         title.appendChild(titleHeader);
 
         card.appendChild(title);
@@ -103,7 +103,7 @@ connection.on("ReportBlock",
         // Add subtitle
         var subtitle = document.createElement("h4");
         subtitle.className = "ui sub header";
-        subtitle.appendChild(document.createTextNode(blockDate));
+        subtitle.appendChild(document.createTextNode(new Date(blockDate).toLocaleString()));
 
         cardBody.appendChild(subtitle);
 
@@ -111,8 +111,8 @@ connection.on("ReportBlock",
         var cardFeed = document.createElement("div");
         cardFeed.className = "ui small feed";
 
-        // IP
-        cardFeed.appendChild(createEventCard(blockIpAddress));
+        // Location
+        cardFeed.appendChild(createEventCard(blockCountry + ", " + blockCity));
 
         // Details
         cardFeed.appendChild(createEventCard(blockDetails));
@@ -159,7 +159,7 @@ connection.on("ReportUnblock",
 
         var titleHeader = document.createElement("div");
         titleHeader.className = "header";
-        titleHeader.appendChild(document.createTextNode(blockCountry + ", " + blockCity));
+        titleHeader.appendChild(document.createTextNode(blockIpAddress));
         title.appendChild(titleHeader);
 
         card.appendChild(title);
@@ -171,7 +171,7 @@ connection.on("ReportUnblock",
         // Add subtitle
         var subtitle = document.createElement("h4");
         subtitle.className = "ui sub header";
-        subtitle.appendChild(document.createTextNode(blockDate));
+        subtitle.appendChild(document.createTextNode(new Date(blockDate).toLocaleString()));
 
         cardBody.appendChild(subtitle);
 
@@ -179,8 +179,8 @@ connection.on("ReportUnblock",
         var cardFeed = document.createElement("div");
         cardFeed.className = "ui small feed";
 
-        // IP
-        cardFeed.appendChild(createEventCard(blockIpAddress));
+        // Location
+        cardFeed.appendChild(createEventCard(blockCountry + ", " + blockCity));
 
         // Details
         cardFeed.appendChild(createEventCard(blockDetails));
