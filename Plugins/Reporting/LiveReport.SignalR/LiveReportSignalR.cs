@@ -137,6 +137,8 @@ namespace Plugins
         /// <returns></returns>
         public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
         {
+	        log.Debug("Invoking LoginAttempt");
+
             try
             {
                 await Hub.InvokeAsync("LoginAttempt", loginAttempt);
@@ -153,6 +155,8 @@ namespace Plugins
         /// </summary>
         public async Task<bool> BlockEvent(Blocks block)
         {
+	        log.Debug("Invoking Block");
+
             try
             {
                 await Hub.InvokeAsync("Block", block);
@@ -171,9 +175,11 @@ namespace Plugins
         /// <returns></returns>
         public async Task<bool> UnblockEvent(Blocks block)
         {
+	        log.Debug("Invoking Unblock");
+
             try
             {
-                await Hub.InvokeAsync("Unblock", block);
+	            await Hub.InvokeAsync("Unblock", block);
                 return true;
             }
             catch (Exception e)

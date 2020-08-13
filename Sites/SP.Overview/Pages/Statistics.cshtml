@@ -4,60 +4,49 @@
     ViewData["Title"] = "Statistics";
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm">
-            <h2>Statistics</h2>
-            <div>These statistics are captured on this server. They are cached and refresh every 5 to 30 minutes.</div>
-            <p></p>
-        </div>
-    </div>
+<h1>Statistics</h1>
+<p>These statistics are captured on this server. They are cached and refresh every 5 to 30 minutes.</p>
 
-    <div class="row">
-        <div class="col-sm">
-            <h3>Top 10 countries</h3>
-            <canvas id="countriesChart"></canvas>
-        </div>
-        <div class="col-sm">
-            <h3>Top 10 cities</h3>
-            <canvas id="citiesChart"></canvas>
-        </div>
-        <div class="col-sm">
-            <h3>Top 10 IPs</h3>
-            <canvas id="ipChart"></canvas>
-        </div>
+<div class="ui two column stackable grid">
+    <div class="column">
+        <h4>Top 10 countries</h4>
+        <canvas id="countriesChart"></canvas>
     </div>
-    
-    <div class="row">
-        <div class="col-sm">
-            <h3>Attempts per hour of the day</h3>
-            <canvas id="attemptsPerHourChart"></canvas>
-        </div>
-        <div class="col-sm">
-            <h3>Attempts per day of the month</h3>
-            <canvas id="attemptsPerDayChart"></canvas>
-        </div>
-        <div class="col-sm">
-            <h3></h3>
-            <div>
-                <canvas id="b"></canvas>
-            </div>
-        </div>
+    <div class="column">
+        <h4>Top 10 cities</h4>
+        <canvas id="citiesChart"></canvas>
     </div>
-    
-    <div class="row">
-        <div class="col-sm">
-            <h3>Blocks per hour of the day</h3>
-            <canvas id="blocksPerHourChart"></canvas>
-        </div>
-        <div class="col-sm">
-            <h3>Blocks per day of the month</h3>
-            <canvas id="blocksPerDayChart"></canvas>
-        </div>
-        <div class="col-sm">
-            <h3></h3>
-            <canvas id="c"></canvas>
-        </div>
+</div>
+
+<div class="ui two column stackable grid">
+    <div class="column">
+        <h4>Top 10 IPs</h4>
+        <canvas id="ipChart"></canvas>
+    </div>
+    <div class="column">
+        <h4></h4>
+    </div>
+</div>
+
+<div class="ui two column stackable grid">
+    <div class="column">
+        <h4>Attempts per hour of the day</h4>
+        <canvas id="attemptsPerHourChart"></canvas>
+    </div>
+    <div class="column">
+        <h4>Attempts per day of the month</h4>
+        <canvas id="attemptsPerDayChart"></canvas>
+    </div>
+</div>
+
+<div class="ui two column stackable grid">
+    <div class="column">
+        <h4>Blocks per hour of the day</h4>
+        <canvas id="blocksPerHourChart"></canvas>
+    </div>
+    <div class="column">
+        <h4>Blocks per day of the month</h4>
+        <canvas id="blocksPerDayChart"></canvas>
     </div>
 </div>
 

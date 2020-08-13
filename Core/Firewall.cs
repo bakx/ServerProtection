@@ -46,37 +46,54 @@ namespace SP.Core
         /// <param name="block"></param>
         public void Block(NET_FW_IP_PROTOCOL_ protocol, Blocks block)
         {
-            INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
-            INetFwRule addRule = (INetFwRule) Activator.CreateInstance(TypeFwRule);
+	        INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
+	        INetFwRule addRule = (INetFwRule) Activator.CreateInstance(TypeFwRule);
 
-            addRule.Profiles = fwPolicy2.CurrentProfileTypes;
+            if (addRule != null && fwPolicy2 != null)
+            {
+	            addRule.Profiles = fwPolicy2.CurrentProfileTypes;
 
-            // Ip Address to block
-            string blockIp = blockIPRange
-                ? $"{block.IpAddress1}.{block.IpAddress2}.{block.IpAddress3}.0/24"
-                : block.IpAddress;
+	            // Ip Address to block
+	            string blockIp = blockIPRange
+		            ? block.IpAddressRange
+		            : block.IpAddress;
 
-            // Create Rule Name
-            block.FirewallRuleName = string.Format(nameTemplate, blockIp);
+	            // Create Rule Name
+	            block.FirewallRuleName = string.Format(nameTemplate, blockIp);
 
-            // Create description
-            string description = string.Format(descriptionTemplate, block.Date.ToString(dateFormat));
+	            // Create description
+	            string description = string.Format(descriptionTemplate, block.Date.ToString(dateFormat));
 
-            // Create firewall rule
-            addRule.Name = block.FirewallRuleName;
-            addRule.Description = description;
-            addRule.Protocol = (int) protocol;
+	            // Create firewall rule
+	            addRule.Name = block.FirewallRuleName;
+	            addRule.Description = description;
+	            addRule.Protocol = (int) protocol;
 
-            addRule.RemoteAddresses = blockIp;
+	            addRule.RemoteAddresses = blockIp;
 
-            addRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
-            addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
-            addRule.Enabled = true;
+	            addRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
+	            addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
+	            addRule.Enabled = true;
 
-            fwPolicy2.Rules.Add(addRule);
+	            try
+	            {
+		            fwPolicy2.Rules.Add(addRule);
 
-            // Diagnostics
-            log.LogInformation($"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
+		            // Diagnostics
+		            log.LogInformation(
+			            $"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
+	            }
+	            catch (Exception e)
+	            {
+		            // Diagnostics
+		            log.LogError($"Unable to create firewall rule {block.FirewallRuleName}: {e.Message}");
+                }
+            }
+            else
+            {
+	            // Diagnostics
+	            log.LogError($"Unable to add firewall rules. Null values: addRule = {addRule == null}, fwPolicy2 = {fwPolicy2 == null}");
+            }
         }
 
         /// <summary>
@@ -84,7 +101,7 @@ namespace SP.Core
         public void Unblock(Blocks block)
         {
             INetFwPolicy2 firewallPolicy = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
-            firewallPolicy.Rules.Remove(block.FirewallRuleName);
+            firewallPolicy?.Rules.Remove(block.FirewallRuleName);
 
             // Diagnostics
             log.LogInformation($"Removed firewall rule {block.FirewallRuleName} that blocked {block.IpAddress}");

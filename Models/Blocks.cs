@@ -27,6 +27,11 @@ namespace SP.Models
         }
 
         /// <summary>
+        /// Returns a 0/24 presentation of the IP address (e.g., 192.168.1.0/24)
+        /// </summary>
+        public string IpAddressRange => $"{IpAddress1}.{IpAddress2}.{IpAddress3}.0/24";
+
+        /// <summary>
         /// Used to split up performance for IP range scanning.
         /// </summary>
         public byte IpAddress1 { get; set; }

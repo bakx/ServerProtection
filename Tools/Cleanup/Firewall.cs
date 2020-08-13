@@ -18,28 +18,35 @@ namespace SP.Core
         {
             INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
 
-            List<INetFwRule> list = fwPolicy2.Rules.Cast<INetFwRule>()
-                .Where(r => r.Name.ToLowerInvariant().StartsWith("rdp attack")).ToList();
+            List<INetFwRule> list = fwPolicy2?.Rules.Cast<INetFwRule>()
+                .Where(r => r.Name.ToLowerInvariant().StartsWith("sp service block")).ToList();
+
+            if (list == null)
+            {
+	            Console.WriteLine("Unable to find any rules");
+
+	            return;
+            }
 
             Console.WriteLine($"Found {list.Count} rules that should be deleted.");
 
             using StreamWriter writer = new StreamWriter("remove.ps1");
             foreach (INetFwRule rule in list)
             {
-                Console.WriteLine($"Deleting {rule.Name}");
-                writer.WriteLine($"Remove-NetFirewallRule \"{rule.Name}\"");
+	            Console.WriteLine($"Deleting {rule.Name}");
+	            writer.WriteLine($"Remove-NetFirewallRule \"{rule.Name}\"");
 
-                Task.Factory.StartNew(() =>
-                {
-                    try
-                    {
-                        fwPolicy2.Rules.Remove(rule.Name);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                });
+	            Task.Factory.StartNew(() =>
+	            {
+		            try
+		            {
+			            fwPolicy2.Rules.Remove(rule.Name);
+		            }
+		            catch (Exception e)
+		            {
+			            Console.WriteLine(e.Message);
+		            }
+	            });
             }
         }
     }

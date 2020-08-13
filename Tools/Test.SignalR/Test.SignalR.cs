@@ -75,7 +75,7 @@ namespace Testing
 
                 Hub = new HubConnectionBuilder()
                     .WithUrl(reportingHubUrl)
-                    //                    .AddMessagePackProtocol()
+                    //               .AddMessagePackProtocol()
                     .Build();
 
                 Hub.Closed += async error =>

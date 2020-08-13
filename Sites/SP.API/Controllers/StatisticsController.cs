@@ -90,7 +90,7 @@ namespace SP.API.Controllers
 
             //
             return (database.LoginAttempts
-                    .AsEnumerable() ?? throw new InvalidOperationException())
+                .AsEnumerable() ?? throw new InvalidOperationException())
                 .GroupBy(s => s.IpAddress)
                 .Select(cl => new TopIps
                 {
@@ -171,7 +171,7 @@ namespace SP.API.Controllers
             // Open handle to database
             await using Db database = new Db(db);
 
-            //
+//
             return database.Blocks
                 .Where(d => d.Date > lastDays)
                 .AsEnumerable()
@@ -243,7 +243,7 @@ namespace SP.API.Controllers
                     Attempts = 1
                 };
 
-                database.StatisticsBlocks.Add(statisticsBlocks);
+                await database.StatisticsBlocks.AddAsync(statisticsBlocks);
             }
 
             // Save changes

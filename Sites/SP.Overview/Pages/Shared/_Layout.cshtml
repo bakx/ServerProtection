@@ -1,53 +1,40 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SP.Overview</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.css">
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-page="/Index">SP.Overview</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Statistics">Statistics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="ui inverted stackable orange menu">
+        <div class="ui container">
+            <div class="header item">SP.Overview</div>
+            <a class="item" asp-area="" asp-page="/Index">Home</a>
+            <a class="item" asp-area="" asp-page="/Statistics">Statistics</a>
+            <a class="item" asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
-    </nav>
-</header>
-<div class="container-fluid">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2020 - SP.Overview | Powered by the open source solution Server Protect (<a href="https://github.com/bakx/ServerProtect">Source</a>)
     </div>
-</footer>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
+    <div class="ui hidden divider"></div>
 
-@RenderSection("Scripts", false)
+    <div class="ui container">
+        @RenderBody()
+    </div>
+
+    <div class="ui hidden divider"></div>
+
+    <div class="ui container">
+        &copy; 2021 - SP.Overview | Powered by the open source solution Server Protect (<a href="https://github.com/bakx/ServerProtect">Source</a>)
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", false)
 </body>
 </html>
