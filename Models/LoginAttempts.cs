@@ -9,8 +9,14 @@ namespace SP.Models
     {
         private string ipAddress;
 
+        /// <summary>
+        /// Unique identifier for the login attempt.
+        /// </summary>
         [Key] public long Id { get; set; }
 
+        /// <summary>
+        /// IP Address of machine that triggered the event.
+        /// </summary>
         public string IpAddress
         {
             get => ipAddress;
@@ -51,7 +57,14 @@ namespace SP.Models
         /// </summary>
         public byte IpAddress4 { get; set; }
 
+        /// <summary>
+        /// The date the login event took place.
+        /// </summary>
         public DateTime EventDate { get; set; }
+
+        /// <summary>
+        /// Details about the login attempt. E.g., RDP brute force with username administrator.
+        /// </summary>
         public string Details { get; set; }
     }
 }

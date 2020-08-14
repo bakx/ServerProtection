@@ -36,7 +36,7 @@
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Models\Models.csproj" />
+    <ProjectReference Include="..\..\Models\SP.Models.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logs\" />

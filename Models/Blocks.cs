@@ -9,6 +9,9 @@ namespace SP.Models
     {
         private string ipAddress;
 
+        /// <summary>
+        /// Unique identifier for the block.
+        /// </summary>
         [Key] public long Id { get; set; }
 
         public string IpAddress
@@ -52,35 +55,42 @@ namespace SP.Models
         public byte IpAddress4 { get; set; }
 
         /// <summary>
-        /// Hostname of Ip when attempt to place
+        /// Hostname of IP that is being blocked.
         /// </summary>
         public string Hostname { get; set; }
 
         /// <summary>
-        /// Country of Ip when attempt to place
+        /// Country of the IP that is being blocked.
         /// </summary>
         public string Country { get; set; }
 
         /// <summary>
-        /// City of Ip when attempt to place
+        /// City of IP that is being blocked.
         /// </summary>
         public string City { get; set; }
 
         /// <summary>
-        /// ISP of Ip when attempt to place
+        /// ISP of IP that is being blocked.
         /// </summary>
         public string ISP { get; set; }
 
+        /// <summary>
+        /// Details about the block. E.g., RDP brute force with username administrator.
+        /// </summary>
         public string Details { get; set; }
+
+        /// <summary>
+        /// Date when the block was activated.
+        /// </summary>
         public DateTime Date { get; set; }
 
         /// <summary>
-        /// The name of the rule in the firewall
+        /// Name of the rule in the firewall.
         /// </summary>
         public string FirewallRuleName { get; set; }
 
         /// <summary>
-        /// Used in conjunction to remove the firewall rules
+        /// Indicates if an IP is blocked. Used in conjunction to remove the firewall rules.
         /// </summary>
         public byte IsBlocked { get; set; } = 1;
     }
