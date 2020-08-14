@@ -30,7 +30,7 @@
     <ProjectReference Include="..\..\Base\Plugins.Base.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Models\Models.csproj">
+    <ProjectReference Include="..\..\..\Models\SP.Models.csproj">
       <Private>false</Private>
     </ProjectReference>
   </ItemGroup>

@@ -11,17 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="logSettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="logSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Models\Models.csproj" />
+    <ProjectReference Include="..\..\Models\SP.Models.csproj" />
   </ItemGroup>
 
 
