@@ -12,7 +12,7 @@ using EventLogEntry = Plugins.Models.EventLogEntry;
 
 namespace Plugins
 {
-	public class EventMonitor : IPluginBase
+	public class WindowsEventMonitor : IPluginBase
 	{
 		/// <summary>
 		/// </summary>
@@ -45,7 +45,7 @@ namespace Plugins
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(EventMonitor));
+					.ForContext(typeof(WindowsEventMonitor));
 
 				log.Information("Plugin initialized");
 

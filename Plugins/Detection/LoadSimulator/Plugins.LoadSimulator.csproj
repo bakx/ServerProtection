@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\loadsimulator</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\loadsimulator</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Load Simulator</Product>
     <PackageId>Load Simulator</PackageId>

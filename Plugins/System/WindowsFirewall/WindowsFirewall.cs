@@ -10,7 +10,7 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class Firewall : IPluginBase
+	public class WindowsFirewall : IPluginBase
 	{
 		private static readonly Type TypeFwPolicy2 =
 			Type.GetTypeFromCLSID(new Guid("{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}"));
@@ -53,7 +53,7 @@ namespace Plugins
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(Firewall));
+					.ForContext(typeof(WindowsFirewall));
 
 				// Configuration settings
 				nameTemplate = config.GetSection("Firewall:Rules:NameTemplate").Get<string>();
@@ -71,6 +71,7 @@ namespace Plugins
 				if (log == null)
 				{
 					Console.WriteLine(e);
+					File.WriteAllText(nameof(WindowsFirewall), e.Message);
 				}
 				else
 				{

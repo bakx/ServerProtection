@@ -1,27 +1,13 @@
 {
-  Plugins: ["windows_eventmonitor", "windows_windowsfirewall", "abuseip", "livereport.signalr"]
+  Plugins: ["windows.eventmonitor", "windows.firewall", "livereport.signalr", "loadsimulator"]
 
   Api: {
       # Url of the API service
-      Url: "your-api-url"
+      # Url: "https://localhost:44316"
+      Url: "http://local.api.sp.bakx.ca"
 
       # Access Token
-      Token: "your-access-token"
-  }
-
-  Firewall: {
-    Rules: {
-      # Name of the firewall rule that will be generated
-      # {0} Source IP
-      NameTemplate: "SP Service block {0}"
-
-      # Description
-      # {0} DateTime formatted as Firewall.DateFormat
-      DescriptionTemplate: "Blocked on {0}"
-
-      # DateTime formatting
-      DateFormat: "MM-dd-yyyy HH:m:s"
-    }
+      Token: "a033fec3-7e95-4a82-91c9-7525405695a8"
   }
 
   Blocking: {
@@ -34,11 +20,11 @@
     # Detect IP Range attemps. 
     # This feature will look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method
     # that includes switching the IP to avoid detection
-    DetectIPRange: true
-          
+    DetectIPRange: false
+
     # Block IP Range. 
     # This feature will block n.n.n.1 to n.n.n.255 when an IP range attack is determined
-    BlockIPRange: true
+    BlockIPRange: false
     
     # Remove the block after NN minutes
     UnblockTimeSpanMinutes: 300
@@ -53,7 +39,7 @@
       Url: "https://api.ipdata.co/{0}?api-key={1}"
 
       # API key
-      Key: "your-api-key"
+      Key: "6deaddf8b1f897a8804a10393d6c3625aff3653aa3d7a74e4e3e35e1"
 
       # Enable/Disable IPData
       Enabled: false

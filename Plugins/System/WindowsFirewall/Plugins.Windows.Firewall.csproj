@@ -4,10 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows_windowsfirewall</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.firewall</OutDir>
     <Authors>Gideon Bakx</Authors>
-    <Product>Windows Firewall</Product>
-    <PackageId>WindowsFirewall</PackageId>
+    <Product>Firewall</Product>
+    <PackageId>Firewall</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,6 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appSettings.development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="appSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

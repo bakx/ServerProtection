@@ -15,10 +15,6 @@ using SP.Core.Tools;
 using SP.Models;
 using SP.Plugins;
 
-#if !DEBUG
-using NetFwTypeLib;
-#endif
-
 namespace SP.Core
 {
 	public class CoreService : BackgroundService
