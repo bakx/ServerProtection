@@ -1,6 +1,6 @@
 ﻿namespace SP.Plugins
 {
-    public interface IPluginOptions
-    {
-    }
+	public interface IPluginOptions
+	{
+	}
 }

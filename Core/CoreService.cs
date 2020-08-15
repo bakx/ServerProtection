@@ -27,13 +27,12 @@ namespace SP.Core
 
 		// Configuration object
 		private readonly IConfigurationRoot config;
-		private readonly IFirewall firewall;
-
-		// Cached entries of last blocks
-		private readonly MemoryCache lastBlocks = new MemoryCache("LastBlocks");
 
 		// Caches entries of the IPData related objects (if enabled)
 		private readonly MemoryCache ipDataCache = new MemoryCache("IpDataCache");
+
+		// Cached entries of last blocks
+		private readonly MemoryCache lastBlocks = new MemoryCache("LastBlocks");
 
 		// Diagnostics
 		private readonly ILogger<CoreService> log;
@@ -57,15 +56,13 @@ namespace SP.Core
 		/// </summary>
 		/// <param name="log"></param>
 		/// <param name="config"></param>
-		/// <param name="firewall"></param>
 		/// <param name="protectHandler"></param>
 		/// <param name="apiHandler"></param>
-		public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IFirewall firewall,
-			IProtectHandler protectHandler, IApiHandler apiHandler)
+		public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IProtectHandler protectHandler,
+			IApiHandler apiHandler)
 		{
 			this.log = log;
 			this.config = config;
-			this.firewall = firewall;
 			this.protectHandler = protectHandler;
 			this.apiHandler = apiHandler;
 
@@ -84,7 +81,7 @@ namespace SP.Core
 
 		/// <summary>
 		/// </summary>
-		protected async Task UnblockTask(object state)
+		protected async Task UnblockTask(object _)
 		{
 			List<Blocks> unblockList = await apiHandler.GetUnblock(unblockTimeSpanMinutes);
 
@@ -94,7 +91,6 @@ namespace SP.Core
 				{
 					foreach (Blocks block in unblockList)
 					{
-						firewall.Unblock(block);
 						block.IsBlocked = 0;
 
 						// Notify listeners of unblock
@@ -147,8 +143,9 @@ namespace SP.Core
 			// This part attempts to prevent duplicate firewall rules.
 			if (lastBlocks.Contains(loginAttempt.IpAddressRange))
 			{
-				log.LogDebug($"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
-			//	return;
+				log.LogDebug(
+					$"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
+				//	return;
 			}
 
 			// Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
@@ -182,7 +179,7 @@ namespace SP.Core
 
 				if (ipDataCache.Contains(loginAttempt.IpAddress))
 				{
-					dataModel = (DataModel)ipDataCache.GetCacheItem(loginAttempt.IpAddress)?.Value;
+					dataModel = (DataModel) ipDataCache.GetCacheItem(loginAttempt.IpAddress)?.Value;
 				}
 				else
 				{
@@ -219,13 +216,6 @@ namespace SP.Core
 				log.LogDebug($"Unable to get host name for {block.IpAddress}");
 			}
 
-#if DEBUG
-			log.LogDebug($"Skipping call to {nameof(Firewall)} due debug mode");
-#else
-            // Block IP in Firewall
-            firewall.Block(NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY, block);
-#endif
-
 			// Notify plug-ins of block
 			foreach (IPluginBase pluginBase in plugins)
 			{
@@ -235,7 +225,7 @@ namespace SP.Core
 			// Report block
 			if (!await apiHandler.AddBlock(block))
 			{
-				log.LogError("An error occured while reporting the block to the api.");
+				log.LogError("An error occurred while reporting the block to the api.");
 			}
 
 			// Increase statistics

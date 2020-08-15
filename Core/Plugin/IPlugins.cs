@@ -2,8 +2,8 @@
 
 namespace SP.Core.Plugin
 {
-    public interface IPlugins
-    {
-        Assembly LoadPlugin(string path);
-    }
+	public interface IPlugins
+	{
+		Assembly LoadPlugin(string path);
+	}
 }

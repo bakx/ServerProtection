@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\eventmonitor</OutDir>
+    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows_eventmonitor</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Event Monitor</Product>
     <PackageId>EventMonitor</PackageId>

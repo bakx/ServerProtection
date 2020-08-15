@@ -1,5 +1,5 @@
 {
-  Plugins: ["eventmonitor", "abuseip", "livereport.signalr"]
+  Plugins: ["windows_eventmonitor", "windows_windowsfirewall", "abuseip", "livereport.signalr"]
 
   Api: {
       # Url of the API service

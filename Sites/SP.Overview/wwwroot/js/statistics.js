@@ -3,7 +3,7 @@ var baseUrl = "http://local.api.sp.bakx.ca";
 
 window.chartColors = [];
 
-window.onload = function () {
+window.onload = function() {
 
     // Create colors
     window.chartColors.push({ name: "Brilliant Azure", color: "rgb(55, 138, 255)" });
@@ -31,7 +31,11 @@ window.onload = function () {
 
 
 function loadStatistics() {
-    getData("countriesChart", "Top 10 countries", baseUrl + "/statistics/GetTopCountries", "country", createDoughnutChart);
+    getData("countriesChart",
+        "Top 10 countries",
+        baseUrl + "/statistics/GetTopCountries",
+        "country",
+        createDoughnutChart);
     getData("citiesChart", "Top 10 cities", baseUrl + "/statistics/GetTopCities", "city", createDoughnutChart);
     getData("ipChart", "Top 10 ip", baseUrl + "/statistics/GetTopIps", "ipAddress", createDoughnutChart);
 
@@ -149,7 +153,7 @@ function createLineChart(elem, title, data, dataElement) {
 function getData(elem, title, url, dataElement, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url);
-    xhr.onload = function () {
+    xhr.onload = function() {
         if (xhr.status === 200) {
             callback(elem, title, JSON.parse(xhr.responseText), dataElement);
             return;

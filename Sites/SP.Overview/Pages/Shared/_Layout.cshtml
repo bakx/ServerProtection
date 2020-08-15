@@ -1,40 +1,40 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - SP.Overview</title>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.css">
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css"/>
 </head>
 <body>
-    <div class="ui inverted stackable orange menu">
-        <div class="ui container">
-            <div class="header item">SP.Overview</div>
-            <a class="item" asp-area="" asp-page="/Index">Home</a>
-            <a class="item" asp-area="" asp-page="/Statistics">Statistics</a>
-            <a class="item" asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </div>
-
-    <div class="ui hidden divider"></div>
-
+<div class="ui inverted stackable orange menu">
     <div class="ui container">
-        @RenderBody()
+        <div class="header item">SP.Overview</div>
+        <a class="item" asp-area="" asp-page="/Index">Home</a>
+        <a class="item" asp-area="" asp-page="/Statistics">Statistics</a>
+        <a class="item" asp-area="" asp-page="/Privacy">Privacy</a>
     </div>
+</div>
 
-    <div class="ui hidden divider"></div>
+<div class="ui hidden divider"></div>
 
-    <div class="ui container">
-        &copy; 2021 - SP.Overview | Powered by the open source solution Server Protect (<a href="https://github.com/bakx/ServerProtect">Source</a>)
-    </div>
+<div class="ui container">
+    @RenderBody()
+</div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<div class="ui hidden divider"></div>
 
-    @await RenderSectionAsync("Scripts", false)
+<div class="ui container">
+    &copy; 2021 - SP.Overview | Powered by the open source solution Server Protect (<a href="https://github.com/bakx/ServerProtect">Source</a>)
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.6/semantic.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+@await RenderSectionAsync("Scripts", false)
 </body>
 </html>
