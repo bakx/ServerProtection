@@ -3,17 +3,17 @@ using Microsoft.Extensions.Logging;
 
 namespace SP.Overview.Pages
 {
-    public class PrivacyModel : PageModel
-    {
-        private readonly ILogger<PrivacyModel> logger;
+	public class PrivacyModel : PageModel
+	{
+		private readonly ILogger<PrivacyModel> logger;
 
-        public PrivacyModel(ILogger<PrivacyModel> logger)
-        {
-            this.logger = logger;
-        }
+		public PrivacyModel(ILogger<PrivacyModel> logger)
+		{
+			this.logger = logger;
+		}
 
-        public void OnGet()
-        {
-        }
-    }
+		public void OnGet()
+		{
+		}
+	}
 }

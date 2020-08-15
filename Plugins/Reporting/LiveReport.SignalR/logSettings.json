@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "DotNetCoreGlobalLogger"
+      "Application": "plugins-LiveReport.SignalR"
     }
   }
 }

@@ -10,25 +10,27 @@ echo ### Creating %releasePath%
 mkdir /s /q %releasePath%
 
 echo ### Removing bin folders
-rmdir /s /q "Core/bin"
+rmdir /s /q "SP.Core/bin"
 
 echo ### Building solution
-msbuild.exe Core/Core.csproj /t:Clean,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
-msbuild.exe Plugins/Detection/EventMonitor/Plugins.EventMonitor.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
+msbuild.exe SP.Core/SP.Core.csproj /t:Clean,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
+msbuild.exe Plugins/Detection/WindowsEventMonitor/Plugins.Windows.EventMonitor.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
+msbuild.exe Plugins/System/WindowsFirewall/Plugins.Windows.Firewall.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/Reporting/LiveReport.SignalR/Plugins.LiveReport.SignalR.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 
+
 echo ### Copying files from Configuration project to release folder
-xcopy "Core\bin\%configurationName%\netcoreapp3.1" "%releasePath%\" /E
+xcopy "SP.Core\bin\%configurationName%\netcoreapp3.1" "%releasePath%\" /E
 
 echo ### Singing dlls
-"C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\Core.dll"
-"C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\Core.exe"
-"C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\eventmonitor\Plugins.EventMonitor.dll"
-"C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
-"C:\Program Files (x86)\kSign\signtool.exe" sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Core.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Core.exe"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.eventmonitor\Plugins.Windows.EventMonitor.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.firewall\Plugins.Windows.Firewall.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
 
-echo ### Cleaning up configurations - Core
+echo ### Cleaning up configurations - SP.Core
 del "%releasePath%\Config\appSettings.development.hjson" /s /f /q
 del "%releasePath%\Config\appSettings.development.json" /s /f /q
 ren "%releasePath%\Config\appSettings.hjson" "sample.appSettings.hjson"
@@ -40,14 +42,17 @@ del "%releasePath%\plugins\abuseip\appSettings.development.json" /s /f /q
 ren "%releasePath%\plugins\abuseip\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\abuseip\logSettings.json" "sample.logSettings.json"
 
-ren "%releasePath%\plugins\eventmonitor\appSettings.json" "sample.appSettings.json"
-ren "%releasePath%\plugins\eventmonitor\logSettings.json" "sample.logSettings.json"
+ren "%releasePath%\plugins\windows.eventmonitor\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\plugins\windows.eventmonitor\logSettings.json" "sample.logSettings.json"
+
+ren "%releasePath%\plugins\windows.firewall\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\plugins\windows.firewall\logSettings.json" "sample.logSettings.json"
 
 del "%releasePath%\plugins\liveReport.signalR\appSettings.development.json" /s /f /q
 ren "%releasePath%\plugins\liveReport.signalR\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\liveReport.signalR\logSettings.json" "sample.logSettings.json"
 
-versioninfo "%releasePath%\Core.dll" > version.txt
+versioninfo "%releasePath%\SP.Core.dll" > version.txt
 set /p V=<version.txt
 
 echo ###  Zipping release

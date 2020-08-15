@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\Core\bin\$(Configuration)\$(TargetFramework)\plugins\abuseip</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\abuseip</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Abuse IP</Product>
     <PackageId>Abuse IP</PackageId>

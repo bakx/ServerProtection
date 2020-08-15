@@ -7,7 +7,7 @@ var hasBlock = false;
 var hasUnblock = false;
 
 connection.on("ReportLoginAttempt",
-    function (attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
+    function(attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
 
         // Get reference to login attempts
         var elem = document.getElementById("loginAttempts");
@@ -42,7 +42,7 @@ connection.on("ReportLoginAttempt",
         var subtitle = document.createElement("h4");
         subtitle.className = "ui sub header";
         subtitle.appendChild(document.createTextNode(new Date(attemptEventDate).toLocaleString()));
-        
+
         cardBody.appendChild(subtitle);
 
         // Add feed
@@ -69,7 +69,7 @@ connection.on("ReportLoginAttempt",
     });
 
 connection.on("ReportBlock",
-    function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
+    function(blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
         // Get reference to blocks
         var elem = document.getElementById("blocks");
@@ -137,7 +137,7 @@ connection.on("ReportBlock",
     });
 
 connection.on("ReportUnblock",
-    function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
+    function(blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
 
         // Get reference to unblocks
         var elem = document.getElementById("unblocks");
@@ -204,9 +204,9 @@ connection.on("ReportUnblock",
         }
     });
 
-connection.start().then(function () {
+connection.start().then(function() {
     console.log("Connected to ReportingHub");
-}).catch(function (err) {
+}).catch(function(err) {
     return console.error(err.toString());
 });
 

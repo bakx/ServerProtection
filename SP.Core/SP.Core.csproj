@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-WorkerService1-E216EF82-5CB2-41A2-AC64-C08090D67AB4</UserSecretsId>
+    <Authors>Gideon Bakx</Authors>
+    <Description>Service Protect monitors various system resources to detect brute force login attempts. Integrates with the Windows Firewall to automatically block unwanted connections.</Description>
+    <RootNamespace>SP.Core</RootNamespace>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+    <AssemblyVersion>0.0.5.0</AssemblyVersion>
+    <FileVersion>0.0.5.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Config\appSettings.json" />
+    <Content Remove="Config\logSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Config\appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Config\logSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hjson" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Models\SP.Models.csproj" />
+    <ProjectReference Include="..\Plugins\Base\Plugins.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Config\appSettings.development.hjson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\appSettings.hjson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logs\" />
+    <Folder Include="Data\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+</Project>

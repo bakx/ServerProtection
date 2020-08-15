@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-EventMonitor{Date}.log"
+                "pathFormat": "logs/plugins-LoadSimulator{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "DotNetCoreGlobalLogger"
+      "Application": "plugins-LoadSimulator"
     }
   }
 }
