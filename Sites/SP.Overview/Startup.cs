@@ -19,6 +19,7 @@ namespace SP.Overview
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddResponseCaching();
 			services.AddRazorPages();
 			services.AddSignalR(); //.AddMessagePackProtocol();
 		}
@@ -41,6 +42,7 @@ namespace SP.Overview
 			app.UseStaticFiles();
 
 			app.UseRouting();
+			app.UseResponseCaching();
 
 			app.UseAuthorization();
 
