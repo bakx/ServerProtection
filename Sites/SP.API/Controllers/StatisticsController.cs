@@ -13,7 +13,6 @@ namespace SP.API.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
-	[ResponseCache(Duration = 60)]
 	public class StatisticsController : ControllerBase
 	{
 		private readonly DbContextOptions<Db> db;
@@ -27,7 +26,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetTopCountries))]
-		[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<TopCountries>> GetTopCountries(int top = 10)
 		{
 			log.LogDebug(
@@ -53,7 +52,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetTopCities))]
-		[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<TopCities>> GetTopCities(int top = 10)
 		{
 			log.LogDebug(
@@ -79,7 +78,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetTopIps))]
-		[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<TopIps>> GetTopIps(int top = 10)
 		{
 			log.LogDebug(
@@ -104,7 +103,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetAttemptsPerHour))]
-		[ResponseCache(Duration = 3600, NoStore = false, CacheProfileName = nameof(GetAttemptsPerHour))]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<StatsPerHour>> GetAttemptsPerHour(int days = 30)
 		{
 			log.LogDebug(
@@ -131,7 +130,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetAttemptsPerDay))]
-		[ResponseCache(Duration = 3600, NoStore = false, CacheProfileName = nameof(GetAttemptsPerDay))]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<StatsPerDay>> GetAttemptsPerDay(int top = 500000)
 		{
 			log.LogDebug(
@@ -159,7 +158,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetBlocksPerHour))]
-		[ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<StatsPerHour>> GetBlocksPerHour(int days = 30)
 		{
 			log.LogDebug(
@@ -188,7 +187,7 @@ namespace SP.API.Controllers
 
 		[HttpGet]
 		[Route(nameof(GetBlocksPerDay))]
-		[ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<StatsPerHour>> GetBlocksPerDay()
 		{
 			log.LogDebug(
