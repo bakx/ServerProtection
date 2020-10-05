@@ -52,7 +52,7 @@ namespace SP.API.Controllers
 			// Open handle to database
 			await using Db database = new Db(db);
 
-			database.Blocks.Add(block);
+			await database.Blocks.AddAsync(block);
 			return await database.SaveChangesAsync() > 0;
 		}
 

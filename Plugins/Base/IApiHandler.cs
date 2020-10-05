@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SP.Models;
 
-namespace SP.Core.Interfaces
+namespace SP.Plugins
 {
 	public interface IApiHandler
 	{

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using SP.Core.Interfaces;
+using SP.Plugins;
 
 namespace SP.Core
 {

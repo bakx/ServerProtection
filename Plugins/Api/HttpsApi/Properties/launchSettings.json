@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Plugins.HttpsApi": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}

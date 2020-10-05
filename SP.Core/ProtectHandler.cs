@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SP.Core.Interfaces;
 using SP.Models;
+using SP.Plugins;
 
 namespace SP.Core
 {

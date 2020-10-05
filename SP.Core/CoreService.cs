@@ -30,6 +30,9 @@ namespace SP.Core
 		// Cached entries of last blocks
 		private readonly MemoryCache lastBlocks = new MemoryCache("LastBlocks");
 
+		// Cached entries of last attempts
+		private readonly MemoryCache lastAttempts = new MemoryCache("lastAttempts");
+
 		// Diagnostics
 		private readonly ILogger<CoreService> log;
 
@@ -41,11 +44,11 @@ namespace SP.Core
 
 		// Configuration items
 		private List<string> enabledPlugins;
-
-
+		private bool blockIPRange;
 		private bool ipDataEnabled;
 		private string ipDataKey;
 		private string ipDataUrl;
+		private int maxLoginAttempts;
 		private int unblockTimeSpanMinutes;
 
 		/// <summary>
@@ -105,6 +108,8 @@ namespace SP.Core
 		/// <returns></returns>
 		private async void OnLoginAttemptEvent(LoginAttempts loginAttempt)
 		{
+			string key = blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress;
+
 			// Notify plug-ins of login attempt
 			foreach (IPluginBase pluginBase in plugins)
 			{
@@ -128,6 +133,38 @@ namespace SP.Core
 				log.LogError(ex.Message);
 			}
 
+			// Attempt to detect DDOS
+			
+			if (lastAttempts.Contains(key))
+			{
+				if (lastAttempts.Get(key) is int number)
+				{
+					lastAttempts.Set(key, number + 1, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+
+					log.LogDebug($"Set value of {key} to {number + 1} attempts.");
+
+					if (number > maxLoginAttempts)
+					{
+						block = true;
+
+						// Diagnostics
+						log.LogDebug($"{key} has exceeded the max login attempts. Will be blocked.");
+					}
+				}
+				else
+				{
+					// Diagnostics
+					log.LogDebug($"Object in cache for {key} is not a number but {lastAttempts.Get(key)}.");
+				}
+			}
+			else
+			{
+				lastAttempts.Add(key, 1, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+
+				// Diagnostics
+				log.LogDebug($"Added {key} to {nameof(lastAttempts)} cache with a value of 1.");
+			}
+
 			// Block IP?
 			if (!block)
 			{
@@ -137,15 +174,15 @@ namespace SP.Core
 
 			// In some cases, it's possible due a massive attack there are multiple events fired at the same time.
 			// This part attempts to prevent duplicate firewall rules.
-			if (lastBlocks.Contains(loginAttempt.IpAddressRange))
+			if (lastBlocks.Contains(key))
 			{
 				log.LogDebug(
-					$"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
-				//	return;
+					$"{loginAttempt.IpAddress} has match in cache and should already have been blocked");
+				return;
 			}
 
 			// Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
-			lastBlocks.Add(loginAttempt.IpAddressRange, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
+			lastBlocks.Add(key, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
 
 			// Signal block
 			BlockEvent?.Invoke(loginAttempt);
@@ -239,13 +276,29 @@ namespace SP.Core
 				await Task.Run(() => { pluginBase.UnblockEvent(block); });
 			}
 
-			// Do not proceed if this IP does not exists in the recently block list
-			if (!lastBlocks.Contains(block.IpAddressRange))
+			// Remove IP from block cache
+			//
+
+			// IP Range
+			if (blockIPRange)
+			{
+				if (!lastBlocks.Contains(block.IpAddressRange))
+				{
+					return;
+				}
+
+				log.LogDebug($"Removing {block.IpAddressRange} from the last block caching list");
+				lastBlocks.Remove(block.IpAddressRange, CacheEntryRemovedReason.Expired);
+
+				return;
+			}
+			
+			// Single IP
+			if (!lastBlocks.Contains(block.IpAddress))
 			{
 				return;
 			}
 
-			// If this IP exists in the recently block list, remove it.
 			log.LogDebug($"Removing {block.IpAddress} from the last block caching list");
 			lastBlocks.Remove(block.IpAddress, CacheEntryRemovedReason.Expired);
 		}
@@ -268,7 +321,10 @@ namespace SP.Core
 			LoadPlugins();
 
 			// Plugin options
-			PluginOptions options = new PluginOptions();
+			PluginOptions options = new PluginOptions()
+			{
+				BlockIPRange = blockIPRange
+			};
 
 			// Start plugins
 			foreach (IPluginBase plugin in plugins)
@@ -278,8 +334,11 @@ namespace SP.Core
 
 				// Initial configuration of plug
 				await plugin.Configure();
+			}
 
-				// Register handlers
+			// Register handlers
+			foreach (IPluginBase plugin in plugins)
+			{
 				await plugin.RegisterLoginAttemptHandler(LoginAttemptEvent);
 				await plugin.RegisterBlockHandler(BlockEvent);
 				await plugin.RegisterUnblockHandler(UnblockEvent);
@@ -300,6 +359,12 @@ namespace SP.Core
 
 			// Retrieve the unblock timespan minutes
 			unblockTimeSpanMinutes = config.GetSection("Blocking:UnblockTimeSpanMinutes").Get<int>();
+
+			//
+			maxLoginAttempts = config.GetSection("Blocking:Attempts").Get<int>();
+
+			// Should IP range (0/24) be blocked instead of single IP?
+			blockIPRange = config.GetSection("Blocking:BlockIPRange").Get<bool>();
 
 			// Get IPData configuration items
 			ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
