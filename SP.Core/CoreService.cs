@@ -19,8 +19,6 @@ namespace SP.Core
 {
 	public class CoreService : BackgroundService
 	{
-		private readonly IApiHandler apiHandler;
-
 		// Configuration object
 		private readonly IConfigurationRoot config;
 
@@ -40,6 +38,7 @@ namespace SP.Core
 		private readonly List<IPluginBase> plugins = new List<IPluginBase>();
 
 		// Handlers
+		private IApiHandler apiHandler;
 		private readonly IProtectHandler protectHandler;
 
 		// Configuration items
@@ -56,14 +55,11 @@ namespace SP.Core
 		/// <param name="log"></param>
 		/// <param name="config"></param>
 		/// <param name="protectHandler"></param>
-		/// <param name="apiHandler"></param>
-		public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IProtectHandler protectHandler,
-			IApiHandler apiHandler)
+		public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IProtectHandler protectHandler)
 		{
 			this.log = log;
 			this.config = config;
 			this.protectHandler = protectHandler;
-			this.apiHandler = apiHandler;
 
 			// Login Attempts
 			LoginAttemptEvent += OnLoginAttemptEvent;
@@ -334,15 +330,30 @@ namespace SP.Core
 
 				// Initial configuration of plug
 				await plugin.Configure();
-			}
 
-			// Register handlers
-			foreach (IPluginBase plugin in plugins)
-			{
+				// Detect if this plug-in implements the Api handler
+				if (plugin is IApiHandler handler)
+				{
+					apiHandler = handler;
+					protectHandler.SetApiHandler(handler);
+				}
+
+				// Register handlers
 				await plugin.RegisterLoginAttemptHandler(LoginAttemptEvent);
 				await plugin.RegisterBlockHandler(BlockEvent);
 				await plugin.RegisterUnblockHandler(UnblockEvent);
 			}
+			
+			// Validate that an ApiHandler is active
+			if (apiHandler == null)
+			{
+				log.LogError("Unable to find an active ApiHandler plug-in. Please enable either the `ApiHttps` or `ApiTcp` plug-in.");
+				return;
+			}
+
+			// Unblock timer
+			UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
+				TimeSpan.FromMinutes(15));
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
@@ -370,10 +381,6 @@ namespace SP.Core
 			ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
 			ipDataKey = config.GetSection("Tools:IPData:Key").Get<string>();
 			ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
-
-			// Unblock timer
-			UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
-				TimeSpan.FromMinutes(15));
 		}
 
 		/// <summary>

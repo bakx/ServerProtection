@@ -78,6 +78,8 @@ namespace Plugins
 			try
 			{
 				// Set up http(s) client
+				HttpClient.BaseAddress = new Uri(apiUrl);
+				HttpClient.DefaultRequestHeaders.Accept.Clear();
 				HttpClient.DefaultRequestHeaders.Add("Key", apiToken);
 				HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -275,7 +277,7 @@ namespace Plugins
 		private async Task<HttpResponseMessage> PostRequest(string path, HttpContent content)
 		{
 			// Post message
-			HttpResponseMessage message = await HttpClient.PostAsync($"{apiUrl}/{path}", content);
+			HttpResponseMessage message = await HttpClient.PostAsync(path, content);
 
 			// Diagnostics 
 			if (!message.IsSuccessStatusCode)

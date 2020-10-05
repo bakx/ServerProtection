@@ -8,6 +8,7 @@
     <Authors>Gideon Bakx</Authors>
     <Product>Https Api</Product>
     <PackageId>Https Api</PackageId>
+    <AssemblyName>Plugins.Api.Https</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

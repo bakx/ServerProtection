@@ -10,7 +10,7 @@ namespace SP.Core
 {
 	public class ProtectHandler : IProtectHandler
 	{
-		private readonly IApiHandler apiHandler;
+		private IApiHandler apiHandler;
 
 		private readonly int attempts;
 		private readonly bool detectIPRange;
@@ -25,15 +25,22 @@ namespace SP.Core
 		/// </summary>
 		/// <param name="log"></param>
 		/// <param name="config"></param>
-		/// <param name="apiHandler"></param>
-		public ProtectHandler(ILogger<ProtectHandler> log, IConfigurationRoot config, IApiHandler apiHandler)
+		public ProtectHandler(ILogger<ProtectHandler> log, IConfigurationRoot config)
 		{
 			this.log = log;
-			this.apiHandler = apiHandler;
 
 			attempts = config.GetSection("Blocking:Attempts").Get<int>();
 			timeSpanMinutes = config.GetSection("Blocking:TimeSpanMinutes").Get<int>();
 			detectIPRange = config.GetSection("Blocking:DetectIPRange").Get<bool>();
+		}
+
+		/// <summary>
+		/// Assign the Api handler
+		/// </summary>
+		/// <param name="handler"></param>
+		public void SetApiHandler(IApiHandler handler)
+		{
+			apiHandler = handler;
 		}
 
 		/// <summary>
