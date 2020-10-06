@@ -14,6 +14,7 @@ rmdir /s /q "SP.Core/bin"
 
 echo ### Building solution
 msbuild.exe SP.Core/SP.Core.csproj /t:Clean,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
+msbuild.exe Plugins/Api/ApiHttps/Plugins.ApiHttps.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/Detection/WindowsEventMonitor/Plugins.Windows.EventMonitor.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/System/WindowsFirewall/Plugins.Windows.Firewall.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
 msbuild.exe Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj /t:Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU /p:SolutionDir="%cd%"
@@ -41,6 +42,10 @@ echo ### Cleaning up configurations - Plugins
 del "%releasePath%\plugins\abuseip\appSettings.development.json" /s /f /q
 ren "%releasePath%\plugins\abuseip\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\abuseip\logSettings.json" "sample.logSettings.json"
+
+del "%releasePath%\plugins\api.https\appSettings.development.json" /s /f /q
+ren "%releasePath%\plugins\api.https\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\plugins\api.https\logSettings.json" "sample.logSettings.json"
 
 ren "%releasePath%\plugins\windows.eventmonitor\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\windows.eventmonitor\logSettings.json" "sample.logSettings.json"

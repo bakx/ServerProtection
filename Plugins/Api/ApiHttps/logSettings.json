@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-HttpsApi{Date}.log"
+                "pathFormat": "logs/plugins-Api.Https{Date}.log"
               }
             }
           ]
