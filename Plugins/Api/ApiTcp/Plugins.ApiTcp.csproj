@@ -4,11 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.https</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.tcp</OutDir>
     <Authors>Gideon Bakx</Authors>
-    <Product>Api Https</Product>
-    <PackageId>Api Https</PackageId>
-    <AssemblyName>Plugins.Api.Https</AssemblyName>
+    <Product>Api Tcp</Product>
+    <PackageId>Api Tcp</PackageId>
+    <AssemblyName>Plugins.Api.Tcp</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

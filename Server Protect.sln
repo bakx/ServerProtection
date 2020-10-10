@@ -68,6 +68,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.LoadSimulator", "Pl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.ApiHttps", "Plugins\Api\ApiHttps\Plugins.ApiHttps.csproj", "{B953640E-2B60-4EE8-9171-B9E4A1A6E64F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.ApiTcp", "Plugins\Api\ApiTcp\Plugins.ApiTcp.csproj", "{D64A02CA-4229-4860-A70B-5AF292FB6594}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,6 +136,10 @@ Global
 		{B953640E-2B60-4EE8-9171-B9E4A1A6E64F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B953640E-2B60-4EE8-9171-B9E4A1A6E64F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B953640E-2B60-4EE8-9171-B9E4A1A6E64F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D64A02CA-4229-4860-A70B-5AF292FB6594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D64A02CA-4229-4860-A70B-5AF292FB6594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D64A02CA-4229-4860-A70B-5AF292FB6594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D64A02CA-4229-4860-A70B-5AF292FB6594}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +164,7 @@ Global
 		{3D35703F-1AC3-427C-B62D-316EB348EB94} = {9293EE60-1E25-4EC9-8A0E-379CA97968E7}
 		{AD2D817D-077D-4A66-A301-3A292064E20E} = {3D35703F-1AC3-427C-B62D-316EB348EB94}
 		{B953640E-2B60-4EE8-9171-B9E4A1A6E64F} = {8C689AC7-E02C-4693-A2FB-3EE1B1A1DC6C}
+		{D64A02CA-4229-4860-A70B-5AF292FB6594} = {8C689AC7-E02C-4693-A2FB-3EE1B1A1DC6C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4837EBBA-68D4-4C02-96CD-59A89BD6B8EE}

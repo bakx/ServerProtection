@@ -130,7 +130,7 @@ namespace SP.Core
 			}
 
 			// Attempt to detect DDOS
-			
+
 			if (lastAttempts.Contains(key))
 			{
 				if (lastAttempts.Get(key) is int number)
@@ -288,7 +288,7 @@ namespace SP.Core
 
 				return;
 			}
-			
+
 			// Single IP
 			if (!lastBlocks.Contains(block.IpAddress))
 			{
@@ -343,11 +343,12 @@ namespace SP.Core
 				await plugin.RegisterBlockHandler(BlockEvent);
 				await plugin.RegisterUnblockHandler(UnblockEvent);
 			}
-			
+
 			// Validate that an ApiHandler is active
 			if (apiHandler == null)
 			{
-				log.LogError("Unable to find an active ApiHandler plug-in. Please enable either the `ApiHttps` or `ApiTcp` plug-in.");
+				log.LogError(
+					"Unable to find an active ApiHandler plug-in. Please enable either the `ApiHttps` or `ApiTcp` plug-in.");
 				return;
 			}
 

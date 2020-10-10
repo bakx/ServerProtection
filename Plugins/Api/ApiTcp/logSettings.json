@@ -1,0 +1,45 @@
+{
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Async",
+      "Serilog.Sinks.RollingFile",
+      "Serilog.Sinks.Console"
+    ],
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Async",
+        "Args": {
+          "configure": [
+            {
+              "Name": "RollingFile",
+              "Args": {
+                "pathFormat": "logs/plugins-Api.Https{Date}.log"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Name": "Console",
+        "Args": {
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+          "outputTemplate": "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {Message:lj} <s:{SourceContext}>{NewLine}{Exception}"
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithThreadId"
+    ],
+    "Properties": {
+      "Application": "plugins-HttpsApi"
+    }
+  }
+}

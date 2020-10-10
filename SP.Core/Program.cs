@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.IO;
 using System.Reflection;
 using Hjson;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using SP.Core.Interfaces;
-using SP.Plugins;
 
 namespace SP.Core
 {
