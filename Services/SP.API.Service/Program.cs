@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
-using Hjson;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,13 +15,6 @@ namespace SP.API.Service
 
 		public static void Main(string[] args)
 		{
-#if DEBUG
-			HjsonValue.Save(HjsonValue.Load(Path.Combine(BasePath, "config/appSettings.development.hjson")).Qo(),
-				"config/appSettings.development.json");
-#else
-            HjsonValue.Save(HjsonValue.Load(Path.Combine(BasePath, "config/appSettings.hjson")).Qo(), "config/appSettings.json");
-#endif
-
 			CreateHostBuilder(args).Build().Run();
 		}
 
@@ -44,11 +37,8 @@ namespace SP.API.Service
 
 			return Host.CreateDefaultBuilder(args)
 				.UseWindowsService()
-				.ConfigureServices((hostContext, services) =>
-				{
-					services.AddSingleton(config);
-					services.AddHostedService<ApiService>();
-				})
+				.ConfigureServices((hostContext, services) => { services.AddSingleton(config); })
+				.ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
 				.UseSerilog(log);
 		}
 	}

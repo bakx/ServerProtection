@@ -69,7 +69,7 @@ namespace Plugins
 				// Load configuration
 				parallelThreads = config.GetSection("ParallelThreads").Get<int>();
 
-				timer = new Timer(Callback, null, TimeSpan.FromSeconds(20), TimeSpan.Zero);
+				timer = new Timer(Callback, null, TimeSpan.FromSeconds(5), TimeSpan.Zero);
 
 				return await Task.FromResult(true);
 			}

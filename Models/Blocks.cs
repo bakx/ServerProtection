@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SP.Models
 {
+	[Serializable]
 	[Table("Blocks")]
 	public class Blocks
 	{

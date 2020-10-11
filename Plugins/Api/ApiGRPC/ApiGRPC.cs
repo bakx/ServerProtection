@@ -2,23 +2,27 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Models;
 using SP.Plugins;
+using Google.Protobuf.WellKnownTypes;
+using SP.API.Service;
+using LoginAttempts = SP.Models.LoginAttempts;
 
 namespace Plugins
 {
-	public class ApiTcp : IPluginBase, IApiHandler
+	public class ApiGrpc : IPluginBase, IApiHandler
 	{
-		private static readonly HttpClient HttpClient = new HttpClient();
-		private string apiUrl;
-		private string apiToken;
+		private GrpcChannel channel;
+		private ApiServices.ApiServicesClient client;
+
+		private string serverHost;
+		private int serverPort;
+		private string accessToken;
 
 		// Diagnostics
 		private ILogger log;
@@ -30,6 +34,7 @@ namespace Plugins
 		{
 			try
 			{
+				return Task.FromResult(true);
 				// Initiate the configuration
 				IConfigurationRoot config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
@@ -41,14 +46,16 @@ namespace Plugins
 					.AddJsonFile("logSettings.json", false, true)
 					.Build();
 
+
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(ApiTcp));
+					.ForContext(typeof(ApiGrpc));
 
 				// Assign config variables
-				apiUrl = config["Url"];
-				apiToken = config["Token"];
+				serverHost = config.GetSection("Server:Host").Get<string>();
+				serverPort = config.GetSection("Server:Port").Get<int>();
+				accessToken = config.GetSection("AccessToken").Get<string>();
 
 				// Diagnostics
 				log.Information("Plugin initialized");
@@ -73,22 +80,30 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public Task<bool> Configure()
 		{
 			try
 			{
-				// Set up http(s) client
-				HttpClient.BaseAddress = new Uri(apiUrl);
-				HttpClient.DefaultRequestHeaders.Accept.Clear();
-				HttpClient.DefaultRequestHeaders.Add("Key", apiToken);
-				HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				HttpClientHandler httpHandler = new HttpClientHandler
+				{
+					ServerCertificateCustomValidationCallback =
+						HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+				};
+				// Return `true` to allow certificates that are untrusted/invalid
 
-				return await Task.FromResult(true);
+				channel = GrpcChannel.ForAddress($"https://127.0.0.1:5001",
+					new GrpcChannelOptions { HttpHandler = httpHandler });
+
+
+				//channel = GrpcChannel.ForAddress($"{serverHost}:{serverPort}");
+				client = new ApiServices.ApiServicesClient(channel);
+
+				return Task.FromResult(true);
 			}
 			catch (Exception e)
 			{
 				log.Error("{0}", e);
-				return await Task.FromResult(false);
+				return Task.FromResult(false);
 			}
 			finally
 			{
@@ -158,21 +173,21 @@ namespace Plugins
 		public async Task<List<Blocks>> GetUnblock(int minutes)
 		{
 			// Contact the api
-			string path = $"/block/GetUnblocks?minutes={minutes}";
+			//string path = $"/block/GetUnblocks?minutes={minutes}";
 
-			HttpResponseMessage message = await HttpClient.GetAsync(path);
+			//HttpResponseMessage message = await HttpClient.GetAsync(path);
 
-			if (message.IsSuccessStatusCode)
-			{
-				return JsonSerializer.Deserialize<List<Blocks>>(await message.Content.ReadAsStringAsync(),
-					new JsonSerializerOptions
-					{
-						PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-					});
-			}
+			//if (message.IsSuccessStatusCode)
+			//{
+			//	return JsonSerializer.Deserialize<List<Blocks>>(await message.Content.ReadAsStringAsync(),
+			//		new JsonSerializerOptions
+			//		{
+			//			PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+			//		});
+			//}
 
-			log.Error(
-				$"Invalid response code while calling {path}. Status code: {message.StatusCode}, {message.RequestMessage}");
+			//log.Error(
+			//	$"Invalid response code while calling {path}. Status code: {message.StatusCode}, {message.RequestMessage}");
 			return null;
 		}
 
@@ -182,15 +197,17 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> AddBlock(Blocks block)
 		{
-			// Contact the api
-			const string path = "/block/AddBlock";
+			//// Contact the api
+			//const string path = "/block/AddBlock";
 
-			// Add content
-			HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
+			//// Add content
+			//HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
 
-			// Execute the request
-			HttpResponseMessage message = await PostRequest(path, content);
-			return message.IsSuccessStatusCode;
+			//// Execute the request
+			//HttpResponseMessage message = await PostRequest(path, content);
+			//return message.IsSuccessStatusCode;
+
+			return false;
 		}
 
 		/// <summary>
@@ -199,15 +216,17 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> UpdateBlock(Blocks block)
 		{
-			// Contact the api
-			const string path = "/block/UpdateBlock";
+			//// Contact the api
+			//const string path = "/block/UpdateBlock";
 
-			// Add content
-			HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
+			//// Add content
+			//HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
 
-			// Execute the request
-			HttpResponseMessage message = await PostRequest(path, content);
-			return message.IsSuccessStatusCode;
+			//// Execute the request
+			//HttpResponseMessage message = await PostRequest(path, content);
+			//return message.IsSuccessStatusCode;
+
+			return false;
 		}
 
 		/// <summary>
@@ -216,15 +235,17 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> StatisticsUpdateBlocks(Blocks block)
 		{
-			// Contact the api
-			const string path = "/statistics/UpdateBlock";
+			//// Contact the api
+			//const string path = "/statistics/UpdateBlock";
 
-			// Add content
-			HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
+			//// Add content
+			//HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
 
-			// Execute the request
-			HttpResponseMessage message = await PostRequest(path, content);
-			return message.IsSuccessStatusCode;
+			//// Execute the request
+			//HttpResponseMessage message = await PostRequest(path, content);
+			//return message.IsSuccessStatusCode;
+
+			return false;
 		}
 
 		/// <summary>
@@ -238,17 +259,22 @@ namespace Plugins
 		/// </returns>
 		public async Task<int> GetLoginAttempts(LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
 		{
-			// Contact the api
-			string path = $"/loginAttempts/GetLoginAttempts?detectIPRange={detectIPRange}&fromTime={fromTime}";
+			LoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
+				new LoginAttemptsRequest
+				{
+					DetectIPRange = detectIPRange,
+					FromTime = Timestamp.FromDateTime(DateTime.SpecifyKind(fromTime, DateTimeKind.Utc)),
+					LoginAttempts = new SP.API.Service.LoginAttempts
+					{
+						Id = loginAttempt.Id,
+						IpAddress = loginAttempt.IpAddress,
+						IpAddressRange = loginAttempt.IpAddressRange,
+						Details = loginAttempt.Details,
+						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
+					}
+				});
 
-			// Add content
-			HttpContent content =
-				new StringContent(JsonSerializer.Serialize(loginAttempt), Encoding.UTF8, "application/json");
-
-			// Execute the request
-			HttpResponseMessage message = await PostRequest(path, content);
-
-			return message.IsSuccessStatusCode ? Convert.ToInt32(message.Content.ReadAsStringAsync().Result) : -1;
+			return response.Result;
 		}
 
 		/// <summary>
@@ -257,36 +283,18 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> AddLoginAttempt(LoginAttempts loginAttempt)
 		{
-			// Contact the api
-			const string path = "/loginAttempts/Add";
+			//// Contact the api
+			//const string path = "/loginAttempts/Add";
 
-			// Add content
-			HttpContent content =
-				new StringContent(JsonSerializer.Serialize(loginAttempt), Encoding.UTF8, "application/json");
+			//// Add content
+			//HttpContent content =
+			//	new StringContent(JsonSerializer.Serialize(loginAttempt), Encoding.UTF8, "application/json");
 
-			// Execute the request
-			HttpResponseMessage message = await PostRequest(path, content);
-			return message.IsSuccessStatusCode;
-		}
+			//// Execute the request
+			//HttpResponseMessage message = await PostRequest(path, content);
+			//return message.IsSuccessStatusCode;
 
-		/// <summary>
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="content"></param>
-		/// <returns></returns>
-		private async Task<HttpResponseMessage> PostRequest(string path, HttpContent content)
-		{
-			// Post message
-			HttpResponseMessage message = await HttpClient.PostAsync(path, content);
-
-			// Diagnostics 
-			if (!message.IsSuccessStatusCode)
-			{
-				log.Error(
-					$"Invalid response code while calling {path}. Status code: {message.StatusCode}, {message.RequestMessage}");
-			}
-
-			return message;
+			return false;
 		}
 	}
 }

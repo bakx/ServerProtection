@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SP.Models
 {
+	[Serializable]
 	[Table("Login.Attempts")]
 	public class LoginAttempts
 	{

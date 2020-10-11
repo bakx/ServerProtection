@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>SP.Api.Models</AssemblyName>
+    <RootNamespace>SP.Api.Models</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="gRPC\**" />
+    <EmbeddedResource Remove="gRPC\**" />
+    <None Remove="gRPC\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="apiServices.proto" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.32.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Protobuf Include="apiServices.proto" />
+  </ItemGroup>
+
+</Project>
