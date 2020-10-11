@@ -31,6 +31,7 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="Config\appSettings.development.json" />
+    <None Remove="Protos\apiServices.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,8 +48,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Api.Models\SP.Api.Models.csproj" />
     <ProjectReference Include="..\..\Models\SP.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\apiServices.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

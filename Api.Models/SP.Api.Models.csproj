@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="gRPC\**" />
-    <EmbeddedResource Remove="gRPC\**" />
-    <None Remove="gRPC\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="apiServices.proto" />
   </ItemGroup>
 

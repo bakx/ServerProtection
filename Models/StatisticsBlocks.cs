@@ -1,10 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SP.Models
 {
-	[Serializable]
 	[Table("Statistics.Blocks")]
 	public class StatisticsBlocks
 	{

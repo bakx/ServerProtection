@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-LoadSimulator{Date}.log"
+                "pathFormat": "logs/plugins-Load.Simulator{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "plugins-LoadSimulator"
+      "Application": "plugins-Load.Simulator"
     }
   }
 }

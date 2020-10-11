@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using SP.API.Service;
 using SP.Models;
 using SP.Plugins;
-using Google.Protobuf.WellKnownTypes;
-using SP.API.Service;
-using LoginAttempts = SP.Models.LoginAttempts;
 
 namespace Plugins
 {
@@ -22,7 +22,8 @@ namespace Plugins
 
 		private string serverHost;
 		private int serverPort;
-		private string accessToken;
+		private string certificatePath;
+		private string certificatePassword;
 
 		// Diagnostics
 		private ILogger log;
@@ -34,7 +35,6 @@ namespace Plugins
 		{
 			try
 			{
-				return Task.FromResult(true);
 				// Initiate the configuration
 				IConfigurationRoot config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
@@ -46,16 +46,16 @@ namespace Plugins
 					.AddJsonFile("logSettings.json", false, true)
 					.Build();
 
-
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
 					.ForContext(typeof(ApiGrpc));
 
 				// Assign config variables
-				serverHost = config.GetSection("Server:Host").Get<string>();
-				serverPort = config.GetSection("Server:Port").Get<int>();
-				accessToken = config.GetSection("AccessToken").Get<string>();
+				serverHost = config.GetSection("Host").Get<string>();
+				serverPort = config.GetSection("Port").Get<int>();
+				certificatePath = config.GetSection("CertificatePath").Get<string>();
+				certificatePassword = config.GetSection("CertificatePassword").Get<string>();
 
 				// Diagnostics
 				log.Information("Plugin initialized");
@@ -84,18 +84,20 @@ namespace Plugins
 		{
 			try
 			{
-				HttpClientHandler httpHandler = new HttpClientHandler
+				// Load certificate
+				X509Certificate2 cert = new X509Certificate2(certificatePath, certificatePassword);
+
+				HttpClientHandler handler = new HttpClientHandler();
+				handler.ClientCertificates.Add(cert);
+
+				handler.ServerCertificateCustomValidationCallback =
+					HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+				channel = GrpcChannel.ForAddress($"{serverHost}:{serverPort}", new GrpcChannelOptions
 				{
-					ServerCertificateCustomValidationCallback =
-						HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-				};
-				// Return `true` to allow certificates that are untrusted/invalid
+					HttpHandler = handler
+				});
 
-				channel = GrpcChannel.ForAddress($"https://127.0.0.1:5001",
-					new GrpcChannelOptions { HttpHandler = httpHandler });
-
-
-				//channel = GrpcChannel.ForAddress($"{serverHost}:{serverPort}");
 				client = new ApiServices.ApiServicesClient(channel);
 
 				return Task.FromResult(true);
@@ -149,7 +151,7 @@ namespace Plugins
 		/// <summary>
 		/// Not used by this plugin
 		/// </summary>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
+		public async Task<bool> LoginAttemptEvent(SP.Models.LoginAttempts loginAttempt)
 		{
 			return await Task.FromResult(true);
 		}
@@ -257,7 +259,7 @@ namespace Plugins
 		/// The number of login attempts that took place within the timespan of the current time vs the fromTime. If -1
 		/// gets returned, the call failed.
 		/// </returns>
-		public async Task<int> GetLoginAttempts(LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
+		public async Task<int> GetLoginAttempts(SP.Models.LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
 		{
 			LoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
 				new LoginAttemptsRequest
@@ -281,7 +283,7 @@ namespace Plugins
 		/// </summary>
 		/// <param name="loginAttempt"></param>
 		/// <returns></returns>
-		public async Task<bool> AddLoginAttempt(LoginAttempts loginAttempt)
+		public async Task<bool> AddLoginAttempt(SP.Models.LoginAttempts loginAttempt)
 		{
 			//// Contact the api
 			//const string path = "/loginAttempts/Add";
@@ -296,5 +298,6 @@ namespace Plugins
 
 			return false;
 		}
+
 	}
 }
