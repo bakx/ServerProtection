@@ -6,17 +6,26 @@ option csharp_namespace = "SP.API.Service";
 package Api;
 
 service ApiServices {
-  rpc GetLoginAttempts ( LoginAttemptsRequest ) returns (LoginAttemptsResponse) {}
+	rpc GetLoginAttempts ( GetLoginAttemptsRequest ) returns ( GetLoginAttemptsResponse );
+	rpc AddLoginAttempt ( AddLoginAttemptRequest ) returns ( AddLoginAttemptResponse );
 }
 
-message LoginAttemptsRequest {
+message GetLoginAttemptsRequest {
 	LoginAttempts loginAttempts = 1;
 	bool detectIPRange = 2;
 	google.protobuf.Timestamp fromTime = 3;
 }
 
-message LoginAttemptsResponse {
+message GetLoginAttemptsResponse {
 	int32 result = 1;
+}
+
+message AddLoginAttemptRequest {
+	LoginAttempts loginAttempts = 1;
+}
+
+message AddLoginAttemptResponse {
+	bool result = 1;
 }
 
 message LoginAttempts {

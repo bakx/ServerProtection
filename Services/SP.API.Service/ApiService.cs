@@ -22,13 +22,23 @@ namespace SP.API.Service
 			this.config = config;
 		}
 
-		public override Task<LoginAttemptsResponse> GetLoginAttempts(LoginAttemptsRequest request,
+		public override Task<GetLoginAttemptsResponse> GetLoginAttempts(GetLoginAttemptsRequest request,
 			ServerCallContext context)
 		{
-			return Task.FromResult(new LoginAttemptsResponse
+			return Task.FromResult(new GetLoginAttemptsResponse
 			{
 				Result = 10
 			});
 		}
+
+		public override Task<AddLoginAttemptResponse> AddLoginAttempt(AddLoginAttemptRequest request,
+			ServerCallContext context)
+		{
+			return Task.FromResult(new AddLoginAttemptResponse
+			{
+				Result = true
+			});
+		}
+
 	}
 }

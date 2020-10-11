@@ -37,9 +37,9 @@ namespace SP.API.Service
 
 			return Host.CreateDefaultBuilder(args)
 				.UseWindowsService()
+				.UseSerilog(log)
 				.ConfigureServices((hostContext, services) => { services.AddSingleton(config); })
-				.ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-				.UseSerilog(log);
+				.ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 		}
 	}
 }

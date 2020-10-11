@@ -18,7 +18,6 @@ namespace Plugins
 	public class ApiGrpc : IPluginBase, IApiHandler
 	{
 		private GrpcChannel channel;
-		private ApiServices.ApiServicesClient client;
 
 		private string serverHost;
 		private int serverPort;
@@ -97,8 +96,6 @@ namespace Plugins
 				{
 					HttpHandler = handler
 				});
-
-				client = new ApiServices.ApiServicesClient(channel);
 
 				return Task.FromResult(true);
 			}
@@ -261,8 +258,15 @@ namespace Plugins
 		/// </returns>
 		public async Task<int> GetLoginAttempts(SP.Models.LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
 		{
-			LoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
-				new LoginAttemptsRequest
+			// Diagnostics
+			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
+
+			// Create new client
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
+			// Make gRPC request
+			GetLoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
+				new GetLoginAttemptsRequest
 				{
 					DetectIPRange = detectIPRange,
 					FromTime = Timestamp.FromDateTime(DateTime.SpecifyKind(fromTime, DateTimeKind.Utc)),
@@ -276,6 +280,9 @@ namespace Plugins
 					}
 				});
 
+			// Diagnostics
+			log.Debug($"{nameof(GetLoginAttempts)} received server response: {response.Result}");
+
 			return response.Result;
 		}
 
@@ -285,18 +292,30 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> AddLoginAttempt(SP.Models.LoginAttempts loginAttempt)
 		{
-			//// Contact the api
-			//const string path = "/loginAttempts/Add";
+			// Diagnostics
+			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
 
-			//// Add content
-			//HttpContent content =
-			//	new StringContent(JsonSerializer.Serialize(loginAttempt), Encoding.UTF8, "application/json");
+			// Create new client
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
 
-			//// Execute the request
-			//HttpResponseMessage message = await PostRequest(path, content);
-			//return message.IsSuccessStatusCode;
+			// Make gRPC request
+			AddLoginAttemptResponse response = await client.AddLoginAttemptAsync(
+				new AddLoginAttemptRequest
+				{
+					LoginAttempts = new SP.API.Service.LoginAttempts
+					{
+						Id = loginAttempt.Id,
+						IpAddress = loginAttempt.IpAddress,
+						IpAddressRange = loginAttempt.IpAddressRange,
+						Details = loginAttempt.Details,
+						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
+					}
+				});
 
-			return false;
+			// Diagnostics
+			log.Debug($"{nameof(GetLoginAttempts)} received server response: {response.Result}");
+
+			return response.Result;
 		}
 
 	}

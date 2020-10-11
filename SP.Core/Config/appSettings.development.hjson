@@ -1,5 +1,5 @@
 {
-  Plugins: ["windows.eventmonitor", "windows.firewall", "livereport.signalr", "load.simulator", "api.grpc"]
+  Plugins: ["windows.firewall", "livereport.signalr", "load.simulator", "api.grpc"]
 
   Blocking: {
     # Amount of attempts that will results in block if within timespan

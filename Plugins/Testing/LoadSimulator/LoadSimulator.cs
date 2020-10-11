@@ -156,7 +156,7 @@ namespace Plugins
 			// Disable timer
 			timer.Change(0, 100);
 
-			Parallel.For((long) 1, parallelThreads, (i, res) =>
+			Parallel.For((long) 0, parallelThreads, (i, res) =>
 			{
 				// Trigger login attempt event
 				LoginAttempts loginAttempt = new LoginAttempts
@@ -172,6 +172,8 @@ namespace Plugins
 
 				// Fire event
 				loginAttemptsHandler?.Invoke(loginAttempt);
+
+				Task.Delay(20);
 			});
 		}
 	}
