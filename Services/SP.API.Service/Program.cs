@@ -40,33 +40,13 @@ namespace SP.Api.Service
 
 			return Host.CreateDefaultBuilder(args)
 				.UseWindowsService()
-				.ConfigureServices((hostContext, services) => { services.AddSingleton(config); })
+
+				.ConfigureServices((hostContext, services) => { services.AddSingleton(config); })			
 				.ConfigureWebHostDefaults(
 					webBuilder =>
 					{
+						webBuilder.UseConfiguration(config);
 						webBuilder.UseStartup<Startup>();
-						webBuilder.ConfigureKestrel(options =>
-						{	
-							options.ConfigureHttpsDefaults(httpsOptions =>
-							{
-								httpsOptions.SslProtocols = SslProtocols.Tls12;
-
-
-							});
-							options.Listen(IPAddress.Any, 5001, listenOptions =>
-							{
-								// Uncomment the following to enable Nagle's algorithm for this endpoint.
-								//listenOptions.NoDelay = false;
-								listenOptions.UseConnectionLogging();
-
-								listenOptions.UseHttps("C:\\Users\\gideo\\source\\repos\\Server Protect\\Services\\SP.API.Service\\SP.pfx",
-									"sp");
-
-								listenOptions.KestrelServerOptions.Limits.MaxConcurrentConnections = long.MaxValue;
-								
-
-							});
-						});
 					})
 				.UseSerilog(log);
 		}

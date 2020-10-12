@@ -5,11 +5,11 @@ option csharp_namespace = "SP.Api.Models";
 
 package Api;
 
-message GetUnblockRequest {
+message GetUnblocksRequest {
 	int32 minutes = 1;
 }
 
-message GetUnblockResponse {
+message GetUnblocksResponse {
 	repeated Blocks blocks = 1;
 }
 
@@ -32,12 +32,17 @@ message UpdateBlockResponse {
 message Blocks {
 	int64 id = 1;
 	string ipAddress = 2;
-	string ipAddressRange = 3;
-	string hostname = 4;
-	string country = 5;
-	string city = 6;
-	string ISP = 7;
-	google.protobuf.Timestamp date = 8;
-	string firewallRuleName = 9;
-	bytes isBlocked = 10;
+	string ipAddress1 = 3;
+	string ipAddress2 = 4;
+	string ipAddress3 = 5;
+	string ipAddress4 = 6;
+	string ipAddressRange = 7;
+	string hostname = 8;
+	string country = 9;
+	string city = 10;
+	string ISP = 11;
+	google.protobuf.Timestamp date = 12;
+	string details = 13;
+	string firewallRuleName = 14;
+	bytes isBlocked = 15;	
 }

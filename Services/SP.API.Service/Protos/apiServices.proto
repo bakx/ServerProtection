@@ -1,6 +1,7 @@
 syntax = "proto3";
 import "Protos/loginAttempts.proto";
 import "Protos/blocks.proto";
+import "Protos/statistics.proto";
 
 option csharp_namespace = "SP.Api.Models";
 
@@ -10,7 +11,9 @@ service ApiServices {
 	rpc GetLoginAttempts ( GetLoginAttemptsRequest ) returns ( GetLoginAttemptsResponse );
 	rpc AddLoginAttempt ( AddLoginAttemptRequest ) returns ( AddLoginAttemptResponse );
 
-	rpc GetUnblock ( GetUnblockRequest ) returns ( GetUnblockResponse );
+	rpc GetUnblocks ( GetUnblocksRequest ) returns ( GetUnblocksResponse );
 	rpc AddBlock ( AddBlockRequest ) returns ( AddBlockResponse );
-	rpc UpdateBlock ( UpdateBlockRequest ) returns (  UpdateBlockResponse );
+	rpc UpdateBlock ( UpdateBlockRequest ) returns ( UpdateBlockResponse );
+
+	rpc StatisticsUpdateBlocks (StatisticsUpdateBlocksRequest ) returns ( StatisticsUpdateBlocksResponse );
 }

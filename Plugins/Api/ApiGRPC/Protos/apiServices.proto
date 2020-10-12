@@ -11,7 +11,7 @@ service ApiServices {
 	rpc GetLoginAttempts ( GetLoginAttemptsRequest ) returns ( GetLoginAttemptsResponse );
 	rpc AddLoginAttempt ( AddLoginAttemptRequest ) returns ( AddLoginAttemptResponse );
 
-	rpc GetUnblock ( GetUnblockRequest ) returns ( GetUnblockResponse );
+	rpc GetUnblocks ( GetUnblocksRequest ) returns ( GetUnblocksResponse );
 	rpc AddBlock ( AddBlockRequest ) returns ( AddBlockResponse );
 	rpc UpdateBlock ( UpdateBlockRequest ) returns ( UpdateBlockResponse );
 

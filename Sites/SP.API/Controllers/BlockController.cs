@@ -66,7 +66,7 @@ namespace SP.API.Controllers
 			// Open handle to database
 			await using Db database = new Db(db);
 
-			Blocks blocks = database.Blocks.Single(b => b.Id == block.Id);
+			Blocks blocks = database.Blocks.SingleOrDefault(b => b.Id == block.Id);
 
 			// If the entry cannot be found, ignore the update
 			if (blocks == null)

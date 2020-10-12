@@ -8,10 +8,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8" />
@@ -34,6 +37,7 @@
     <None Remove="Protos\apiServices.proto" />
     <None Remove="Protos\blocks.proto" />
     <None Remove="Protos\loginAttempts.proto" />
+    <None Remove="Protos\statistics.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +48,7 @@
     <Protobuf Include="Protos\apiServices.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\blocks.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\loginAttempts.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\statistics.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

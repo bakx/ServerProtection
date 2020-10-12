@@ -186,8 +186,8 @@ namespace Plugins
 			log.Debug($"{nameof(GetUnblock)} called with param {minutes}");
 
 			// Make gRPC request
-			GetUnblockResponse response = await GetClient().GetUnblockAsync(
-				new GetUnblockRequest
+			GetUnblocksResponse response = await GetClient().GetUnblocksAsync(
+				new GetUnblocksRequest
 				{
 					Minutes = minutes
 				});
@@ -204,6 +204,7 @@ namespace Plugins
 					Country = blocks.Country,
 					City = blocks.City,
 					ISP = blocks.ISP,
+					Details = blocks.Details,
 					Date = blocks.Date.ToDateTime(),
 					FirewallRuleName = blocks.FirewallRuleName,
 					IsBlocked = blocks.IsBlocked[0]
@@ -229,9 +230,10 @@ namespace Plugins
 						Id = block.Id,
 						IpAddress = block.IpAddress,
 						Hostname = block.Hostname,
-						Country = block.Country,
-						City = block.City,
-						ISP = block.ISP,
+						Country = block.Country ?? "",
+						City = block.City ?? "",
+						ISP = block.ISP ?? "",
+						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
 						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
@@ -262,9 +264,10 @@ namespace Plugins
 						Id = block.Id,
 						IpAddress = block.IpAddress,
 						Hostname = block.Hostname,
-						Country = block.Country,
-						City = block.City,
-						ISP = block.ISP,
+						Country = block.Country ?? "",
+						City = block.City ?? "",
+						ISP = block.ISP ?? "",
+						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
 						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
@@ -295,9 +298,10 @@ namespace Plugins
 						Id = block.Id,
 						IpAddress = block.IpAddress,
 						Hostname = block.Hostname,
-						Country = block.Country,
-						City = block.City,
-						ISP = block.ISP,
+						Country = block.Country ?? "",
+						City = block.City ?? "",
+						ISP = block.ISP ?? "",
+						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
 						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
@@ -334,6 +338,10 @@ namespace Plugins
 					{
 						Id = loginAttempt.Id,
 						IpAddress = loginAttempt.IpAddress,
+						IpAddress1 = Convert.ToString(loginAttempt.IpAddress1),
+						IpAddress2 = Convert.ToString(loginAttempt.IpAddress2),
+						IpAddress3 = Convert.ToString(loginAttempt.IpAddress3),
+						IpAddress4 = Convert.ToString(loginAttempt.IpAddress4),
 						IpAddressRange = loginAttempt.IpAddressRange,
 						Details = loginAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
@@ -363,6 +371,10 @@ namespace Plugins
 					{
 						Id = loginAttempt.Id,
 						IpAddress = loginAttempt.IpAddress,
+						IpAddress1 = Convert.ToString(loginAttempt.IpAddress1),
+						IpAddress2 = Convert.ToString(loginAttempt.IpAddress2),
+						IpAddress3 = Convert.ToString(loginAttempt.IpAddress3),
+						IpAddress4 = Convert.ToString(loginAttempt.IpAddress4),
 						IpAddressRange = loginAttempt.IpAddressRange,
 						Details = loginAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
