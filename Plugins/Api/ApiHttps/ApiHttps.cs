@@ -1,43 +1,166 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SP.Core.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 using SP.Models;
+using SP.Plugins;
 
-namespace SP.Core
+namespace Plugins
 {
-	public class ApiHandler : IApiHandler
+	public class ApiHttps : IPluginBase, IApiHandler
 	{
-		// Configuration settings
-		private readonly HttpClient httpClient;
+		private static readonly HttpClient HttpClient = new HttpClient();
+		private string apiUrl;
+		private string apiToken;
 
 		// Diagnostics
-		private readonly ILogger<ApiHandler> log;
+		private ILogger log;
 
 		/// <summary>
 		/// </summary>
-		/// <param name="log"></param>
-		/// <param name="httpClient"></param>
-		public ApiHandler(ILogger<ApiHandler> log, HttpClient httpClient)
+		/// <returns></returns>
+		public Task<bool> Initialize(PluginOptions options)
 		{
-			this.log = log;
-			this.httpClient = httpClient;
+			try
+			{
+				// Initiate the configuration
+				IConfigurationRoot config = new ConfigurationBuilder()
+					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
+#if DEBUG
+					.AddJsonFile("appSettings.development.json", false, true)
+#else
+                    .AddJsonFile("appSettings.json", false, true)
+#endif
+					.AddJsonFile("logSettings.json", false, true)
+					.Build();
+
+				log = new LoggerConfiguration()
+					.ReadFrom.Configuration(config)
+					.CreateLogger()
+					.ForContext(typeof(ApiHttps));
+
+				// Assign config variables
+				apiUrl = config["Url"];
+				apiToken = config["Token"];
+
+				// Diagnostics
+				log.Information("Plugin initialized");
+
+				return Task.FromResult(true);
+			}
+			catch (Exception e)
+			{
+				if (log == null)
+				{
+					Console.WriteLine(e);
+				}
+				else
+				{
+					log.Error(e.Message);
+				}
+
+				return Task.FromResult(false);
+			}
 		}
 
 		/// <summary>
 		/// </summary>
-		/// <param name="minutes"></param>
 		/// <returns></returns>
+		public async Task<bool> Configure()
+		{
+			try
+			{
+				// Set up http(s) client
+				HttpClient.BaseAddress = new Uri(apiUrl);
+				HttpClient.DefaultRequestHeaders.Accept.Clear();
+				HttpClient.DefaultRequestHeaders.Add("Key", apiToken);
+				HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+				return await Task.FromResult(true);
+			}
+			catch (Exception e)
+			{
+				log.Error("{0}", e);
+				return await Task.FromResult(false);
+			}
+			finally
+			{
+				if (log == null)
+				{
+					Console.WriteLine("Completed Configuration stage");
+				}
+				else
+				{
+					log.Information("Completed Configuration stage");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Not used by this plugin
+		/// </summary>
+		/// <param name="loginAttemptHandler"></param>
+		/// <returns></returns>
+		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		{
+			return await Task.FromResult(true);
+		}
+
+		/// <summary>
+		/// Not used by this plugin
+		/// </summary>
+		/// <param name="blockHandler"></param>
+		/// <returns></returns>
+		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
+		{
+			return await Task.FromResult(true);
+		}
+
+		/// <summary>
+		/// Not used by this plugin
+		/// </summary>
+		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
+		{
+			return await Task.FromResult(true);
+		}
+
+		/// <summary>
+		/// Not used by this plugin
+		/// </summary>
+		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
+		{
+			return await Task.FromResult(true);
+		}
+
+		/// <summary>
+		/// Not used by this plugin
+		/// </summary>
+		public async Task<bool> BlockEvent(Blocks block)
+		{
+			return await Task.FromResult(true);
+		}
+
+		/// <summary>
+		/// Not used by this plugin
+		/// </summary>
+		public async Task<bool> UnblockEvent(Blocks block)
+		{
+			return await Task.FromResult(true);
+		}
+
 		public async Task<List<Blocks>> GetUnblock(int minutes)
 		{
 			// Contact the api
 			string path = $"/block/GetUnblocks?minutes={minutes}";
 
-			HttpResponseMessage message = await httpClient.GetAsync(path);
+			HttpResponseMessage message = await HttpClient.GetAsync(path);
 
 			if (message.IsSuccessStatusCode)
 			{
@@ -48,7 +171,7 @@ namespace SP.Core
 					});
 			}
 
-			log.LogError(
+			log.Error(
 				$"Invalid response code while calling {path}. Status code: {message.StatusCode}, {message.RequestMessage}");
 			return null;
 		}
@@ -154,12 +277,12 @@ namespace SP.Core
 		private async Task<HttpResponseMessage> PostRequest(string path, HttpContent content)
 		{
 			// Post message
-			HttpResponseMessage message = await httpClient.PostAsync(path, content);
+			HttpResponseMessage message = await HttpClient.PostAsync(path, content);
 
 			// Diagnostics 
 			if (!message.IsSuccessStatusCode)
 			{
-				log.LogError(
+				log.Error(
 					$"Invalid response code while calling {path}. Status code: {message.StatusCode}, {message.RequestMessage}");
 			}
 

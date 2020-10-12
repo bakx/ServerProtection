@@ -4,13 +4,26 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.firewall</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc</OutDir>
     <Authors>Gideon Bakx</Authors>
-    <Product>Firewall</Product>
-    <PackageId>Firewall</PackageId>
+    <Product>Api gRPC</Product>
+    <PackageId>Api gRPC</PackageId>
+    <AssemblyName>Plugins.Api.gRPC</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\blocks.proto" />
+    <None Remove="Protos\loginAttempts.proto" />
+    <None Remove="Protos\statistics.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.13.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.32.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.32.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.8" />
@@ -34,14 +47,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <COMReference Include="NetFwTypeLib.dll">
-      <Guid>58fbcf7c-e7a9-467c-80b3-fc65e8fcca08</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-    </COMReference>
+    <Protobuf Include="Protos\statistics.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\blocks.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\loginAttempts.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\apiServices.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,5 +63,9 @@
     <None Update="logSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="SP.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+
 </Project>

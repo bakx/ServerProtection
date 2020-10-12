@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.IO;
 using System.Reflection;
 using Hjson;
 using Microsoft.Extensions.Configuration;
@@ -52,20 +49,6 @@ namespace SP.Core
 				{
 					services.AddSingleton(config);
 					services.AddSingleton<IProtectHandler, ProtectHandler>();
-					services.AddSingleton<IApiHandler, ApiHandler>();
-
-					HttpClient httpClient = new HttpClient
-					{
-						BaseAddress = new Uri(config["Api:Url"])
-					};
-
-					httpClient.DefaultRequestHeaders.Add("token", config["Api:Token"]);
-
-					httpClient.DefaultRequestHeaders.Accept.Clear();
-					httpClient.DefaultRequestHeaders.Accept.Add(
-						new MediaTypeWithQualityHeaderValue("application/json"));
-
-					services.AddSingleton(httpClient);
 
 					services.AddHostedService<CoreService>();
 				})

@@ -19,16 +19,11 @@ namespace SP.Core
 {
 	public class CoreService : BackgroundService
 	{
-		private readonly IApiHandler apiHandler;
-
 		// Configuration object
 		private readonly IConfigurationRoot config;
 
 		// Caches entries of the IPData related objects (if enabled)
 		private readonly MemoryCache ipDataCache = new MemoryCache("IpDataCache");
-
-		// Cached entries of last blocks
-		private readonly MemoryCache lastBlocks = new MemoryCache("LastBlocks");
 
 		// Diagnostics
 		private readonly ILogger<CoreService> log;
@@ -37,12 +32,12 @@ namespace SP.Core
 		private readonly List<IPluginBase> plugins = new List<IPluginBase>();
 
 		// Handlers
+		private IApiHandler apiHandler;
 		private readonly IProtectHandler protectHandler;
 
 		// Configuration items
 		private List<string> enabledPlugins;
-
-
+		private bool blockIPRange;
 		private bool ipDataEnabled;
 		private string ipDataKey;
 		private string ipDataUrl;
@@ -53,14 +48,11 @@ namespace SP.Core
 		/// <param name="log"></param>
 		/// <param name="config"></param>
 		/// <param name="protectHandler"></param>
-		/// <param name="apiHandler"></param>
-		public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IProtectHandler protectHandler,
-			IApiHandler apiHandler)
+		public CoreService(ILogger<CoreService> log, IConfigurationRoot config, IProtectHandler protectHandler)
 		{
 			this.log = log;
 			this.config = config;
 			this.protectHandler = protectHandler;
-			this.apiHandler = apiHandler;
 
 			// Login Attempts
 			LoginAttemptEvent += OnLoginAttemptEvent;
@@ -119,7 +111,6 @@ namespace SP.Core
 			{
 				// Add the login attempt
 				await protectHandler.AddLoginAttempt(loginAttempt);
-
 				// Analyze the login attempt to see if a block should be applied
 				block = await protectHandler.AnalyzeAttempt(loginAttempt);
 			}
@@ -134,18 +125,6 @@ namespace SP.Core
 				log.LogDebug($"{loginAttempt.IpAddress} will not be blocked.");
 				return;
 			}
-
-			// In some cases, it's possible due a massive attack there are multiple events fired at the same time.
-			// This part attempts to prevent duplicate firewall rules.
-			if (lastBlocks.Contains(loginAttempt.IpAddressRange))
-			{
-				log.LogDebug(
-					$"{loginAttempt.IpAddress} has range match {loginAttempt.IpAddressRange} in cache and should already have been blocked");
-				//	return;
-			}
-
-			// Add IP to list of last blocked entries cache. Include an expiration that matches the `unblockTimeSpanMinutes` variable.
-			lastBlocks.Add(loginAttempt.IpAddressRange, true, DateTime.Now.AddMinutes(unblockTimeSpanMinutes));
 
 			// Signal block
 			BlockEvent?.Invoke(loginAttempt);
@@ -238,16 +217,6 @@ namespace SP.Core
 			{
 				await Task.Run(() => { pluginBase.UnblockEvent(block); });
 			}
-
-			// Do not proceed if this IP does not exists in the recently block list
-			if (!lastBlocks.Contains(block.IpAddressRange))
-			{
-				return;
-			}
-
-			// If this IP exists in the recently block list, remove it.
-			log.LogDebug($"Removing {block.IpAddress} from the last block caching list");
-			lastBlocks.Remove(block.IpAddress, CacheEntryRemovedReason.Expired);
 		}
 
 		// Events
@@ -268,7 +237,10 @@ namespace SP.Core
 			LoadPlugins();
 
 			// Plugin options
-			PluginOptions options = new PluginOptions();
+			PluginOptions options = new PluginOptions()
+			{
+				BlockIPRange = blockIPRange
+			};
 
 			// Start plugins
 			foreach (IPluginBase plugin in plugins)
@@ -279,10 +251,36 @@ namespace SP.Core
 				// Initial configuration of plug
 				await plugin.Configure();
 
+				// Detect if this plug-in implements the Api handler
+				if (plugin is IApiHandler handler)
+				{
+					apiHandler = handler;
+					protectHandler.SetApiHandler(handler);
+				}
+
 				// Register handlers
 				await plugin.RegisterLoginAttemptHandler(LoginAttemptEvent);
 				await plugin.RegisterBlockHandler(BlockEvent);
 				await plugin.RegisterUnblockHandler(UnblockEvent);
+			}
+
+			// Validate that an ApiHandler is active
+			if (apiHandler == null)
+			{
+				log.LogError(
+					"Unable to find an active ApiHandler plug-in. Please enable either the `api.https` or `api.grpc` plug-in.");
+				return;
+			}
+
+			try
+			{
+				// Unblock timer
+				UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
+					TimeSpan.FromMinutes(15));
+			}
+			catch(Exception e)
+			{
+				log.LogError(e.Message);
 			}
 
 			while (!stoppingToken.IsCancellationRequested)
@@ -301,14 +299,13 @@ namespace SP.Core
 			// Retrieve the unblock timespan minutes
 			unblockTimeSpanMinutes = config.GetSection("Blocking:UnblockTimeSpanMinutes").Get<int>();
 
+			// Should IP range (0/24) be blocked instead of single IP?
+			blockIPRange = config.GetSection("Blocking:BlockIPRange").Get<bool>();
+
 			// Get IPData configuration items
 			ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();
 			ipDataKey = config.GetSection("Tools:IPData:Key").Get<string>();
 			ipDataEnabled = config.GetSection("Tools:IPData:Enabled").Get<bool>();
-
-			// Unblock timer
-			UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
-				TimeSpan.FromMinutes(15));
 		}
 
 		/// <summary>

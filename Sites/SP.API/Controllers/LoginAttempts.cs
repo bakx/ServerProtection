@@ -59,7 +59,7 @@ namespace SP.API.Controllers
 			// Open handle to database
 			await using Db database = new Db(db);
 
-			database.LoginAttempts.Add(loginAttempt);
+			await database.LoginAttempts.AddAsync(loginAttempt);
 			return await database.SaveChangesAsync() > 0;
 		}
 	}

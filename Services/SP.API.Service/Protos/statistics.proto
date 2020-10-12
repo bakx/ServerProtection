@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "SP.Api.Models";
+import "Protos/blocks.proto";
+
+package Api;
+
+message StatisticsUpdateBlocksRequest {
+	Blocks blocks = 1;
+}
+
+message StatisticsUpdateBlocksResponse {
+	bool result = 1;
+}
+
+message StatisticsBlocks {
+	int64 id = 1;
+	string country = 2;
+	string city = 3;
+	string ISP = 4;
+	int64 attempts = 5;
+}

@@ -1,14 +1,5 @@
 {
-  Plugins: ["windows.eventmonitor", "windows.firewall", "livereport.signalr", "loadsimulator"]
-
-  Api: {
-      # Url of the API service
-      # Url: "https://localhost:44316"
-      Url: "http://local.api.sp.bakx.ca"
-
-      # Access Token
-      Token: "a033fec3-7e95-4a82-91c9-7525405695a8"
-  }
+  Plugins: ["windows.firewall", "livereport.signalr", "load.simulator", "api.grpc"]
 
   Blocking: {
     # Amount of attempts that will results in block if within timespan
@@ -17,13 +8,10 @@
     # Time to block after the threshold is exceeded
     TimeSpanMinutes: 30
     
-    # Detect IP Range attemps. 
-    # This feature will look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method
-    # that includes switching the IP to avoid detection
-    DetectIPRange: false
-
     # Block IP Range. 
     # This feature will block n.n.n.1 to n.n.n.255 when an IP range attack is determined
+    # as well as look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method
+    # that includes switching the IP to avoid detection
     BlockIPRange: false
     
     # Remove the block after NN minutes
