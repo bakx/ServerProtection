@@ -8,10 +8,8 @@ using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SP.Api.Models;
-using SP.Models;
 using Blocks = SP.Models.Blocks;
 
 namespace SP.Api.Service
@@ -21,19 +19,16 @@ namespace SP.Api.Service
 		private readonly DbContextOptions<Db> db;
 
 		// Configuration object
-		private readonly IConfigurationRoot config;
 
 		private readonly ILogger log;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="log"></param>
-		/// <param name="config"></param>
 		/// <param name="db"></param>
-		public ApiService(ILogger<ApiService> log, IConfigurationRoot config, DbContextOptions<Db> db)
+		public ApiService(ILogger<ApiService> log, DbContextOptions<Db> db)
 		{
 			this.log = log;
-			this.config = config;
 			this.db = db;
 		}
 
@@ -139,9 +134,9 @@ namespace SP.Api.Service
 					Id = blocks.Id,
 					IpAddress = blocks.IpAddress,
 					Hostname = blocks.Hostname,
-					Country = blocks.Country,
-					City = blocks.City,
-					ISP = blocks.ISP,
+					Country = blocks.Country ?? "",
+					City = blocks.City ?? "",
+					ISP = blocks.ISP ?? "",
 					Date =  Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
 					FirewallRuleName = blocks.FirewallRuleName,
 					IsBlocked = ByteString.CopyFrom(blocks.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
@@ -170,9 +165,9 @@ namespace SP.Api.Service
 				Id = request.Blocks.Id,
 				IpAddress = request.Blocks.IpAddress,
 				Hostname = request.Blocks.Hostname,
-				Country = request.Blocks.Country,
-				City = request.Blocks.City,
-				ISP = request.Blocks.ISP,
+				Country = request.Blocks.Country ?? "",
+				City = request.Blocks.City ?? "",
+				ISP = request.Blocks.ISP ?? "",
 				Date = request.Blocks.Date.ToDateTime(),
 				FirewallRuleName = request.Blocks.FirewallRuleName,
 				IsBlocked = request.Blocks.IsBlocked.ToByteArray()[0]
@@ -213,10 +208,6 @@ namespace SP.Api.Service
 			blocks.Hostname = request.Blocks.Hostname;
 			blocks.Details = request.Blocks.Details;
 			blocks.IpAddress = request.Blocks.IpAddress;
-			blocks.IpAddress1 = Convert.ToByte(request.Blocks.IpAddress1);
-			blocks.IpAddress2 = Convert.ToByte(request.Blocks.IpAddress2);
-			blocks.IpAddress3 = Convert.ToByte(request.Blocks.IpAddress3);
-			blocks.IpAddress4 = Convert.ToByte(request.Blocks.IpAddress4);
 			blocks.FirewallRuleName = request.Blocks.FirewallRuleName;
 			blocks.IsBlocked = request.Blocks.IsBlocked.ToByteArray()[0];
 

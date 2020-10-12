@@ -197,18 +197,22 @@ namespace Plugins
 
 			// Convert models.
 			return response.Blocks.Select(blocks => new Blocks
-				{
-					Id = blocks.Id,
-					IpAddress = blocks.IpAddress,
-					Hostname = blocks.Hostname,
-					Country = blocks.Country,
-					City = blocks.City,
-					ISP = blocks.ISP,
-					Details = blocks.Details,
-					Date = blocks.Date.ToDateTime(),
-					FirewallRuleName = blocks.FirewallRuleName,
-					IsBlocked = blocks.IsBlocked[0]
-				})
+			{
+				Id = blocks.Id,
+				IpAddress = blocks.IpAddress,
+				IpAddress1 = Convert.ToByte(blocks.IpAddress.Split(".")[0]),
+				IpAddress2 = Convert.ToByte(blocks.IpAddress.Split(".")[1]),
+				IpAddress3 = Convert.ToByte(blocks.IpAddress.Split(".")[2]),
+				IpAddress4 = Convert.ToByte(blocks.IpAddress.Split(".")[3]),
+				Hostname = blocks.Hostname,
+				Country = blocks.Country,
+				City = blocks.City,
+				ISP = blocks.ISP,
+				Details = blocks.Details,
+				Date = blocks.Date.ToDateTime(),
+				FirewallRuleName = blocks.FirewallRuleName,
+				IsBlocked = blocks.IsBlocked[0]
+			})
 				.ToList();
 		}
 
