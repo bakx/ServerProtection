@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/SP.API.Service{Date}.log"
+                "pathFormat": "logs/SP.Api.Service{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "SP.API.Service"
+      "Application": "SP.Api.Service"
     }
   }
 }

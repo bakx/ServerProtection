@@ -15,11 +15,14 @@ using Serilog;
 using SP.Api.Models;
 using SP.Plugins;
 using Blocks = SP.Models.Blocks;
+using ILogger = Serilog.ILogger;
 
 namespace Plugins
 {
 	public class ApiGrpc : IPluginBase, IApiHandler
 	{
+		private X509Certificate2 x509Certificate2;
+
 		private string serverHost;
 		private int serverPort;
 		private string certificatePath;
@@ -82,8 +85,8 @@ namespace Plugins
 		/// <returns></returns>
 		public Task<bool> Configure()
 		{
-			// This plug-in does not use the Configure functionality.
-			// To keep the logs consistent, output the 'completed' message regardless.
+			// Load certificate
+			x509Certificate2 = new X509Certificate2(certificatePath, certificatePassword);
 
 			if (log == null)
 			{
@@ -102,15 +105,10 @@ namespace Plugins
 		/// <returns></returns>
 		private GrpcChannel GetChannel()
 		{
-			// Load certificate
-			X509Certificate2 cert = new X509Certificate2(certificatePath, certificatePassword);
-
+			// Create handler
 			HttpClientHandler handler = new HttpClientHandler();
-			handler.ClientCertificates.Add(cert);
-
-			handler.ServerCertificateCustomValidationCallback =
-				HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
+			handler.ClientCertificates.Add(x509Certificate2);
+			
 			GrpcChannel grpcChannel = GrpcChannel.ForAddress($"{serverHost}:{serverPort}", new GrpcChannelOptions
 			{
 				HttpHandler = handler
