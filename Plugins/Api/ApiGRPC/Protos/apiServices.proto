@@ -1,37 +1,19 @@
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
+import "Protos/loginAttempts.proto";
+import "Protos/blocks.proto";
+import "Protos/statistics.proto";
 
-option csharp_namespace = "SP.API.Service";
+option csharp_namespace = "SP.Api.Models";
 
 package Api;
 
 service ApiServices {
 	rpc GetLoginAttempts ( GetLoginAttemptsRequest ) returns ( GetLoginAttemptsResponse );
 	rpc AddLoginAttempt ( AddLoginAttemptRequest ) returns ( AddLoginAttemptResponse );
-}
 
-message GetLoginAttemptsRequest {
-	LoginAttempts loginAttempts = 1;
-	bool detectIPRange = 2;
-	google.protobuf.Timestamp fromTime = 3;
-}
+	rpc GetUnblock ( GetUnblockRequest ) returns ( GetUnblockResponse );
+	rpc AddBlock ( AddBlockRequest ) returns ( AddBlockResponse );
+	rpc UpdateBlock ( UpdateBlockRequest ) returns ( UpdateBlockResponse );
 
-message GetLoginAttemptsResponse {
-	int32 result = 1;
-}
-
-message AddLoginAttemptRequest {
-	LoginAttempts loginAttempts = 1;
-}
-
-message AddLoginAttemptResponse {
-	bool result = 1;
-}
-
-message LoginAttempts {
-	int64 id = 1;
-	string ipAddress = 2;
-	string ipAddressRange = 3;
-	google.protobuf.Timestamp eventDate = 4;
-	string details = 5;
+	rpc StatisticsUpdateBlocks (StatisticsUpdateBlocksRequest ) returns ( StatisticsUpdateBlocksResponse );
 }

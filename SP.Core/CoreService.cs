@@ -348,13 +348,20 @@ namespace SP.Core
 			if (apiHandler == null)
 			{
 				log.LogError(
-					"Unable to find an active ApiHandler plug-in. Please enable either the `ApiHttps` or `ApiTcp` plug-in.");
+					"Unable to find an active ApiHandler plug-in. Please enable either the `api.https` or `api.grpc` plug-in.");
 				return;
 			}
 
-			// Unblock timer
-			UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
-				TimeSpan.FromMinutes(15));
+			try
+			{
+				// Unblock timer
+				UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
+					TimeSpan.FromMinutes(15));
+			}
+			catch(Exception e)
+			{
+				log.LogError(e.Message);
+			}
 
 			while (!stoppingToken.IsCancellationRequested)
 			{

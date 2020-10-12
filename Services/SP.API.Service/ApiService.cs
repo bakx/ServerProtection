@@ -2,8 +2,9 @@
 using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SP.Api.Models;
 
-namespace SP.API.Service
+namespace SP.Api.Service
 {
 	internal class ApiService : ApiServices.ApiServicesBase
 	{
@@ -37,6 +38,16 @@ namespace SP.API.Service
 			return Task.FromResult(new AddLoginAttemptResponse
 			{
 				Result = true
+			});
+		}
+
+		public override Task<GetUnblockResponse> GetUnblock(GetUnblockRequest request,
+			ServerCallContext context)
+		{
+			return Task.FromResult(new GetUnblockResponse
+			{
+				
+
 			});
 		}
 

@@ -1,0 +1,43 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "SP.Api.Models";
+
+package Api;
+
+message GetUnblockRequest {
+	int32 minutes = 1;
+}
+
+message GetUnblockResponse {
+	repeated Blocks blocks = 1;
+}
+
+message AddBlockRequest {
+	Blocks blocks = 1;
+}
+
+message AddBlockResponse {
+	bool result = 1;
+}
+
+message UpdateBlockRequest {
+	Blocks blocks = 1;
+}
+
+message UpdateBlockResponse {
+	bool result = 1;
+}
+
+message Blocks {
+	int64 id = 1;
+	string ipAddress = 2;
+	string ipAddressRange = 3;
+	string hostname = 4;
+	string country = 5;
+	string city = 6;
+	string ISP = 7;
+	google.protobuf.Timestamp date = 8;
+	string firewallRuleName = 9;
+	bytes isBlocked = 10;
+}

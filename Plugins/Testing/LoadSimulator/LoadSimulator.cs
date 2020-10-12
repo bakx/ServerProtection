@@ -154,7 +154,7 @@ namespace Plugins
 		private void Callback(object state)
 		{
 			// Disable timer
-			timer.Change(0, 100);
+			timer.Change(0, 1000);
 
 			Parallel.For((long) 0, parallelThreads, (i, res) =>
 			{
@@ -172,8 +172,6 @@ namespace Plugins
 
 				// Fire event
 				loginAttemptsHandler?.Invoke(loginAttempt);
-
-				Task.Delay(20);
 			});
 		}
 	}

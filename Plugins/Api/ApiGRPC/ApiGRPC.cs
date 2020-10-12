@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using SP.API.Service;
-using SP.Models;
+using SP.Api.Models;
 using SP.Plugins;
+using Blocks = SP.Models.Blocks;
 
 namespace Plugins
 {
 	public class ApiGrpc : IPluginBase, IApiHandler
 	{
-		private GrpcChannel channel;
-
 		private string serverHost;
 		private int serverPort;
 		private string certificatePath;
@@ -81,40 +82,50 @@ namespace Plugins
 		/// <returns></returns>
 		public Task<bool> Configure()
 		{
-			try
+			// This plug-in does not use the Configure functionality.
+			// To keep the logs consistent, output the 'completed' message regardless.
+
+			if (log == null)
 			{
-				// Load certificate
-				X509Certificate2 cert = new X509Certificate2(certificatePath, certificatePassword);
-
-				HttpClientHandler handler = new HttpClientHandler();
-				handler.ClientCertificates.Add(cert);
-
-				handler.ServerCertificateCustomValidationCallback =
-					HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
-				channel = GrpcChannel.ForAddress($"{serverHost}:{serverPort}", new GrpcChannelOptions
-				{
-					HttpHandler = handler
-				});
-
-				return Task.FromResult(true);
+				Console.WriteLine("Completed Configuration stage");
 			}
-			catch (Exception e)
+			else
 			{
-				log.Error("{0}", e);
-				return Task.FromResult(false);
+				log.Information("Completed Configuration stage");
 			}
-			finally
+
+			return Task.FromResult(true);
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <returns></returns>
+		private GrpcChannel GetChannel()
+		{
+			// Load certificate
+			X509Certificate2 cert = new X509Certificate2(certificatePath, certificatePassword);
+
+			HttpClientHandler handler = new HttpClientHandler();
+			handler.ClientCertificates.Add(cert);
+
+			handler.ServerCertificateCustomValidationCallback =
+				HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+			GrpcChannel grpcChannel = GrpcChannel.ForAddress($"{serverHost}:{serverPort}", new GrpcChannelOptions
 			{
-				if (log == null)
-				{
-					Console.WriteLine("Completed Configuration stage");
-				}
-				else
-				{
-					log.Information("Completed Configuration stage");
-				}
-			}
+				HttpHandler = handler
+			});
+
+			return grpcChannel;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		private ApiServices.ApiServicesClient GetClient()
+		{
+			return new ApiServices.ApiServicesClient(GetChannel());
 		}
 
 		/// <summary>
@@ -171,23 +182,33 @@ namespace Plugins
 
 		public async Task<List<Blocks>> GetUnblock(int minutes)
 		{
-			// Contact the api
-			//string path = $"/block/GetUnblocks?minutes={minutes}";
+			// Diagnostics
+			log.Debug($"{nameof(GetUnblock)} called with param {minutes}");
 
-			//HttpResponseMessage message = await HttpClient.GetAsync(path);
+			// Make gRPC request
+			GetUnblockResponse response = await GetClient().GetUnblockAsync(
+				new GetUnblockRequest
+				{
+					Minutes = minutes
+				});
 
-			//if (message.IsSuccessStatusCode)
-			//{
-			//	return JsonSerializer.Deserialize<List<Blocks>>(await message.Content.ReadAsStringAsync(),
-			//		new JsonSerializerOptions
-			//		{
-			//			PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-			//		});
-			//}
+			// Diagnostics
+			log.Debug($"{nameof(GetUnblock)} received server response: {response.Blocks.Count} items");
 
-			//log.Error(
-			//	$"Invalid response code while calling {path}. Status code: {message.StatusCode}, {message.RequestMessage}");
-			return null;
+			// Convert models.
+			return response.Blocks.Select(blocks => new Blocks
+				{
+					Id = blocks.Id,
+					IpAddress = blocks.IpAddress,
+					Hostname = blocks.Hostname,
+					Country = blocks.Country,
+					City = blocks.City,
+					ISP = blocks.ISP,
+					Date = blocks.Date.ToDateTime(),
+					FirewallRuleName = blocks.FirewallRuleName,
+					IsBlocked = blocks.IsBlocked[0]
+				})
+				.ToList();
 		}
 
 		/// <summary>
@@ -196,17 +217,31 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> AddBlock(Blocks block)
 		{
-			//// Contact the api
-			//const string path = "/block/AddBlock";
+			// Diagnostics
+			log.Debug($"{nameof(AddBlock)} called for {block.IpAddress}");
 
-			//// Add content
-			//HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
+			// Make gRPC request
+			AddBlockResponse response = await GetClient().AddBlockAsync(
+				new AddBlockRequest
+				{
+					Blocks = new SP.Api.Models.Blocks
+					{
+						Id = block.Id,
+						IpAddress = block.IpAddress,
+						Hostname = block.Hostname,
+						Country = block.Country,
+						City = block.City,
+						ISP = block.ISP,
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
+						FirewallRuleName = block.FirewallRuleName,
+						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+					}
+				});
 
-			//// Execute the request
-			//HttpResponseMessage message = await PostRequest(path, content);
-			//return message.IsSuccessStatusCode;
+			// Diagnostics
+			log.Debug($"{nameof(AddBlock)} received server response: {response.Result}");
 
-			return false;
+			return response.Result;
 		}
 
 		/// <summary>
@@ -215,17 +250,31 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> UpdateBlock(Blocks block)
 		{
-			//// Contact the api
-			//const string path = "/block/UpdateBlock";
+			// Diagnostics
+			log.Debug($"{nameof(UpdateBlock)} called for {block.IpAddress}");
 
-			//// Add content
-			//HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
+			// Make gRPC request
+			UpdateBlockResponse response = await GetClient().UpdateBlockAsync(
+				new UpdateBlockRequest
+				{
+					Blocks = new SP.Api.Models.Blocks
+					{
+						Id = block.Id,
+						IpAddress = block.IpAddress,
+						Hostname = block.Hostname,
+						Country = block.Country,
+						City = block.City,
+						ISP = block.ISP,
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
+						FirewallRuleName = block.FirewallRuleName,
+						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+					}
+				});
 
-			//// Execute the request
-			//HttpResponseMessage message = await PostRequest(path, content);
-			//return message.IsSuccessStatusCode;
+			// Diagnostics
+			log.Debug($"{nameof(UpdateBlock)} received server response: {response.Result}");
 
-			return false;
+			return response.Result;
 		}
 
 		/// <summary>
@@ -234,17 +283,31 @@ namespace Plugins
 		/// <returns></returns>
 		public async Task<bool> StatisticsUpdateBlocks(Blocks block)
 		{
-			//// Contact the api
-			//const string path = "/statistics/UpdateBlock";
+			// Diagnostics
+			log.Debug($"{nameof(StatisticsUpdateBlocks)} called for {block.IpAddress}");
 
-			//// Add content
-			//HttpContent content = new StringContent(JsonSerializer.Serialize(block), Encoding.UTF8, "application/json");
+			// Make gRPC request
+			StatisticsUpdateBlocksResponse response = await GetClient().StatisticsUpdateBlocksAsync(
+				new StatisticsUpdateBlocksRequest
+				{
+					Blocks = new SP.Api.Models.Blocks
+					{
+						Id = block.Id,
+						IpAddress = block.IpAddress,
+						Hostname = block.Hostname,
+						Country = block.Country,
+						City = block.City,
+						ISP = block.ISP,
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
+						FirewallRuleName = block.FirewallRuleName,
+						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+					}
+				});
 
-			//// Execute the request
-			//HttpResponseMessage message = await PostRequest(path, content);
-			//return message.IsSuccessStatusCode;
+			// Diagnostics
+			log.Debug($"{nameof(StatisticsUpdateBlocks)} received server response: {response.Result}");
 
-			return false;
+			return response.Result;
 		}
 
 		/// <summary>
@@ -261,16 +324,13 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
 
-			// Create new client
-			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
-
 			// Make gRPC request
-			GetLoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
+			GetLoginAttemptsResponse response = await GetClient().GetLoginAttemptsAsync(
 				new GetLoginAttemptsRequest
 				{
 					DetectIPRange = detectIPRange,
 					FromTime = Timestamp.FromDateTime(DateTime.SpecifyKind(fromTime, DateTimeKind.Utc)),
-					LoginAttempts = new SP.API.Service.LoginAttempts
+					LoginAttempts = new LoginAttempts
 					{
 						Id = loginAttempt.Id,
 						IpAddress = loginAttempt.IpAddress,
@@ -295,14 +355,11 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
 
-			// Create new client
-			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
-
 			// Make gRPC request
-			AddLoginAttemptResponse response = await client.AddLoginAttemptAsync(
+			AddLoginAttemptResponse response = await GetClient().AddLoginAttemptAsync(
 				new AddLoginAttemptRequest
 				{
-					LoginAttempts = new SP.API.Service.LoginAttempts
+					LoginAttempts = new LoginAttempts
 					{
 						Id = loginAttempt.Id,
 						IpAddress = loginAttempt.IpAddress,
@@ -317,6 +374,5 @@ namespace Plugins
 
 			return response.Result;
 		}
-
 	}
 }
