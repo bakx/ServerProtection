@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -139,7 +137,7 @@ namespace SP.Api.Service
 					ISP = blocks.ISP ?? "",
 					Date =  Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
 					FirewallRuleName = blocks.FirewallRuleName,
-					IsBlocked = ByteString.CopyFrom(blocks.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+					IsBlocked = blocks.IsBlocked
 				})
 			});
 
@@ -170,7 +168,7 @@ namespace SP.Api.Service
 				ISP = request.Blocks.ISP ?? "",
 				Date = request.Blocks.Date.ToDateTime(),
 				FirewallRuleName = request.Blocks.FirewallRuleName,
-				IsBlocked = request.Blocks.IsBlocked.ToByteArray()[0]
+				IsBlocked = (byte) request.Blocks.IsBlocked
 			};
 
 			await database.Blocks.AddAsync(block);
@@ -209,11 +207,56 @@ namespace SP.Api.Service
 			blocks.Details = request.Blocks.Details;
 			blocks.IpAddress = request.Blocks.IpAddress;
 			blocks.FirewallRuleName = request.Blocks.FirewallRuleName;
-			blocks.IsBlocked = request.Blocks.IsBlocked.ToByteArray()[0];
+			blocks.IsBlocked = (byte) request.Blocks.IsBlocked;
 
 			bool result = await database.SaveChangesAsync() > 0;
 
 			return new UpdateBlockResponse
+			{
+				Result = result
+			};
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public override async Task<StatisticsUpdateBlocksResponse> StatisticsUpdateBlocks(StatisticsUpdateBlocksRequest request,
+			ServerCallContext context)
+		{
+			log.LogDebug($"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(StatisticsUpdateBlocks)}.");
+
+			// Open handle to database
+			await using Db database = new Db(db);
+
+			// Determine if this country has been blocked before
+			SP.Models.StatisticsBlocks blocks = database.StatisticsBlocks
+				.FirstOrDefault(s =>
+					s.Country == request.Blocks.Country && 
+					s.City == request.Blocks.City && 
+					s.ISP == request.Blocks.ISP);
+
+			if (blocks != null)
+			{
+				blocks.Attempts++;
+			}
+			else
+			{
+				SP.Models.StatisticsBlocks statisticsBlocks = new SP.Models.StatisticsBlocks
+				{
+					Country = request.Blocks.Country,
+					ISP = request.Blocks.ISP,
+					City = request.Blocks.City,
+					Attempts = 1
+				};
+
+				await database.StatisticsBlocks.AddAsync(statisticsBlocks);
+			}
+
+			bool result = await database.SaveChangesAsync() > 0;
+
+			return new StatisticsUpdateBlocksResponse
 			{
 				Result = result
 			};

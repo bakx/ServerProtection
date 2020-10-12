@@ -211,19 +211,19 @@ namespace Plugins
 				Details = blocks.Details,
 				Date = blocks.Date.ToDateTime(),
 				FirewallRuleName = blocks.FirewallRuleName,
-				IsBlocked = blocks.IsBlocked[0]
+				IsBlocked = (byte) blocks.IsBlocked
 			})
 				.ToList();
 		}
 
 		/// <summary>
 		/// </summary>
-		/// <param name="block"></param>
+		/// <param name="blocks"></param>
 		/// <returns></returns>
-		public async Task<bool> AddBlock(Blocks block)
+		public async Task<bool> AddBlock(Blocks blocks)
 		{
 			// Diagnostics
-			log.Debug($"{nameof(AddBlock)} called for {block.IpAddress}");
+			log.Debug($"{nameof(AddBlock)} called for {blocks.IpAddress}");
 
 			// Make gRPC request
 			AddBlockResponse response = await GetClient().AddBlockAsync(
@@ -231,16 +231,20 @@ namespace Plugins
 				{
 					Blocks = new SP.Api.Models.Blocks
 					{
-						Id = block.Id,
-						IpAddress = block.IpAddress,
-						Hostname = block.Hostname,
-						Country = block.Country ?? "",
-						City = block.City ?? "",
-						ISP = block.ISP ?? "",
-						Details = block.Details,
-						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
-						FirewallRuleName = block.FirewallRuleName,
-						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+						Id = blocks.Id,
+						IpAddress = blocks.IpAddress,
+						IpAddress1 = Convert.ToInt32(blocks.IpAddress.Split(".")[0]),
+						IpAddress2 = Convert.ToInt32(blocks.IpAddress.Split(".")[1]),
+						IpAddress3 = Convert.ToInt32(blocks.IpAddress.Split(".")[2]),
+						IpAddress4 = Convert.ToInt32(blocks.IpAddress.Split(".")[3]),
+						Hostname = blocks.Hostname,
+						Country = blocks.Country ?? "",
+						City = blocks.City ?? "",
+						ISP = blocks.ISP ?? "",
+						Details = blocks.Details,
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
+						FirewallRuleName = blocks.FirewallRuleName,
+						IsBlocked = blocks.IsBlocked
 					}
 				});
 
@@ -274,7 +278,7 @@ namespace Plugins
 						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
-						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+						IsBlocked = block.IsBlocked
 					}
 				});
 
@@ -308,7 +312,7 @@ namespace Plugins
 						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
-						IsBlocked = ByteString.CopyFrom(block.IsBlocked == 0 ? "0" : "1", Encoding.Unicode)
+						IsBlocked = block.IsBlocked
 					}
 				});
 
@@ -342,10 +346,10 @@ namespace Plugins
 					{
 						Id = loginAttempt.Id,
 						IpAddress = loginAttempt.IpAddress,
-						IpAddress1 = Convert.ToString(loginAttempt.IpAddress1),
-						IpAddress2 = Convert.ToString(loginAttempt.IpAddress2),
-						IpAddress3 = Convert.ToString(loginAttempt.IpAddress3),
-						IpAddress4 = Convert.ToString(loginAttempt.IpAddress4),
+						IpAddress1 = loginAttempt.IpAddress1,
+						IpAddress2 = loginAttempt.IpAddress2,
+						IpAddress3 = loginAttempt.IpAddress3,
+						IpAddress4 = loginAttempt.IpAddress4,
 						IpAddressRange = loginAttempt.IpAddressRange,
 						Details = loginAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
@@ -375,10 +379,43 @@ namespace Plugins
 					{
 						Id = loginAttempt.Id,
 						IpAddress = loginAttempt.IpAddress,
-						IpAddress1 = Convert.ToString(loginAttempt.IpAddress1),
-						IpAddress2 = Convert.ToString(loginAttempt.IpAddress2),
-						IpAddress3 = Convert.ToString(loginAttempt.IpAddress3),
-						IpAddress4 = Convert.ToString(loginAttempt.IpAddress4),
+						IpAddress1 = loginAttempt.IpAddress1,
+						IpAddress2 = loginAttempt.IpAddress2,
+						IpAddress3 = loginAttempt.IpAddress3,
+						IpAddress4 = loginAttempt.IpAddress4,
+						IpAddressRange = loginAttempt.IpAddressRange,
+						Details = loginAttempt.Details,
+						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
+					}
+				});
+
+			// Diagnostics
+			log.Debug($"{nameof(GetLoginAttempts)} received server response: {response.Result}");
+
+			return response.Result;
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="loginAttempt"></param>
+		/// <returns></returns>
+		public async Task<bool> StatisticsUpdateBlocks(SP.Models.LoginAttempts loginAttempt)
+		{
+			// Diagnostics
+			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
+
+			// Make gRPC request
+			AddLoginAttemptResponse response = await GetClient().AddLoginAttemptAsync(
+				new AddLoginAttemptRequest
+				{
+					LoginAttempts = new LoginAttempts
+					{
+						Id = loginAttempt.Id,
+						IpAddress = loginAttempt.IpAddress,
+						IpAddress1 = loginAttempt.IpAddress1,
+						IpAddress2 = loginAttempt.IpAddress2,
+						IpAddress3 = loginAttempt.IpAddress3,
+						IpAddress4 = loginAttempt.IpAddress4,
 						IpAddressRange = loginAttempt.IpAddressRange,
 						Details = loginAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))

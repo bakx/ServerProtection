@@ -32,10 +32,10 @@ message UpdateBlockResponse {
 message Blocks {
 	int64 id = 1;
 	string ipAddress = 2;
-	string ipAddress1 = 3;
-	string ipAddress2 = 4;
-	string ipAddress3 = 5;
-	string ipAddress4 = 6;
+	int32 ipAddress1 = 3;
+	int32 ipAddress2 = 4;
+	int32 ipAddress3 = 5;
+	int32 ipAddress4 = 6;
 	string ipAddressRange = 7;
 	string hostname = 8;
 	string country = 9;
@@ -44,5 +44,5 @@ message Blocks {
 	google.protobuf.Timestamp date = 12;
 	string details = 13;
 	string firewallRuleName = 14;
-	bytes isBlocked = 15;	
+	int32 isBlocked = 15;	
 }
