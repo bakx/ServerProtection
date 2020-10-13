@@ -25,6 +25,9 @@ namespace SP.Core
 		// Caches entries of the IPData related objects (if enabled)
 		private readonly MemoryCache ipDataCache = new MemoryCache("IpDataCache");
 
+		// Caches entries of latest blocks
+		private readonly MemoryCache latestBlocks = new MemoryCache("LatestBlocks");
+
 		// Diagnostics
 		private readonly ILogger<CoreService> log;
 
@@ -146,6 +149,18 @@ namespace SP.Core
 
 			// Diagnostics
 			log.LogDebug($"In routine to block {loginAttempt.IpAddress}");
+
+			// If this IP address is found in the memory cache, it's likely that this IP address was used to 
+			// bombard the server with login attempts and the plug-in architecture is catching up. During attacks
+			// like that, it is possible that this method will be triggered multiple times.
+			// Blocks will be cached for 5 minutes to prevent this.
+			if (latestBlocks.Contains(blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress))
+			{
+				log.LogDebug($"{(blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress)} was recently blocked and this request will be ignored");
+				return;
+			}
+
+			latestBlocks.Add(blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress, 1, DateTime.Now.AddMinutes(5));
 
 			// Use IPData to get additional information about the IP
 			if (ipDataEnabled)

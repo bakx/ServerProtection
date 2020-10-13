@@ -110,14 +110,17 @@ namespace SP.Api.Service
 			ServerCallContext context)
 		{
 			log.LogDebug(
-				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(GetUnblocks)}. Parameters: minutes {request.Minutes} ");
+				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(GetUnblocks)}. Parameters: minutes {request.Minutes} date {request.Date} ");
+
+			// Check if a date is passed
+			DateTime date = request.Date != null ? request.Date.ToDateTime() : DateTime.Now;
 
 			// Open handle to database
 			await using Db database = new Db(db);
 
 			List<Blocks> blockedEntries = database.Blocks.Where(b => b.IsBlocked == 1)
 				.ToListAsync().Result.Where(b =>
-					b.Date < DateTime.Now.Subtract(new TimeSpan(0, request.Minutes, 0)) &&
+					b.Date < date.Subtract(new TimeSpan(0, request.Minutes, 0)) &&
 					b.IsBlocked == 1
 				).ToList();
 
