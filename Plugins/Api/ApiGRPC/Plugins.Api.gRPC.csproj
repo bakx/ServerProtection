@@ -12,12 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\blocks.proto" />
-    <None Remove="Protos\loginAttempts.proto" />
-    <None Remove="Protos\statistics.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.13.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.32.0" />
     <PackageReference Include="Grpc.Tools" Version="2.32.0">
@@ -44,8 +38,8 @@
     <ProjectReference Include="..\..\..\Models\SP.Models.csproj">
       <Private>false</Private>
     </ProjectReference>
-  </ItemGroup>
-
+  </ItemGroup> 
+  
   <ItemGroup>
     <Protobuf Include="Protos\statistics.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\blocks.proto" GrpcServices="Client" />

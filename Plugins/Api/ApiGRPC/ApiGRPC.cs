@@ -5,9 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
-using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
@@ -120,15 +118,6 @@ namespace Plugins
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		private ApiServices.ApiServicesClient GetClient()
-		{
-			return new ApiServices.ApiServicesClient(GetChannel());
-		}
-
-		/// <summary>
 		/// Not used by this plugin
 		/// </summary>
 		/// <param name="loginAttemptHandler"></param>
@@ -185,8 +174,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetUnblock)} called with param {minutes}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			GetUnblocksResponse response = await GetClient().GetUnblocksAsync(
+			GetUnblocksResponse response = await client.GetUnblocksAsync(
 				new GetUnblocksRequest
 				{
 					Minutes = minutes
@@ -194,6 +187,9 @@ namespace Plugins
 
 			// Diagnostics
 			log.Debug($"{nameof(GetUnblock)} received server response: {response.Blocks.Count} items");
+
+			// Clean up
+			await channel.ShutdownAsync();
 
 			// Convert models.
 			return response.Blocks.Select(blocks => new Blocks
@@ -225,8 +221,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(AddBlock)} called for {blocks.IpAddress}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			AddBlockResponse response = await GetClient().AddBlockAsync(
+			AddBlockResponse response = await client.AddBlockAsync(
 				new AddBlockRequest
 				{
 					Blocks = new SP.Api.Models.Blocks
@@ -250,6 +250,9 @@ namespace Plugins
 
 			// Diagnostics
 			log.Debug($"{nameof(AddBlock)} received server response: {response.Result}");
+			
+			// Clean up
+			await channel.ShutdownAsync();
 
 			return response.Result;
 		}
@@ -263,8 +266,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(UpdateBlock)} called for {block.IpAddress}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			UpdateBlockResponse response = await GetClient().UpdateBlockAsync(
+			UpdateBlockResponse response = await client.UpdateBlockAsync(
 				new UpdateBlockRequest
 				{
 					Blocks = new SP.Api.Models.Blocks
@@ -285,6 +292,9 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(UpdateBlock)} received server response: {response.Result}");
 
+			// Clean up
+			await channel.ShutdownAsync();
+
 			return response.Result;
 		}
 
@@ -297,8 +307,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(StatisticsUpdateBlocks)} called for {block.IpAddress}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			StatisticsUpdateBlocksResponse response = await GetClient().StatisticsUpdateBlocksAsync(
+			StatisticsUpdateBlocksResponse response = await client.StatisticsUpdateBlocksAsync(
 				new StatisticsUpdateBlocksRequest
 				{
 					Blocks = new SP.Api.Models.Blocks
@@ -319,6 +333,9 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(StatisticsUpdateBlocks)} received server response: {response.Result}");
 
+			// Clean up
+			await channel.ShutdownAsync();
+
 			return response.Result;
 		}
 
@@ -336,8 +353,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			GetLoginAttemptsResponse response = await GetClient().GetLoginAttemptsAsync(
+			GetLoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
 				new GetLoginAttemptsRequest
 				{
 					DetectIPRange = detectIPRange,
@@ -359,6 +380,9 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} received server response: {response.Result}");
 
+			// Clean up
+			await channel.ShutdownAsync();
+
 			return response.Result;
 		}
 
@@ -371,8 +395,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			AddLoginAttemptResponse response = await GetClient().AddLoginAttemptAsync(
+			AddLoginAttemptResponse response = await client.AddLoginAttemptAsync(
 				new AddLoginAttemptRequest
 				{
 					LoginAttempts = new LoginAttempts
@@ -391,6 +419,9 @@ namespace Plugins
 
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} received server response: {response.Result}");
+
+			// Clean up
+			await channel.ShutdownAsync();
 
 			return response.Result;
 		}
@@ -404,8 +435,12 @@ namespace Plugins
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
 
+			// Get connection
+			GrpcChannel channel = GetChannel();
+			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
+
 			// Make gRPC request
-			AddLoginAttemptResponse response = await GetClient().AddLoginAttemptAsync(
+			AddLoginAttemptResponse response = await client.AddLoginAttemptAsync(
 				new AddLoginAttemptRequest
 				{
 					LoginAttempts = new LoginAttempts
@@ -424,6 +459,9 @@ namespace Plugins
 
 			// Diagnostics
 			log.Debug($"{nameof(GetLoginAttempts)} received server response: {response.Result}");
+
+			// Clean up
+			await channel.ShutdownAsync();
 
 			return response.Result;
 		}

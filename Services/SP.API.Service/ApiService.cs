@@ -125,9 +125,9 @@ namespace SP.Api.Service
 			GetUnblocksResponse result = new GetUnblocksResponse();
 
 			// Convert models
-			result.Blocks.AddRange( new RepeatedField<Models.Blocks>
+			result.Blocks.AddRange( new RepeatedField<Api.Models.Blocks>
 			{
-				blockedEntries.Select(blocks => new Models.Blocks
+				blockedEntries.Select(blocks => new Api.Models.Blocks
 				{
 					Id = blocks.Id,
 					IpAddress = blocks.IpAddress,
