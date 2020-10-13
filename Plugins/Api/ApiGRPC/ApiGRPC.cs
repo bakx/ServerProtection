@@ -182,7 +182,8 @@ namespace Plugins
 			GetUnblocksResponse response = await client.GetUnblocksAsync(
 				new GetUnblocksRequest
 				{
-					Minutes = minutes
+					Minutes = minutes,
+					Date = Timestamp.FromDateTime(DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc))
 				});
 
 			// Diagnostics

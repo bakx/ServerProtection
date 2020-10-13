@@ -1,5 +1,5 @@
-# What is Server Protect?
-Server Protect monitors various system resources to detect brute force login attempts. The purpose of this project is to block such attempts to prevent unauthorized access.
+# What is Server Protection?
+Server Protection monitors various system resources to detect brute force login attempts. The purpose of this project is to block such attempts to prevent unauthorized access.
 
 It's using a plugin architecture and can be extended to support various 3rd party tools.
 
@@ -9,7 +9,7 @@ The current builds are focusing on Windows (server) where should be installed to
 All indidivual components of this applications are set up to use their own project. They are divided between Core, Sites, Services and Plug-ins.
 
 # **Main**
-The base of the Server Protect is the Core project.
+The base of the Server Protection is the Core project.
 
 ## **SP.Core**
 The Core is considered the base program and loads all enabled plug-ins. It should ideally be run as a service. 
@@ -28,7 +28,7 @@ The API project contains the database that's used to store all data related to t
 Provides an overview of the login attempts made on this server. It includes live data (if the LiveReport.SignalR plug-in is enabled) and various statistics related to the login attempts.
 
 # **Plugins**
-Server Protect comes with the following plugins:
+Server Protection comes with the following plugins:
 
 ### **Detection - EventMonitor**
 **Windows Only:** Connects to the Event Log of Windows server (requires Administrative permissions) and fires an LoginAttempt event when it detects
@@ -46,6 +46,6 @@ Shield icon taken from http://www.iconarchive.com/show/small-n-flat-icons-by-pao
 ---
 
 ## Future goals - Not implemented
-* To support attacks on a complete server park, Server Protect communicates through the SP.API project. This allows system administrators to protect multiple servers simultanously 
+* To support attacks on a complete server park, Server Protection communicates through the SP.API project. This allows system administrators to protect multiple servers simultanously 
 when an attack is detected.
 * Support Linux and Mac (by adding plug-ins specifically for these platforms)

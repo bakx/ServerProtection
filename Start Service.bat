@@ -1,2 +1,2 @@
 @echo off
-sc start "Server Protect Core"
+sc start "Server Protection Core"

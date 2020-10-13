@@ -1,2 +1,2 @@
 @echo off
-sc stop "Server Protect Core"
+sc stop "Server Protection Core"

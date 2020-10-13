@@ -7,6 +7,7 @@ package Api;
 
 message GetUnblocksRequest {
 	int32 minutes = 1;
+	google.protobuf.Timestamp date = 2;
 }
 
 message GetUnblocksResponse {
