@@ -4,25 +4,22 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR</OutDir>
     <Authors>Gideon Bakx</Authors>
-    <Product>Api gRPC</Product>
-    <PackageId>Api gRPC</PackageId>
-    <AssemblyName>Plugins.Api.gRPC</AssemblyName>
+    <Product>SignalR</Product>
+    <PackageId>SignalR</PackageId>
+    <AssemblyName>Plugins.LiveReport.signalR</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.13.0" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.32.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.32.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="4.7.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
@@ -38,13 +35,6 @@
     <ProjectReference Include="..\..\..\Models\SP.Models.csproj">
       <Private>false</Private>
     </ProjectReference>
-  </ItemGroup> 
-  
-  <ItemGroup>
-    <Protobuf Include="Protos\statistics.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\blocks.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\loginAttempts.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\apiServices.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,9 +45,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="logSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SP.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

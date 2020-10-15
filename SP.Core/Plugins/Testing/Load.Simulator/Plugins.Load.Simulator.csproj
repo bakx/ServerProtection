@@ -4,10 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.eventmonitor</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\load.simulator</OutDir>
     <Authors>Gideon Bakx</Authors>
-    <Product>Windows Event Monitor</Product>
-    <PackageId>WindowsEventMonitor</PackageId>
+    <Product>Load Simulator</Product>
+    <PackageId>Load Simulator</PackageId>
+    <AssemblyName>Plugins.Load.Simulator</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,9 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appSettings.development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="appSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

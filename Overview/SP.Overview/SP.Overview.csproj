@@ -11,9 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Models\SP.Models.csproj" />
+    <ProjectReference Include="..\..\SP.Core\Models\SP.Models.csproj" />
   </ItemGroup>
-
-
 
 </Project>
