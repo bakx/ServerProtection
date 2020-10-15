@@ -138,6 +138,7 @@ namespace SP.Api.Service
 					Country = blocks.Country ?? "",
 					City = blocks.City ?? "",
 					ISP = blocks.ISP ?? "",
+					Details = blocks.Details,
 					Date =  Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
 					FirewallRuleName = blocks.FirewallRuleName,
 					IsBlocked = blocks.IsBlocked
@@ -170,6 +171,7 @@ namespace SP.Api.Service
 				City = request.Blocks.City ?? "",
 				ISP = request.Blocks.ISP ?? "",
 				Date = request.Blocks.Date.ToDateTime(),
+				Details = request.Blocks.Details,
 				FirewallRuleName = request.Blocks.FirewallRuleName,
 				IsBlocked = (byte) request.Blocks.IsBlocked
 			};
