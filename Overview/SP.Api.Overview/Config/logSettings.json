@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/SP.API{Date}.log"
+                "pathFormat": "logs/SP.Api.Overview{Date}.log"
               }
             }
           ]
