@@ -17,5 +17,5 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
-    - name: Build
-      run: msbuild SP.Core/SP.Core.csproj /t:Clean,Restore,Rebuild /p:Configuration=$env:Configuration /p:Platform=AnyCPU
+    - name: Build SP Core
+      run: msbuild "Server Protection.sln" /t:Restore,Clean,Rebuild /p:Configuration=Release /p:Platform=AnyCPU /p:SourceRevisionId=${GITHUB_SHA}
