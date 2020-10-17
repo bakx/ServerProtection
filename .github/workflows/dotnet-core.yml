@@ -18,4 +18,4 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Build SP Core
-      run: msbuild "Server Protection.sln" /t:Restore,Clean,Rebuild /p:Configuration=Release /p:Platform=AnyCPU /p:SourceRevisionId=${GITHUB_SHA}
+      run: msbuild "Server Protection.sln" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
