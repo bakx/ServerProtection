@@ -1,0 +1,37 @@
+{
+  Plugins: ["windows.firewall", "livereport.signalr", "load.simulator", "api.grpc"]
+
+  Blocking: {
+    # Amount of attempts that will results in block if within timespan
+    Attempts: 3
+
+    # Time to block after the threshold is exceeded
+    TimeSpanMinutes: 30
+    
+    # Block IP Range. 
+    # This feature will block n.n.n.1 to n.n.n.255 when an IP range attack is determined
+    # as well as look for similar login attempts from the n.n.n.XXX range to see if the attacker is using a method
+    # that includes switching the IP to avoid detection
+    BlockIPRange: false
+    
+    # Remove the block after NN minutes
+    UnblockTimeSpanMinutes: 300
+  }
+
+  Tools: {
+    # IP Data api key
+    IPData: {
+      # Url of the webservice
+      # {0} IPv4
+      # {1} API Key
+      Url: "https://api.ipdata.co/{0}?api-key={1}"
+
+      # API key
+      Key: "6deaddf8b1f897a8804a10393d6c3625aff3653aa3d7a74e4e3e35e1"
+
+      # Enable/Disable IPData
+      Enabled: false
+    }
+  }
+  
+}
