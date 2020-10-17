@@ -20,6 +20,6 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build SP.Core/SP.Core.csproj /t:Clean,Rebuild /p:Configuration=Release /p:Platform=AnyCPU /p:SolutionDir="%pwd%"
     - name: Test
       run: dotnet test --no-restore --verbosity normal
