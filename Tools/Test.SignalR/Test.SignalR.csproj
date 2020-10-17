@@ -30,8 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Models\SP.Models.csproj" />
-    <ProjectReference Include="..\..\Plugins\Base\Plugins.Base.csproj" />
+    <ProjectReference Include="..\..\SP.Core\Models\SP.Models.csproj" />
+    <ProjectReference Include="..\..\SP.Core\Plugins\Base\Plugins.Base.csproj" />
   </ItemGroup>
 
   <ItemGroup>
