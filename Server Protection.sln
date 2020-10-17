@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2636D675-E239-4553-918A-1B7BA4C6BF22}"
 	ProjectSection(SolutionItems) = preProject
 		Create Release.bat = Create Release.bat
-		DevNotes.txt = DevNotes.txt
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
@@ -15,14 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Overview", "Overview", "{FABB4AC0-C403-437B-ABDB-6E841BAA59FD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SignalR", "Tools\Test.SignalR\Test.SignalR.csproj", "{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service Installation", "Service Installation", "{3450DA87-B1A2-4BF5-BE57-4C66271FA5B9}"
-	ProjectSection(SolutionItems) = preProject
-		Install Service.bat = Install Service.bat
-		Remove Service.bat = Remove Service.bat
-		Start Service.bat = Start Service.bat
-		Stop Service.bat = Stop Service.bat
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{270F610C-8397-4C3C-A265-CC46D43DD911}"
 EndProject
@@ -148,7 +139,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DC992A74-FD8E-4A38-B176-D4EA4E8DE96F} = {BECA0564-D6FD-4041-A0F8-16AB5D51B47B}
-		{3450DA87-B1A2-4BF5-BE57-4C66271FA5B9} = {2636D675-E239-4553-918A-1B7BA4C6BF22}
 		{17B6C538-5AC6-4B3B-AE35-72A7026DE94E} = {270F610C-8397-4C3C-A265-CC46D43DD911}
 		{2B878802-A0CA-45B5-951C-3C8B251A5AFC} = {D0F4AD41-8DD8-4512-8FB2-66B5653E6920}
 		{5053F112-6E80-4FC6-B978-AF4E2BEFD4D5} = {90073DBE-B783-4213-A25B-EF719F5DB044}

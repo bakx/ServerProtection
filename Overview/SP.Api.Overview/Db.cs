@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SP.Models;
 
-namespace SP.API
+namespace SP.Api.Overview
 {
 	public class Db : DbContext
 	{

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace SP.API.Migrations
+namespace SP.Api.Overview.Migrations
 {
 	[DbContext(typeof(Db))]
 	internal class DbModelSnapshot : ModelSnapshot

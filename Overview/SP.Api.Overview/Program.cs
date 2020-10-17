@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace SP.API
+namespace SP.Api.Overview
 {
 	public class Program
 	{
