@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -30,6 +30,8 @@ jobs:
       run: dotnet build "SP.Core/Plugins/Reporting/LiveReport.SignalR/Plugins.LiveReport.SignalR.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
 #    - name: Build Plugins.Windows.Firewall
 #      run: dotnet build "SP.Core/Plugins/System/Windows.Firewall/Plugins.Windows.Firewall.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+#    - name: Build Plugins.Load.Simulator
+#      run: dotnet build "SP.Core/Plugins/Testing/Load.Simulator/Plugins.Load.Simulator.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
 
     - name: Upload SP.Core
       uses: actions/upload-artifact@v2.2.0
@@ -87,10 +89,10 @@ jobs:
 #            # A file, directory or wildcard pattern that describes what to upload
 #            path: SP.Core/Plugins/System/Windows.Firewall/bin/Any CPU/Release/netcoreapp3.1
 
-    - name: Upload Plugins.Load.Simulator
-      uses: actions/upload-artifact@v2.2.0
-      with:
-          # Artifact name
-            name: Plugins.Load.Simulator
-            # A file, directory or wildcard pattern that describes what to upload
-            path: SP.Core/Plugins/Testing/Plugins.Load.Simulator/bin/Any CPU/Release/netcoreapp3.1
+#    - name: Upload Plugins.Load.Simulator
+#      uses: actions/upload-artifact@v2.2.0
+#      with:
+#          # Artifact name
+#            name: Plugins.Load.Simulator
+#            # A file, directory or wildcard pattern that describes what to upload
+#            path: SP.Core/Plugins/Testing/Plugins.Load.Simulator/bin/Any CPU/Release/netcoreapp3.1
