@@ -40,7 +40,7 @@ jobs:
           certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
           certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
           password: "${{ secrets.CERTIFICATE_PASSWORD }}"
-          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/SP.Core.exe
+          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
           recursive: false
 
     - name: Code signing Plugins
@@ -50,9 +50,8 @@ jobs:
           certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
           certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
           password: "${{ secrets.CERTIFICATE_PASSWORD }}"
-          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/plugin.*
+          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/
           recursive: false
-
 
     - name: Upload SP.Core
       uses: actions/upload-artifact@v2.2.0
