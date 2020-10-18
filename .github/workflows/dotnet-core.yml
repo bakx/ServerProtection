@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -29,6 +29,6 @@ jobs:
       run: dotnet build "SP.Core/Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
     - name: Build LiveReport.SignalR
       run: dotnet build "SP.Core/Plugins/Reporting/LiveReport.SignalR/Plugins.LiveReport.SignalR.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
-    - name: Build Plugins.Windows.Firewall
-      run: dotnet build "SP.Core/Plugins/System/Windows.Firewall/Plugins.Windows.Firewall.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+#    - name: Build Plugins.Windows.Firewall
+#      run: dotnet build "SP.Core/Plugins/System/Windows.Firewall/Plugins.Windows.Firewall.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
 
