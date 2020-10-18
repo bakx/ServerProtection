@@ -20,7 +20,15 @@ jobs:
     - name: Build SP Core
       run: dotnet build "SP.Core/SP.Core/SP.Core.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
     - name: Build Plugins.Api.Https
-      run: dotnet build "SP.Core/Plugins/Api/ApiHttps/Plugins.Api.Https.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+      run: dotnet build "SP.Core/Plugins/Api/Api.Https/Plugins.Api.Https.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
     - name: Build Plugins.Api.gRPC
-      run: dotnet build "SP.Core/Plugins/Api/ApiGRPC/Plugins.Api.gRPC.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
-      
+      run: dotnet build "SP.Core/Plugins/Api/Api.GRPC/Plugins.Api.gRPC.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+    - name: Build Plugins.Windows.EventMonitor
+      run: dotnet build "SP.Core/Plugins/Detection/Windows.Event.Monitor/Plugins.Windows.Event.Monitor.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+    - name: Build Plugins.AbuseIP
+      run: dotnet build "SP.Core/Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+    - name: Build LiveReport.SignalR
+      run: dotnet build "SP.Core/Plugins/Reporting/LiveReport.SignalR/Plugins.LiveReport.SignalR.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+    - name: Build Plugins.Windows.Firewall
+      run: dotnet build "SP.Core/Plugins/System/Windows.Firewall/Plugins.Windows.Firewall.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+
