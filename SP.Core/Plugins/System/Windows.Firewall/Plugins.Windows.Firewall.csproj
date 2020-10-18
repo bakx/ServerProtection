@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.firewall</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Firewall</Product>
     <PackageId>Firewall</PackageId>
@@ -56,4 +55,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="mkdir &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.firewall\&quot;&#xD;&#xA;copy &quot;$(TargetDir)\*.*&quot; &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.firewall\&quot; /y" />
+  </Target>
+
 </Project>

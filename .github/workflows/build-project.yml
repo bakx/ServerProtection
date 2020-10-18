@@ -1,8 +1,8 @@
-name: .NET Core
+name: Build Server Protection
 
 on:
   push:
-    branches: [ master, bakx-patch-1 ]
+    branches: [ master, feature/37/github-actions ]
   pull_request:
     branches: [ master ]
 

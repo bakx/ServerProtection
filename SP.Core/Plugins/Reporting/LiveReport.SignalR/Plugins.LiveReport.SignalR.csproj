@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>SignalR</Product>
     <PackageId>SignalR</PackageId>
@@ -48,5 +47,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="mkdir &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR\&quot;&#xD;&#xA;copy &quot;$(TargetDir)\*.*&quot; &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR\&quot; /y" />
+  </Target>
 
 </Project>
