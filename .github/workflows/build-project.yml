@@ -37,8 +37,8 @@ jobs:
       uses: DanaBear/code-sign-action@v4
       with:
           # Artifact name
-          certificate: '${{ secrets.CODE_SIGNING_CERTIFICATE }}'
-          password: '${{ secrets.CERTIFICATE_PASSWORD }}'
+          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
+          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
           folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
           recursive: false
 
