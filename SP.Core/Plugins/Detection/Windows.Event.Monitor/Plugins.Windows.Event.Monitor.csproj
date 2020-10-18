@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.event.monitor</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Windows Event Monitor</Product>
     <PackageId>WindowsEventMonitor</PackageId>
@@ -45,9 +46,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.event.monitor\&quot;&#xD;&#xA;copy &quot;$(TargetDir)\*.*&quot; &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.event.monitor\&quot; /y" />
-  </Target>
-
 </Project>

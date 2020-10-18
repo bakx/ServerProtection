@@ -17,10 +17,3 @@ sc start "Server Protection Core"
 
 @echo off
 sc stop "Server Protection Core"
-
-
-
-sc create "Server Protection Core Api Service" start="Auto" BinPath="%cd%\SP.Api.Service.exe"
-sc description "Server Protection Core Api Service" "Service Protection Api Service is the reporting point for SP.Core applications and stores all login attempts, blocks and keeps track of statistics."
-sc start "Server Protection Core Api Service" 
-

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Api gRPC</Product>
     <PackageId>Api gRPC</PackageId>
@@ -60,9 +61,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc\&quot;&#xD;&#xA;copy &quot;$(TargetDir)\*.*&quot; &quot;$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc\&quot; /y" />
-  </Target>
 
 </Project>
