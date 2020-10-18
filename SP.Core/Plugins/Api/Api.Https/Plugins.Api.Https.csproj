@@ -4,11 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.https</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Api Https</Product>
     <PackageId>Api Https</PackageId>
     <AssemblyName>Plugins.Api.Https</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.https</OutDir>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,11 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\load.simulator</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Load Simulator</Product>
     <PackageId>Load Simulator</PackageId>
     <AssemblyName>Plugins.Load.Simulator</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\load.simulator</OutDir>
   </PropertyGroup>
 
   <ItemGroup>

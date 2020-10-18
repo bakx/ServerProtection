@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2636D675-E239-4553-918A-1B7BA4C6BF22}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-project.yml = .github\workflows\build-project.yml
 		Create Release.bat = Create Release.bat
 		Readme.md = Readme.md
 	EndProjectSection

@@ -1,0 +1,118 @@
+name: Build Server Protection
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Build SP Core
+      run: dotnet build "SP.Core/SP.Core/SP.Core.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+    - name: Build Plugins.Api.Https
+      run: dotnet build "SP.Core/Plugins/Api/Api.Https/Plugins.Api.Https.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+    - name: Build Plugins.Api.gRPC
+      run: dotnet build "SP.Core/Plugins/Api/Api.GRPC/Plugins.Api.gRPC.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+    - name: Build Plugins.Windows.EventMonitor
+      run: dotnet build "SP.Core/Plugins/Detection/Windows.Event.Monitor/Plugins.Windows.Event.Monitor.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+    - name: Build Plugins.AbuseIP
+      run: dotnet build "SP.Core/Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+    - name: Build LiveReport.SignalR
+      run: dotnet build "SP.Core/Plugins/Reporting/LiveReport.SignalR/Plugins.LiveReport.SignalR.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+#    - name: Build Plugins.Windows.Firewall
+#      run: dotnet build "SP.Core/Plugins/System/Windows.Firewall/Plugins.Windows.Firewall.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+#    - name: Build Plugins.Load.Simulator
+#      run: dotnet build "SP.Core/Plugins/Testing/Load.Simulator/Plugins.Load.Simulator.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+
+#    - name: Code signing SP.Core
+#      uses: DanaBear/code-sign-action@v4
+#      with:
+#          # Artifact name
+#          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
+#          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
+#          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
+#          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
+#          recursive: false
+
+#    - name: Code signing Plugins
+#      uses: DanaBear/code-sign-action@v4
+#      with:
+#          # Artifact name
+#          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
+#          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
+#          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
+#          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/
+#          recursive: false
+
+    - name: Upload SP.Core
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: SP.Core
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
+
+    - name: Upload Plugins.Api.Https
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: Plugins.Api.Https
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/Plugins/Api/Api.Https/bin/Any CPU/Release/netcoreapp3.1
+
+    - name: Upload Plugins.Api.gRPC
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: Plugins.Api.gRPC
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/Plugins/Api/Api.gRPC/bin/Any CPU/Release/netcoreapp3.1
+
+    - name: Upload Plugins.Windows.Event.Monitor
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: Plugins.Windows.Event.Monitor
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/Plugins/Detection/Windows.Event.Monitor/bin/Any CPU/Release/netcoreapp3.1
+
+    - name: Upload Plugins.AbuseIP
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: Plugins.AbuseIP
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/Plugins/Reporting/AbuseIP/bin/Any CPU/Release/netcoreapp3.1
+
+    - name: Upload Plugins.LiveReport.SignalR
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: Plugins.LiveReport.SignalR
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/Plugins/Reporting/LiveReport.SignalR/bin/Any CPU/Release/netcoreapp3.1
+
+#    - name: Upload Plugins.Windows.Firewall
+#      uses: actions/upload-artifact@v2.2.0
+#      with:
+#          # Artifact name
+#          name: Plugins.Windows.Firewall
+#          # A file, directory or wildcard pattern that describes what to upload
+#          path: SP.Core/Plugins/System/Windows.Firewall/bin/Any CPU/Release/netcoreapp3.1
+
+#    - name: Upload Plugins.Load.Simulator
+#      uses: actions/upload-artifact@v2.2.0
+#      with:
+#          # Artifact name
+#          name: Plugins.Load.Simulator
+#          # A file, directory or wildcard pattern that describes what to upload
+#          path: SP.Core/Plugins/Testing/Plugins.Load.Simulator/bin/Any CPU/Release/netcoreapp3.1

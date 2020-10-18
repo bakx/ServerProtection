@@ -4,11 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>SignalR</Product>
     <PackageId>SignalR</PackageId>
     <AssemblyName>Plugins.LiveReport.signalR</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\liveReport.signalR</OutDir>
   </PropertyGroup>
 
   <ItemGroup>
