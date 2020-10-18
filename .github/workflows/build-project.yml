@@ -34,16 +34,15 @@ jobs:
 #      run: dotnet build "SP.Core/Plugins/Testing/Load.Simulator/Plugins.Load.Simulator.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
 
     - name: Code signing
-    uses: DanaBear/code-sign-action@v4
-    with:
-      certificate: '${{ secrets.CODE_SIGNING_CERTIFICATE }}'
-      password: '${{ secrets.CERTIFICATE_PASSWORD }}'
-      certificatesha1: '${{ secrets.CERTIFICATE_HASH }}'
-      certificatename: '${{ secrets.CERTIFICATE_NAME }}'
-      folder: |
-        SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
-        SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1
-      recursive: false
+      uses: DanaBear/code-sign-action@v4
+      with:
+          # Artifact name
+          certificate: '${{ secrets.CODE_SIGNING_CERTIFICATE }}'
+          password: '${{ secrets.CERTIFICATE_PASSWORD }}'
+          certificatesha1: '${{ secrets.CERTIFICATE_HASH }}'
+          certificatename: '${{ secrets.CERTIFICATE_NAME }}'
+          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
+          recursive: false
 
     - name: Upload SP.Core
       uses: actions/upload-artifact@v2.2.0
