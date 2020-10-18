@@ -2,7 +2,7 @@ name: Build Server Protection
 
 on:
   push:
-    branches: [ master, feature/37/github-actions ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -33,25 +33,25 @@ jobs:
 #    - name: Build Plugins.Load.Simulator
 #      run: dotnet build "SP.Core/Plugins/Testing/Load.Simulator/Plugins.Load.Simulator.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
 
-    - name: Code signing SP.Core
-      uses: DanaBear/code-sign-action@v4
-      with:
-          # Artifact name
-          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
-          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
-          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
-          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
-          recursive: false
+#    - name: Code signing SP.Core
+#      uses: DanaBear/code-sign-action@v4
+#      with:
+#          # Artifact name
+#          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
+#          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
+#          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
+#          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
+#          recursive: false
 
-    - name: Code signing Plugins
-      uses: DanaBear/code-sign-action@v4
-      with:
-          # Artifact name
-          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
-          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
-          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
-          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/
-          recursive: false
+#    - name: Code signing Plugins
+#      uses: DanaBear/code-sign-action@v4
+#      with:
+#          # Artifact name
+#          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
+#          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
+#          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
+#          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/
+#          recursive: false
 
     - name: Upload SP.Core
       uses: actions/upload-artifact@v2.2.0
