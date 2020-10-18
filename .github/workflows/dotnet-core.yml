@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Build SP Core
-      run: dotnet build "SP.Core/SP.Core.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
+      run: dotnet build "SP.Core/SP.Core/SP.Core.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
     - name: Build Plugins.Api.Https
       run: dotnet build "Plugins/Api/ApiHttps/Plugins.Api.Https.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${GITHUB_SHA}"
     - name: Build Plugins.Api.gRPC
