@@ -4,11 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc</OutDir>
     <Authors>Gideon Bakx</Authors>
     <Product>Api gRPC</Product>
     <PackageId>Api gRPC</PackageId>
     <AssemblyName>Plugins.Api.gRPC</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\api.grpc</OutDir>
   </PropertyGroup>
 
   <ItemGroup>
