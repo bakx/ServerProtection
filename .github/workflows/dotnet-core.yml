@@ -37,7 +37,7 @@ jobs:
           # Artifact name
             name: Archive build
             # A file, directory or wildcard pattern that describes what to upload
-            path: "SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/"
+            path: |
+              "SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/"
+              "SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/"  
             retention-days: 90
-  
-
