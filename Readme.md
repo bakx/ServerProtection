@@ -6,15 +6,19 @@ It's using a plug-in architecture and can be extended to support various 3rd par
 The current builds are focusing on Windows (Server) where ideally it should get installed to run as a Windows service.
 
 ## **Api**
-To support a wide range of machines the *api* project is split up between 2 projects. Based on experience the **SP.Api.Https** project is flexible and can be hosted through IIS or other webservers that can host .NET Core.
+To support a wide range of machines the *api* project is split up between 2 projects. Only one of these has to be installed.
+They both come with a matching plug-in.
 
+**SP.Api.Https** uses the REST protocol and can be hosted through IIS or other webservers that can host .NET Core.
 To support higher load it's recommended to use the **SP.Api.gRPC** project instead, which can be installed as a Windows Service. 
 
 ### **SP.Api.Https**
-The SP.Api.Https project contains the database that's used to store all data related to the project. 
+The **SP.Api.Https** project uses the REST protocol and can be hosted through IIS or other webservers that can host .NET Core.
+It contains all the *api* calls required for the project to work and is responsible for storing and exposing the data.
 
 ### **SP.Api.gRPC**
-The SP.Api.gRPC project contains the database that's used to store all data related to the project and can be installed as a Windows Service.
+The **SP.Api.gRPC** project uses the gRPC protocol and can be hosted through IIS or other webservers that can host .NET Core, but also as a *Windows Service*.
+It contains all the *api* calls required for the project to work and is responsible for storing and exposing the data.
 
 It's recommended to use the **SP.Api.gRPC** instead of the **SP.Api.Https**.
 
