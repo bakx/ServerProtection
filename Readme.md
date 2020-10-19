@@ -64,6 +64,9 @@ Simplified stress testing that will simulate login failures in a very high rate.
 ## **Overview**
 To provide diagnostics and offer central reporting, this project comes with an overview page that displays various statistics.
 
+### **SP.Overview**
+Provides an overview of the login attempts made on this server. It includes live data (if the LiveReport.SignalR plug-in is enabled) and various statistics related to the login attempts.
+
 ### **SP.Api.Overview**
 Contains the datasource for the SP.Overview project and exposes various statistics related to the login attempts, blocks, ISPs and more.
 
