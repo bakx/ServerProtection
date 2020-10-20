@@ -39,7 +39,7 @@ namespace SP.Api.Service
 			ServerCallContext context)
 		{
 			log.LogDebug(
-				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(GetLoginAttempts)}.");
+				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(GetLoginAttempts)} for IP {request.LoginAttempts.IpAddress}");
 
 			// Open handle to database
 			await using Db database = new Db(db);
@@ -74,7 +74,7 @@ namespace SP.Api.Service
 			ServerCallContext context)
 		{
 			log.LogDebug(
-				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(AddLoginAttempt)}.");
+				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(AddLoginAttempt)} for IP {request.LoginAttempts.IpAddress}");
 
 			// Open handle to database
 			await using Db database = new Db(db);
@@ -157,7 +157,7 @@ namespace SP.Api.Service
 		public override async Task<AddBlockResponse> AddBlock(AddBlockRequest request,
 			ServerCallContext context)
 		{
-			log.LogDebug($"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(AddBlock)}.");
+			log.LogDebug($"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(AddBlock)} for IP {request.Blocks.IpAddress}");
 
 			// Open handle to database
 			await using Db database = new Db(db);
@@ -188,7 +188,7 @@ namespace SP.Api.Service
 		public override async Task<UpdateBlockResponse> UpdateBlock(UpdateBlockRequest request,
 			ServerCallContext context)
 		{
-			log.LogDebug($"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(UpdateBlock)}.");
+			log.LogDebug($"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(UpdateBlock)} for IP {request.Blocks.IpAddress}");
 
 			// Open handle to database
 			await using Db database = new Db(db);
