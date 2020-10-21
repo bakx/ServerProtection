@@ -103,15 +103,15 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		public override async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
+		public override async Task<bool> AccessAttemptEvent(AccessAttempts accessAttempt)
 		{
-			log.Debug("Invoking LoginAttempt");
+			log.Debug("Invoking AccessAttempt");
 
 			try
 			{
-				await Hub.InvokeAsync("LoginAttempt", loginAttempt);
+				await Hub.InvokeAsync("AccessAttempt", accessAttempt);
 				return true;
 			}
 			catch (Exception e)

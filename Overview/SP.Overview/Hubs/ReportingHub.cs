@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using SP.Models;
+using SP.Overview.Helpers;
 
 namespace SP.Overview.Hubs
 {
@@ -11,10 +12,10 @@ namespace SP.Overview.Hubs
 		/// </summary>
 		/// <param name="attempt"></param>
 		/// <returns></returns>
-		public async Task LoginAttempt(LoginAttempts attempt)
+		public async Task AccessAttempt(AccessAttempts attempt)
 		{
-			await Clients.All.SendCoreAsync("ReportLoginAttempt",
-				new object[] {attempt.Id, attempt.IpAddress, attempt.EventDate, attempt.Details},
+			await Clients.All.SendCoreAsync("ReportAccessAttempt",
+				new object[] {attempt.Id, attempt.IpAddress, attempt.EventDate, attempt.Details, AttackTypeString.GetName(attempt.AttackType)},
 				CancellationToken.None);
 		}
 
@@ -26,7 +27,7 @@ namespace SP.Overview.Hubs
 		{
 			await Clients.All.SendCoreAsync("ReportBlock",
 				new object[]
-					{block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP},
+					{block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP, AttackTypeString.GetName(block.AttackType)},
 				CancellationToken.None);
 		}
 
@@ -38,7 +39,7 @@ namespace SP.Overview.Hubs
 		{
 			await Clients.All.SendCoreAsync("ReportUnblock",
 				new object[]
-					{block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP},
+					{block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP, AttackTypeString.GetName(block.AttackType)},
 				CancellationToken.None);
 		}
 	}

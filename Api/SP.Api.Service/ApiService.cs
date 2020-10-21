@@ -8,6 +8,7 @@ using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SP.Api.Models;
+using SP.Models.Enums;
 using Blocks = SP.Models.Blocks;
 
 namespace SP.Api.Service
@@ -35,11 +36,11 @@ namespace SP.Api.Service
 		/// <param name="request"></param>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public override async Task<GetLoginAttemptsResponse> GetLoginAttempts(GetLoginAttemptsRequest request,
+		public override async Task<GetAccessAttemptsResponse> GetLoginAttempts(GetAccessAttemptsRequest request,
 			ServerCallContext context)
 		{
 			log.LogDebug(
-				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(GetLoginAttempts)} for IP {request.LoginAttempts.IpAddress}");
+				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(GetLoginAttempts)} for IP {request.AccessAttempt.IpAddress}");
 
 			// Open handle to database
 			await using Db database = new Db(db);
@@ -48,21 +49,21 @@ namespace SP.Api.Service
 			if (request.DetectIPRange)
 			{
 				// Match on the first 3 blocks
-				int rangeCount = database.LoginAttempts
+				int rangeCount = database.AccessAttempts
 					.Where(l =>
-						l.IpAddress1 == Convert.ToByte(request.LoginAttempts.IpAddress1) &&
-						l.IpAddress2 == Convert.ToByte(request.LoginAttempts.IpAddress2) &&
-						l.IpAddress3 == Convert.ToByte(request.LoginAttempts.IpAddress3))
+						l.IpAddress1 == Convert.ToByte(request.AccessAttempt.IpAddress1) &&
+						l.IpAddress2 == Convert.ToByte(request.AccessAttempt.IpAddress2) &&
+						l.IpAddress3 == Convert.ToByte(request.AccessAttempt.IpAddress3))
 					.Count(l => l.EventDate > request.FromTime.ToDateTime());
 
-				return new GetLoginAttemptsResponse{ Result = rangeCount };
+				return new GetAccessAttemptsResponse{ Result = rangeCount };
 			}
 
-			int count = database.LoginAttempts
-				.Where(l => l.IpAddress == request.LoginAttempts.IpAddress)
+			int count = database.AccessAttempts
+				.Where(l => l.IpAddress == request.AccessAttempt.IpAddress)
 				.Count(l => l.EventDate > request.FromTime.ToDateTime());
 
-			return new GetLoginAttemptsResponse { Result = count };
+			return new GetAccessAttemptsResponse { Result = count };
 		}
 
 		/// <summary>
@@ -70,31 +71,32 @@ namespace SP.Api.Service
 		/// <param name="request"></param>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public override async Task<AddLoginAttemptResponse> AddLoginAttempt(AddLoginAttemptRequest request,
+		public override async Task<AddAccessAttemptResponse> AddLoginAttempt(AddAccessAttemptRequest request,
 			ServerCallContext context)
 		{
 			log.LogDebug(
-				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(AddLoginAttempt)} for IP {request.LoginAttempts.IpAddress}");
+				$"Received call from {context.GetHttpContext().Connection.RemoteIpAddress} to {nameof(AddLoginAttempt)} for IP {request.AccessAttempts.IpAddress}");
 
 			// Open handle to database
 			await using Db database = new Db(db);
 
-			SP.Models.LoginAttempts loginAttempt = new SP.Models.LoginAttempts
+			SP.Models.AccessAttempts accessAttempt = new SP.Models.AccessAttempts
 			{
-				Id = request.LoginAttempts.Id,
-				IpAddress = request.LoginAttempts.IpAddress,
-				IpAddress1 = Convert.ToByte(request.LoginAttempts.IpAddress1),
-				IpAddress2 = Convert.ToByte(request.LoginAttempts.IpAddress2),
-				IpAddress3 = Convert.ToByte(request.LoginAttempts.IpAddress3),
-				IpAddress4 = Convert.ToByte(request.LoginAttempts.IpAddress4),
-				Details = request.LoginAttempts.Details,
-				EventDate = request.LoginAttempts.EventDate.ToDateTime()
+				Id = request.AccessAttempts.Id,
+				IpAddress = request.AccessAttempts.IpAddress,
+				IpAddress1 = Convert.ToByte(request.AccessAttempts.IpAddress1),
+				IpAddress2 = Convert.ToByte(request.AccessAttempts.IpAddress2),
+				IpAddress3 = Convert.ToByte(request.AccessAttempts.IpAddress3),
+				IpAddress4 = Convert.ToByte(request.AccessAttempts.IpAddress4),
+				Details = request.AccessAttempts.Details,
+				EventDate = request.AccessAttempts.EventDate.ToDateTime(),
+				AttackType = (AttackType) request.AccessAttempts.AttackType
 			};
 
-			await database.LoginAttempts.AddAsync(loginAttempt);
+			await database.AccessAttempts.AddAsync(accessAttempt);
 			bool result = await database.SaveChangesAsync() > 0;
 
-			return new AddLoginAttemptResponse
+			return new AddAccessAttemptResponse
 			{
 				Result = result
 			};
@@ -141,7 +143,8 @@ namespace SP.Api.Service
 					Details = blocks.Details,
 					Date =  Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
 					FirewallRuleName = blocks.FirewallRuleName,
-					IsBlocked = blocks.IsBlocked
+					IsBlocked = blocks.IsBlocked,
+					AttackType = (int) blocks.AttackType
 				})
 			});
 
@@ -173,7 +176,8 @@ namespace SP.Api.Service
 				Date = request.Blocks.Date.ToDateTime(),
 				Details = request.Blocks.Details,
 				FirewallRuleName = request.Blocks.FirewallRuleName,
-				IsBlocked = (byte) request.Blocks.IsBlocked
+				IsBlocked = (byte) request.Blocks.IsBlocked,
+				AttackType = (AttackType) request.Blocks.AttackType
 			};
 
 			await database.Blocks.AddAsync(block);
@@ -213,6 +217,7 @@ namespace SP.Api.Service
 			blocks.IpAddress = request.Blocks.IpAddress;
 			blocks.FirewallRuleName = request.Blocks.FirewallRuleName;
 			blocks.IsBlocked = (byte) request.Blocks.IsBlocked;
+			blocks.AttackType = (AttackType) request.Blocks.AttackType;
 
 			bool result = await database.SaveChangesAsync() > 0;
 

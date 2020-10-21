@@ -5,25 +5,25 @@ option csharp_namespace = "SP.Api.Models";
 
 package Api;
 
-message GetLoginAttemptsRequest {
-	LoginAttempts loginAttempts = 1;
+message GetAccessAttemptsRequest {
+	AccessAttempt AccessAttempt = 1;
 	bool detectIPRange = 2;
 	google.protobuf.Timestamp fromTime = 3;
 }
 
-message GetLoginAttemptsResponse {
+message GetAccessAttemptsResponse {
 	int32 result = 1;
 }
 
-message AddLoginAttemptRequest {
-	LoginAttempts loginAttempts = 1;
+message AddAccessAttemptRequest {
+	AccessAttempt accessAttempts = 1;
 }
 
-message AddLoginAttemptResponse {
+message AddAccessAttemptResponse {
 	bool result = 1;
 }
 
-message LoginAttempts {
+message AccessAttempt {
 	int64 id = 1;
 	string ipAddress = 2;
 	int32 ipAddress1 = 3;
@@ -33,4 +33,5 @@ message LoginAttempts {
 	string ipAddressRange = 7;
 	google.protobuf.Timestamp eventDate = 8;
 	string details = 9;
+	int32 attackType = 10;
 }

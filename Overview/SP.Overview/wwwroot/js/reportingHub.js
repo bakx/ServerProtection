@@ -2,20 +2,20 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/reportingHub").build();
 var maxLength = 25;
 
-var hasLoginAttempt = false;
+var hasAccessAttempt = false;
 var hasBlock = false;
 var hasUnblock = false;
 
-connection.on("ReportLoginAttempt",
-    function(attemptId, attemptIpAddress, attemptEventDate, attemptDetails) {
+connection.on("ReportAccessAttempt",
+    function(attemptId, attemptIpAddress, attemptEventDate, attemptDetails, attemptAttackType) {
 
         // Get reference to login attempts
-        var elem = document.getElementById("loginAttempts");
+        var elem = document.getElementById("accessAttempts");
 
         // Clear loading block
-        if (!hasLoginAttempt) {
+        if (!hasAccessAttempt) {
             elem.innerHTML = "";
-            hasLoginAttempt = true;
+            hasAccessAttempt = true;
         }
 
         // Create card
@@ -50,7 +50,10 @@ connection.on("ReportLoginAttempt",
         cardFeed.className = "ui small feed";
 
         // Details
-        cardFeed.appendChild(createEventCard(attemptDetails));
+        cardFeed.appendChild(createEventCard("Details: " + attemptDetails));
+
+        // AttackType
+        cardFeed.appendChild(createEventCard("Attack Type: " + attemptAttackType));
 
         // Add feed to body
         cardBody.appendChild(cardFeed);
@@ -69,7 +72,7 @@ connection.on("ReportLoginAttempt",
     });
 
 connection.on("ReportBlock",
-    function(blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
+    function (blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP, blockAttackType) {
 
         // Get reference to blocks
         var elem = document.getElementById("blocks");
@@ -112,13 +115,16 @@ connection.on("ReportBlock",
         cardFeed.className = "ui small feed";
 
         // Location
-        cardFeed.appendChild(createEventCard(blockCountry + ", " + blockCity));
+        cardFeed.appendChild(createEventCard("Location: " + blockCountry + ", " + blockCity));
 
         // Details
-        cardFeed.appendChild(createEventCard(blockDetails));
+        cardFeed.appendChild(createEventCard("Details: " + blockDetails));
 
         // ISP
-        cardFeed.appendChild(createEventCard(blockISP));
+        cardFeed.appendChild(createEventCard("ISP: " + blockISP));
+
+        // Attack Type
+        cardFeed.appendChild(createEventCard("Attack Type: " + blockAttackType));
 
         // Add feed to body
         cardBody.appendChild(cardFeed);
@@ -137,7 +143,7 @@ connection.on("ReportBlock",
     });
 
 connection.on("ReportUnblock",
-    function(blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP) {
+    function(blockId, blockDate, blockDetails, blockIpAddress, blockCity, blockCountry, blockISP, blockAttackType) {
 
         // Get reference to unblocks
         var elem = document.getElementById("unblocks");
@@ -180,13 +186,16 @@ connection.on("ReportUnblock",
         cardFeed.className = "ui small feed";
 
         // Location
-        cardFeed.appendChild(createEventCard(blockCountry + ", " + blockCity));
+        cardFeed.appendChild(createEventCard("Location: " + blockCountry + ", " + blockCity));
 
         // Details
-        cardFeed.appendChild(createEventCard(blockDetails));
+        cardFeed.appendChild(createEventCard("Details: " + blockDetails));
 
         // ISP
-        cardFeed.appendChild(createEventCard(blockISP));
+        cardFeed.appendChild(createEventCard("ISP: " + blockISP));
+
+        // Attack Type
+        cardFeed.appendChild(createEventCard("Attack Type: " + blockAttackType));
 
         // Add feed to body
         cardBody.appendChild(cardFeed);

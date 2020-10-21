@@ -1,13 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 using SP.Models.Enums;
 
 namespace SP.Models
 {
-	[Table("Login.Attempts")]
-	public class LoginAttempts
+	[Table("Access.Attempts")]
+	public class AccessAttempts
 	{
 		private string ipAddress;
 
@@ -71,17 +70,16 @@ namespace SP.Models
 		public string Details { get; set; }
 
 		/// <summary>
+		/// This property can be set from plug-ins to identify the type of Attack.
+		/// </summary>
+		public AttackType AttackType { get; set; }
+
+		/// <summary>
 		/// This property can be set from plug-ins to overwrite the block mechanism.
 		/// Login attempts in general can be attempted N times, while bots searching for exploitable
 		/// paths should be blocked right away.
 		/// </summary>
-		[IgnoreDataMember]
+		[NotMapped]
 		public bool OverrideBlock { get; set; }
-
-		/// <summary>
-		/// This property can be set from plug-ins to identify the type of Attack.
-		/// </summary>
-		[IgnoreDataMember]
-		public AttackType AttackType { get; set; }
 	}
 }

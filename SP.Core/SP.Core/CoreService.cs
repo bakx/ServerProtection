@@ -96,14 +96,14 @@ namespace SP.Core
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		private async void OnLoginAttemptEvent(LoginAttempts loginAttempt)
+		private async void OnLoginAttemptEvent(AccessAttempts accessAttempt)
 		{
 			// Notify plug-ins of login attempt
 			foreach (IPluginBase pluginBase in plugins)
 			{
-				await Task.Run(() => { pluginBase.LoginAttemptEvent(loginAttempt); });
+				await Task.Run(() => { pluginBase.AccessAttemptEvent(accessAttempt); });
 			}
 
 			// Default action for block
@@ -113,17 +113,17 @@ namespace SP.Core
 			try
 			{
 				// Add the login attempt
-				await protectHandler.AddLoginAttempt(loginAttempt);
+				await protectHandler.AddLoginAttempt(accessAttempt);
 
 				// Override?
-				if (loginAttempt.OverrideBlock)
+				if (accessAttempt.OverrideBlock)
 				{
 					block = true;
 				}
 				else
 				{
 					// Analyze the login attempt to see if a block should be applied
-					block = await protectHandler.AnalyzeAttempt(loginAttempt);
+					block = await protectHandler.AnalyzeAttempt(accessAttempt);
 				}
 			}
 			catch (Exception ex)
@@ -134,60 +134,60 @@ namespace SP.Core
 			// Block IP?
 			if (!block)
 			{
-				log.LogDebug($"{loginAttempt.IpAddress} will not be blocked.");
+				log.LogDebug($"{accessAttempt.IpAddress} will not be blocked.");
 				return;
 			}
 
 			// Signal block
-			BlockEvent?.Invoke(loginAttempt);
+			BlockEvent?.Invoke(accessAttempt);
 		}
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
-		private async void OnBlockEvent(LoginAttempts loginAttempt)
+		/// <param name="accessAttempt"></param>
+		private async void OnBlockEvent(AccessAttempts accessAttempt)
 		{
 			// Create EventData object
 			Blocks block = new Blocks
 			{
-				IpAddress = loginAttempt.IpAddress,
+				IpAddress = accessAttempt.IpAddress,
 				Hostname = "",
-				Date = loginAttempt.EventDate,
-				Details = loginAttempt.Details,
-				AttackType = loginAttempt.AttackType
+				Date = accessAttempt.EventDate,
+				Details = accessAttempt.Details,
+				AttackType = accessAttempt.AttackType
 			};
 
 			// Diagnostics
-			log.LogDebug($"In routine to block {loginAttempt.IpAddress}");
+			log.LogDebug($"In routine to block {accessAttempt.IpAddress}");
 
 			// If this IP address is found in the memory cache, it's likely that this IP address was used to 
 			// bombard the server with login attempts and the plug-in architecture is catching up. During attacks
 			// like that, it is possible that this method will be triggered multiple times.
 			// Blocks will be cached for 5 minutes to prevent this.
-			if (latestBlocks.Contains(blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress))
+			if (latestBlocks.Contains(blockIPRange ? accessAttempt.IpAddressRange : accessAttempt.IpAddress))
 			{
-				log.LogDebug($"{(blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress)} was recently blocked and this request will be ignored");
+				log.LogDebug($"{(blockIPRange ? accessAttempt.IpAddressRange : accessAttempt.IpAddress)} was recently blocked and this request will be ignored");
 				return;
 			}
 
-			latestBlocks.Add(blockIPRange ? loginAttempt.IpAddressRange : loginAttempt.IpAddress, 1, DateTime.Now.AddMinutes(5));
+			latestBlocks.Add(blockIPRange ? accessAttempt.IpAddressRange : accessAttempt.IpAddress, 1, DateTime.Now.AddMinutes(5));
 
 			// Use IPData to get additional information about the IP
 			if (ipDataEnabled)
 			{
 				DataModel dataModel = null;
 
-				if (ipDataCache.Contains(loginAttempt.IpAddress))
+				if (ipDataCache.Contains(accessAttempt.IpAddress))
 				{
-					dataModel = (DataModel) ipDataCache.GetCacheItem(loginAttempt.IpAddress)?.Value;
+					dataModel = (DataModel) ipDataCache.GetCacheItem(accessAttempt.IpAddress)?.Value;
 				}
 				else
 				{
 					try
 					{
-						dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, loginAttempt.IpAddress);
+						dataModel = await IPData.GetDetails(ipDataUrl, ipDataKey, accessAttempt.IpAddress);
 
-						ipDataCache.Add(loginAttempt.IpAddress, dataModel, DateTime.Now.AddDays(7));
+						ipDataCache.Add(accessAttempt.IpAddress, dataModel, DateTime.Now.AddDays(7));
 					}
 					catch (Exception ex)
 					{
@@ -245,7 +245,7 @@ namespace SP.Core
 		}
 
 		// Events
-		public event IPluginBase.LoginAttempt LoginAttemptEvent;
+		public event IPluginBase.AccessAttempt LoginAttemptEvent;
 		public event IPluginBase.Block BlockEvent;
 		public event IPluginBase.Unblock UnblockEvent;
 
@@ -282,9 +282,9 @@ namespace SP.Core
 					apiHandler = handler;
 					protectHandler.SetApiHandler(handler);
 				}
-
+			
 				// Register handlers
-				await plugin.RegisterLoginAttemptHandler(LoginAttemptEvent);
+				await plugin.RegisterAccessAttemptHandler(LoginAttemptEvent);
 				await plugin.RegisterBlockHandler(BlockEvent);
 				await plugin.RegisterUnblockHandler(UnblockEvent);
 			}
@@ -307,6 +307,9 @@ namespace SP.Core
 			{
 				log.LogError(e.Message);
 			}
+
+			// Diagnostics
+			log.LogInformation("Plug-ins loaded. SP.Core is now operating.");
 
 			while (!stoppingToken.IsCancellationRequested)
 			{

@@ -43,10 +43,10 @@ signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Core.exe"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\api.https\Plugins.Api.Https.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\api.grpc\Plugins.Api.gRPC.dll"
-signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.eventmonitor\Plugins.Windows.Event.Monitor.dll"
-signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.eventmonitor\Plugins.Windows.IIS.Monitor.dll"
-signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.firewall\Plugins.Windows.Firewall.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.event.monitor\Plugins.Windows.Event.Monitor.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.iis.monitor\Plugins.Windows.IIS.Monitor.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.firewall\Plugins.Windows.Firewall.dll"
 
 echo ###
 echo ### Cleaning up configurations - SP.Core

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 using SP.Models.Enums;
 
 namespace SP.Models
@@ -98,9 +97,8 @@ namespace SP.Models
 		public byte IsBlocked { get; set; } = 1;
 
 		/// <summary>
-		/// This property can be set from plug-ins to identify the type of Attack.
+		/// This property is used to identify the type of Attack and log it for statistics.
 		/// </summary>
-		[IgnoreDataMember]
 		public AttackType AttackType { get; set; }
 	}
 }

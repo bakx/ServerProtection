@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
@@ -15,12 +17,13 @@ namespace Plugins
 {
 	public class WindowsIISMonitor : PluginBase
 	{
+		private Thread thread;
 		private List<string> sitesMonitored;
 		private List<string> exploitPaths;
 
 		private IConfigurationRoot config;
 		private ILogger log;
-		private IPluginBase.LoginAttempt loginAttemptsHandler;
+		private IPluginBase.AccessAttempt accessAttemptsHandler;
 
 		/// <summary>
 		/// </summary>
@@ -71,19 +74,28 @@ namespace Plugins
 				sitesMonitored = config.GetSection("SitesMonitored").Get<List<string>>();
 				exploitPaths = config.GetSection("ExploitPaths").Get<List<string>>();
 
-				using TraceEventSession session = new TraceEventSession("IIS-ETW");
+				thread = new Thread(() =>
+				{
+					using TraceEventSession session = new TraceEventSession("IIS-ETW");
 
-				// Enable IIS ETW provider and set up a new trace source on it
-				session.EnableProvider(IISLogTraceEventParser.ProviderName);
+					// Enable IIS ETW provider and set up a new trace source on it
+					session.EnableProvider(IISLogTraceEventParser.ProviderName);
 
-				using ETWTraceEventSource traceSource = new ETWTraceEventSource("IIS-ETW", TraceEventSourceType.Session);
-				IISLogTraceEventParser parser = new IISLogTraceEventParser(traceSource);
+					using ETWTraceEventSource traceSource =
+						new ETWTraceEventSource("IIS-ETW", TraceEventSourceType.Session);
+					IISLogTraceEventParser parser = new IISLogTraceEventParser(traceSource);
 
-				// Listen to event
-				parser.IisLog += ParserOnIisLog;
+					// Listen to event
+					parser.IISLog += ParserOnIISLog;
 
-				// Start processing
-				traceSource.Process();
+					// Start processing
+					traceSource.Process();
+				})
+				{
+					IsBackground = true
+				};
+				thread.Start();
+
 				// traceSource.StopProcessing();
 
 				return await Task.FromResult(true);
@@ -105,7 +117,7 @@ namespace Plugins
 		/// 
 		/// </summary>
 		/// <param name="data"></param>
-		private void ParserOnIisLog(IISLogTraceData data)
+		private void ParserOnIISLog(IISLogTraceData data)
 		{
 			// Check if this site is monitored
 			if (!sitesMonitored.Contains(data.ServiceName))
@@ -114,13 +126,15 @@ namespace Plugins
 			}
 
 			// Check if path is in prohibited list
-			if (!exploitPaths.Contains(data.UriStem))
+			bool isProhibited = exploitPaths.Any(p => data.UriStem.Contains(p));
+
+			if (!isProhibited)
 			{
 				return;
 			}
 
 			// Trigger login attempt event
-			LoginAttempts loginAttempt = new LoginAttempts
+			AccessAttempts accessAttempt = new AccessAttempts
 			{
 				IpAddress = data.ClientIp,
 				EventDate = DateTime.Now,
@@ -134,17 +148,19 @@ namespace Plugins
 				$"Attempt to access {data.UriStem} on {data.ServiceName} by IP {data.ClientIp}.");
 
 			// Fire event
-			loginAttemptsHandler?.Invoke(loginAttempt);
+			accessAttemptsHandler?.Invoke(accessAttempt);
 		}
 
 		/// <summary>
 		/// Register the LoginAttemptsHandler in order to fire events
 		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
+		/// <param name="accessAttemptHandler"></param>
 		/// <returns></returns>
-		public override async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			loginAttemptsHandler = loginAttemptHandler;
+			log.Debug("Registered as LoginAttemptHandler");
+
+			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);
 		}
 	}

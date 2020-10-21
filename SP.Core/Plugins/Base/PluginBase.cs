@@ -15,7 +15,7 @@ namespace SP.Plugins
 			return await Task.FromResult(true);
 		}
 
-		public virtual async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt eventHandler)
+		public virtual async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt eventHandler)
 		{
 			return await Task.FromResult(true);
 		}
@@ -30,7 +30,7 @@ namespace SP.Plugins
 			return await Task.FromResult(true);
 		}
 
-		public virtual async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
+		public virtual async Task<bool> AccessAttemptEvent(AccessAttempts accessAttempt)
 		{
 			return await Task.FromResult(true);
 		}

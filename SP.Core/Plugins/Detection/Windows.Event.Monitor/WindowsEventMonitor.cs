@@ -27,7 +27,7 @@ namespace Plugins
 
 		private IConfigurationRoot config;
 		private ILogger log;
-		private IPluginBase.LoginAttempt loginAttemptsHandler;
+		private IPluginBase.AccessAttempt accessAttemptsHandler;
 
 		/// <summary>
 		/// </summary>
@@ -105,11 +105,13 @@ namespace Plugins
 		/// <summary>
 		/// Register the LoginAttemptsHandler in order to fire events
 		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
+		/// <param name="accessAttemptHandler"></param>
 		/// <returns></returns>
-		public override async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			loginAttemptsHandler = loginAttemptHandler;
+			log.Debug("Registered as LoginAttemptHandler");
+
+			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);
 		}
 
@@ -134,7 +136,7 @@ namespace Plugins
 					EventLogEntry eventLogEntry = new EventLogEntry(e.Entry.ReplacementStrings);
 
 					// Trigger login attempt event
-					LoginAttempts loginAttempt = new LoginAttempts
+					AccessAttempts accessAttempt = new AccessAttempts
 					{
 						IpAddress = eventLogEntry.SourceNetworkAddress,
 						EventDate = DateTime.Now,
@@ -147,7 +149,7 @@ namespace Plugins
 						$"Workstation {eventLogEntry.SourceWorkstationName} from {eventLogEntry.SourceNetworkAddress} failed logging in.");
 
 					// Fire event
-					loginAttemptsHandler?.Invoke(loginAttempt);
+					accessAttemptsHandler?.Invoke(accessAttempt);
 					break;
 				}
 			}

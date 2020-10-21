@@ -182,21 +182,21 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <param name="detectIPRange"></param>
 		/// <param name="fromTime"></param>
 		/// <returns>
 		/// The number of login attempts that took place within the timespan of the current time vs the fromTime. If -1
 		/// gets returned, the call failed.
 		/// </returns>
-		public async Task<int> GetLoginAttempts(LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
+		public async Task<int> GetLoginAttempts(AccessAttempts accessAttempt, bool detectIPRange, DateTime fromTime)
 		{
 			// Contact the api
-			string path = $"/loginAttempts/GetLoginAttempts?detectIPRange={detectIPRange}&fromTime={fromTime}";
+			string path = $"/AccessAttempts/GetLoginAttempts?detectIPRange={detectIPRange}&fromTime={fromTime}";
 
 			// Add content
 			HttpContent content =
-				new StringContent(JsonSerializer.Serialize(loginAttempt), Encoding.UTF8, "application/json");
+				new StringContent(JsonSerializer.Serialize(accessAttempt), Encoding.UTF8, "application/json");
 
 			// Execute the request
 			HttpResponseMessage message = await PostRequest(path, content);
@@ -206,16 +206,16 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		public async Task<bool> AddLoginAttempt(LoginAttempts loginAttempt)
+		public async Task<bool> AddLoginAttempt(AccessAttempts accessAttempt)
 		{
 			// Contact the api
-			const string path = "/loginAttempts/Add";
+			const string path = "/AccessAttempts/Add";
 
 			// Add content
 			HttpContent content =
-				new StringContent(JsonSerializer.Serialize(loginAttempt), Encoding.UTF8, "application/json");
+				new StringContent(JsonSerializer.Serialize(accessAttempt), Encoding.UTF8, "application/json");
 
 			// Execute the request
 			HttpResponseMessage message = await PostRequest(path, content);

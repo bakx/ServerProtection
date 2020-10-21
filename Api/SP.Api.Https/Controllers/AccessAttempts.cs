@@ -5,28 +5,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace SP.Api.Overview.Controllers
+namespace SP.Api.Https.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
-	public class LoginAttempts : ControllerBase
+	public class AccessAttempts : ControllerBase
 	{
 		private readonly DbContextOptions<Db> db;
-		private readonly ILogger<LoginAttempts> log;
+		private readonly ILogger<AccessAttempts> log;
 
-		public LoginAttempts(ILogger<LoginAttempts> log, DbContextOptions<Db> db)
+		public AccessAttempts(ILogger<AccessAttempts> log, DbContextOptions<Db> db)
 		{
 			this.log = log;
 			this.db = db;
 		}
 
 		[HttpPost]
-		[Route(nameof(GetLoginAttempts))]
-		public async Task<int> GetLoginAttempts([FromBody] Models.LoginAttempts loginAttempt, bool detectIPRange,
+		[Route(nameof(GetAccessAttempts))]
+		public async Task<int> GetAccessAttempts([FromBody] Models.AccessAttempts accessAttempt, bool detectIPRange,
 			DateTime fromTime)
 		{
 			log.LogDebug(
-				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetLoginAttempts)}.");
+				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetAccessAttempts)}.");
 
 			// Open handle to database
 			await using Db database = new Db(db);
@@ -35,23 +35,23 @@ namespace SP.Api.Overview.Controllers
 			if (detectIPRange)
 			{
 				// Match on the first 3 blocks
-				return database.LoginAttempts
+				return database.AccessAttempts
 					.Where(l =>
-						l.IpAddress1 == loginAttempt.IpAddress1 &&
-						l.IpAddress2 == loginAttempt.IpAddress2 &&
-						l.IpAddress3 == loginAttempt.IpAddress3)
+						l.IpAddress1 == accessAttempt.IpAddress1 &&
+						l.IpAddress2 == accessAttempt.IpAddress2 &&
+						l.IpAddress3 == accessAttempt.IpAddress3)
 					.Count(l => l.EventDate > fromTime);
 			}
 
 			// Return results
-			return database.LoginAttempts
-				.Where(l => l.IpAddress == loginAttempt.IpAddress)
+			return database.AccessAttempts
+				.Where(l => l.IpAddress == accessAttempt.IpAddress)
 				.Count(l => l.EventDate > fromTime);
 		}
 
 		[HttpPost]
 		[Route(nameof(Add))]
-		public async Task<bool> Add(Models.LoginAttempts loginAttempt)
+		public async Task<bool> Add(Models.AccessAttempts accessAttempt)
 		{
 			log.LogDebug(
 				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(Add)}.");
@@ -59,7 +59,7 @@ namespace SP.Api.Overview.Controllers
 			// Open handle to database
 			await using Db database = new Db(db);
 
-			await database.LoginAttempts.AddAsync(loginAttempt);
+			await database.AccessAttempts.AddAsync(accessAttempt);
 			return await database.SaveChangesAsync() > 0;
 		}
 	}

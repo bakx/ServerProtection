@@ -33,16 +33,16 @@ namespace SP.Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <param name="detectIPRange"></param>
 		/// <param name="fromTime"></param>
 		/// <returns></returns>
-		Task<int> GetLoginAttempts(LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime);
+		Task<int> GetLoginAttempts(AccessAttempts accessAttempt, bool detectIPRange, DateTime fromTime);
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		Task<bool> AddLoginAttempt(LoginAttempts loginAttempt);
+		Task<bool> AddLoginAttempt(AccessAttempts accessAttempt);
 	}
 }

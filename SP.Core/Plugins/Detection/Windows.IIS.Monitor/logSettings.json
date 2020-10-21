@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-Windows.EventMonitor{Date}.log"
+                "pathFormat": "logs/plugins-Windows.IIS.Monitor{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "plugins-Windows.EventMonitor"
+      "Application": "plugins-Windows.IIS.Monitor"
     }
   }
 }

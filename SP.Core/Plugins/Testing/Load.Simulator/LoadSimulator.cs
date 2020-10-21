@@ -15,7 +15,7 @@ namespace Plugins
 		private IConfigurationRoot config;
 		private ILogger log;
 
-		private IPluginBase.LoginAttempt loginAttemptsHandler;
+		private IPluginBase.AccessAttempt accessAttemptsHandler;
 
 		//
 		private int parallelThreads;
@@ -94,11 +94,13 @@ namespace Plugins
 		/// <summary>
 		/// Register the LoginAttemptsHandler in order to fire events
 		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
+		/// <param name="accessAttemptHandler"></param>
 		/// <returns></returns>
-		public override async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			loginAttemptsHandler = loginAttemptHandler;
+			log.Debug("Registered as LoginAttemptHandler");
+
+			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);
 		}
 
@@ -113,7 +115,7 @@ namespace Plugins
 			Parallel.For((long) 0, parallelThreads, (i, res) =>
 			{
 				// Trigger login attempt event
-				LoginAttempts loginAttempt = new LoginAttempts
+				AccessAttempts accessAttempt = new AccessAttempts
 				{
 					IpAddress = $"123.123.123.{i}",
 					EventDate = DateTime.Now,
@@ -125,7 +127,7 @@ namespace Plugins
 					"Load test simulation.");
 
 				// Fire event
-				loginAttemptsHandler?.Invoke(loginAttempt);
+				accessAttemptsHandler?.Invoke(accessAttempt);
 			});
 		}
 	}

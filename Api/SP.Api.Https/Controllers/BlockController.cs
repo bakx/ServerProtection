@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SP.Models;
 
-namespace SP.Api.Overview.Controllers
+namespace SP.Api.Https.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
@@ -87,6 +87,7 @@ namespace SP.Api.Overview.Controllers
 			blocks.IpAddress4 = block.IpAddress4;
 			blocks.FirewallRuleName = block.FirewallRuleName;
 			blocks.IsBlocked = block.IsBlocked;
+			blocks.AttackType = block.AttackType;
 
 			return await database.SaveChangesAsync() > 0;
 		}

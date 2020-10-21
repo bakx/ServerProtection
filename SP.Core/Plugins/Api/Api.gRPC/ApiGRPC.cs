@@ -11,6 +11,7 @@ using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Api.Models;
+using SP.Models.Enums;
 using SP.Plugins;
 using Blocks = SP.Models.Blocks;
 
@@ -147,22 +148,23 @@ namespace Plugins
 
 			// Convert models.
 			return response.Blocks.Select(blocks => new Blocks
-			{
-				Id = blocks.Id,
-				IpAddress = blocks.IpAddress,
-				IpAddress1 = Convert.ToByte(blocks.IpAddress.Split(".")[0]),
-				IpAddress2 = Convert.ToByte(blocks.IpAddress.Split(".")[1]),
-				IpAddress3 = Convert.ToByte(blocks.IpAddress.Split(".")[2]),
-				IpAddress4 = Convert.ToByte(blocks.IpAddress.Split(".")[3]),
-				Hostname = blocks.Hostname,
-				Country = blocks.Country,
-				City = blocks.City,
-				ISP = blocks.ISP,
-				Details = blocks.Details,
-				Date = blocks.Date.ToDateTime(),
-				FirewallRuleName = blocks.FirewallRuleName,
-				IsBlocked = (byte) blocks.IsBlocked
-			})
+				{
+					Id = blocks.Id,
+					IpAddress = blocks.IpAddress,
+					IpAddress1 = Convert.ToByte(blocks.IpAddress.Split(".")[0]),
+					IpAddress2 = Convert.ToByte(blocks.IpAddress.Split(".")[1]),
+					IpAddress3 = Convert.ToByte(blocks.IpAddress.Split(".")[2]),
+					IpAddress4 = Convert.ToByte(blocks.IpAddress.Split(".")[3]),
+					Hostname = blocks.Hostname,
+					Country = blocks.Country,
+					City = blocks.City,
+					ISP = blocks.ISP,
+					Details = blocks.Details,
+					Date = blocks.Date.ToDateTime(),
+					FirewallRuleName = blocks.FirewallRuleName,
+					IsBlocked = (byte) blocks.IsBlocked,
+					AttackType = (AttackType) blocks.AttackType
+				})
 				.ToList();
 		}
 
@@ -198,13 +200,14 @@ namespace Plugins
 						Details = blocks.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
 						FirewallRuleName = blocks.FirewallRuleName,
-						IsBlocked = blocks.IsBlocked
+						IsBlocked = blocks.IsBlocked,
+						AttackType = (int) blocks.AttackType
 					}
 				});
 
 			// Diagnostics
 			log.Debug($"{nameof(AddBlock)} received server response: {response.Result}");
-			
+
 			// Clean up
 			await channel.ShutdownAsync();
 
@@ -239,7 +242,8 @@ namespace Plugins
 						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
-						IsBlocked = block.IsBlocked
+						IsBlocked = block.IsBlocked,
+						AttackType = (int) block.AttackType
 					}
 				});
 
@@ -280,7 +284,8 @@ namespace Plugins
 						Details = block.Details,
 						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
-						IsBlocked = block.IsBlocked
+						IsBlocked = block.IsBlocked,
+						AttackType = (int) block.AttackType
 					}
 				});
 
@@ -295,39 +300,42 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <param name="detectIPRange"></param>
 		/// <param name="fromTime"></param>
 		/// <returns>
 		/// The number of login attempts that took place within the timespan of the current time vs the fromTime. If -1
 		/// gets returned, the call failed.
 		/// </returns>
-		public async Task<int> GetLoginAttempts(SP.Models.LoginAttempts loginAttempt, bool detectIPRange, DateTime fromTime)
+		public async Task<int> GetLoginAttempts(SP.Models.AccessAttempts accessAttempt, bool detectIPRange,
+			DateTime fromTime)
 		{
 			// Diagnostics
-			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
+			log.Debug($"{nameof(GetLoginAttempts)} called for IP {accessAttempt.IpAddress}");
 
 			// Get connection
 			GrpcChannel channel = GetChannel();
 			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
 
 			// Make gRPC request
-			GetLoginAttemptsResponse response = await client.GetLoginAttemptsAsync(
-				new GetLoginAttemptsRequest
+			GetAccessAttemptsResponse response = await client.GetLoginAttemptsAsync(
+				new GetAccessAttemptsRequest
 				{
 					DetectIPRange = detectIPRange,
 					FromTime = Timestamp.FromDateTime(DateTime.SpecifyKind(fromTime, DateTimeKind.Utc)),
-					LoginAttempts = new LoginAttempts
+					AccessAttempt = new AccessAttempt
 					{
-						Id = loginAttempt.Id,
-						IpAddress = loginAttempt.IpAddress,
-						IpAddress1 = loginAttempt.IpAddress1,
-						IpAddress2 = loginAttempt.IpAddress2,
-						IpAddress3 = loginAttempt.IpAddress3,
-						IpAddress4 = loginAttempt.IpAddress4,
-						IpAddressRange = loginAttempt.IpAddressRange,
-						Details = loginAttempt.Details,
-						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
+						Id = accessAttempt.Id,
+						IpAddress = accessAttempt.IpAddress,
+						IpAddress1 = accessAttempt.IpAddress1,
+						IpAddress2 = accessAttempt.IpAddress2,
+						IpAddress3 = accessAttempt.IpAddress3,
+						IpAddress4 = accessAttempt.IpAddress4,
+						IpAddressRange = accessAttempt.IpAddressRange,
+						Details = accessAttempt.Details,
+						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(accessAttempt.EventDate,
+							DateTimeKind.Utc)),
+						AttackType = (int) accessAttempt.AttackType
 					}
 				});
 
@@ -342,32 +350,34 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		public async Task<bool> AddLoginAttempt(SP.Models.LoginAttempts loginAttempt)
+		public async Task<bool> AddLoginAttempt(SP.Models.AccessAttempts accessAttempt)
 		{
 			// Diagnostics
-			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
+			log.Debug($"{nameof(GetLoginAttempts)} called for IP {accessAttempt.IpAddress}");
 
 			// Get connection
 			GrpcChannel channel = GetChannel();
 			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
 
 			// Make gRPC request
-			AddLoginAttemptResponse response = await client.AddLoginAttemptAsync(
-				new AddLoginAttemptRequest
+			AddAccessAttemptResponse response = await client.AddLoginAttemptAsync(
+				new AddAccessAttemptRequest
 				{
-					LoginAttempts = new LoginAttempts
+					AccessAttempts = new AccessAttempt
 					{
-						Id = loginAttempt.Id,
-						IpAddress = loginAttempt.IpAddress,
-						IpAddress1 = loginAttempt.IpAddress1,
-						IpAddress2 = loginAttempt.IpAddress2,
-						IpAddress3 = loginAttempt.IpAddress3,
-						IpAddress4 = loginAttempt.IpAddress4,
-						IpAddressRange = loginAttempt.IpAddressRange,
-						Details = loginAttempt.Details,
-						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
+						Id = accessAttempt.Id,
+						IpAddress = accessAttempt.IpAddress,
+						IpAddress1 = accessAttempt.IpAddress1,
+						IpAddress2 = accessAttempt.IpAddress2,
+						IpAddress3 = accessAttempt.IpAddress3,
+						IpAddress4 = accessAttempt.IpAddress4,
+						IpAddressRange = accessAttempt.IpAddressRange,
+						Details = accessAttempt.Details,
+						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(accessAttempt.EventDate,
+							DateTimeKind.Utc)),
+						AttackType = (int) accessAttempt.AttackType
 					}
 				});
 
@@ -382,32 +392,34 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		public async Task<bool> StatisticsUpdateBlocks(SP.Models.LoginAttempts loginAttempt)
+		public async Task<bool> StatisticsUpdateBlocks(SP.Models.AccessAttempts accessAttempt)
 		{
 			// Diagnostics
-			log.Debug($"{nameof(GetLoginAttempts)} called for IP {loginAttempt.IpAddress}");
+			log.Debug($"{nameof(GetLoginAttempts)} called for IP {accessAttempt.IpAddress}");
 
 			// Get connection
 			GrpcChannel channel = GetChannel();
 			ApiServices.ApiServicesClient client = new ApiServices.ApiServicesClient(channel);
 
 			// Make gRPC request
-			AddLoginAttemptResponse response = await client.AddLoginAttemptAsync(
-				new AddLoginAttemptRequest
+			AddAccessAttemptResponse response = await client.AddLoginAttemptAsync(
+				new AddAccessAttemptRequest
 				{
-					LoginAttempts = new LoginAttempts
+					AccessAttempts = new AccessAttempt
 					{
-						Id = loginAttempt.Id,
-						IpAddress = loginAttempt.IpAddress,
-						IpAddress1 = loginAttempt.IpAddress1,
-						IpAddress2 = loginAttempt.IpAddress2,
-						IpAddress3 = loginAttempt.IpAddress3,
-						IpAddress4 = loginAttempt.IpAddress4,
-						IpAddressRange = loginAttempt.IpAddressRange,
-						Details = loginAttempt.Details,
-						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(loginAttempt.EventDate, DateTimeKind.Utc))
+						Id = accessAttempt.Id,
+						IpAddress = accessAttempt.IpAddress,
+						IpAddress1 = accessAttempt.IpAddress1,
+						IpAddress2 = accessAttempt.IpAddress2,
+						IpAddress3 = accessAttempt.IpAddress3,
+						IpAddress4 = accessAttempt.IpAddress4,
+						IpAddressRange = accessAttempt.IpAddressRange,
+						Details = accessAttempt.Details,
+						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(accessAttempt.EventDate,
+							DateTimeKind.Utc)),
+						AttackType = (int) accessAttempt.AttackType
 					}
 				});
 

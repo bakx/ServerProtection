@@ -13,7 +13,7 @@ https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotne
 Add-Migration InitialCreate
 update-database
 
-Add-Migration AddDetailsToBlocks
+Add-Migration AddAttackTypeToBlocks
 update-database
 
 Add-Migration IpRanges

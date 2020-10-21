@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\accessAttempts.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.13.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.32.0" />
     <PackageReference Include="Grpc.Tools" Version="2.32.0">
@@ -44,9 +48,9 @@
   </ItemGroup> 
   
   <ItemGroup>
+    <Protobuf Include="Protos\accessAttempts.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\statistics.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\blocks.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\loginAttempts.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\apiServices.proto" GrpcServices="Client" />
   </ItemGroup>
 

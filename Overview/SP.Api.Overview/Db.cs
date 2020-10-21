@@ -20,7 +20,7 @@ namespace SP.Api.Overview
 		}
 
 		public DbSet<Blocks> Blocks { get; set; }
-		public DbSet<LoginAttempts> LoginAttempts { get; set; }
+		public DbSet<AccessAttempts> AccessAttempts { get; set; }
 		public DbSet<StatisticsBlocks> StatisticsBlocks { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder options)

@@ -14,7 +14,7 @@ namespace Plugins
 		{
 		}
 
-		public event Action<IISLogTraceData> IisLog
+		public event Action<IISLogTraceData> IISLog
 		{
 			add => source.RegisterEventTemplate(IisLogTemplate(value));
 			remove => source.UnregisterEventTemplate(value, IisLogEventId, ProviderGuid);

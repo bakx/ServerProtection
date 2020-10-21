@@ -17,16 +17,16 @@ namespace SP.Core.Interfaces
 		/// <param name="attempt"></param>
 		/// <param name="fromTime"></param>
 		/// <returns></returns>
-		Task<int> GetLoginAttempts(LoginAttempts attempt, DateTime fromTime);
+		Task<int> GetLoginAttempts(AccessAttempts attempt, DateTime fromTime);
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
-		Task<bool> AddLoginAttempt(LoginAttempts loginAttempt);
+		/// <param name="accessAttempt"></param>
+		Task<bool> AddLoginAttempt(AccessAttempts accessAttempt);
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
-		Task<bool> AnalyzeAttempt(LoginAttempts loginAttempt);
+		/// <param name="accessAttempt"></param>
+		Task<bool> AnalyzeAttempt(AccessAttempts accessAttempt);
 	}
 }
