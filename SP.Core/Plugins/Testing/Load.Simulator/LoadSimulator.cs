@@ -10,7 +10,7 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class LoadSimulator : IPluginBase
+	public class LoadSimulator : PluginBase
 	{
 		private IConfigurationRoot config;
 		private ILogger log;
@@ -24,7 +24,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -62,7 +62,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
 			{
@@ -96,55 +96,9 @@ namespace Plugins
 		/// </summary>
 		/// <param name="loginAttemptHandler"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
 		{
 			loginAttemptsHandler = loginAttemptHandler;
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="blockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="unblockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="loginAttempt"></param>
-		/// <returns></returns>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> UnblockEvent(Blocks block)
-		{
 			return await Task.FromResult(true);
 		}
 

@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Models;
+using SP.Models.Enums;
 using SP.Plugins;
 using EventLogEntry = Plugins.Models.EventLogEntry;
 
 namespace Plugins
 {
-	public class WindowsEventMonitor : IPluginBase
+	public class WindowsEventMonitor : PluginBase
 	{
 		/// <summary>
 		/// </summary>
@@ -31,7 +32,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -69,17 +70,17 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
-			{
+			{				
+				// Load actionable events from the configuration
+				actionableEvents = config.GetSection("ActionableEvents").Get<List<long>>();
+
 				// Register EventLog
 				EventLog eventLog = new EventLog("Security");
 				eventLog.EntryWritten += EventLogOnEntryWritten;
 				eventLog.EnableRaisingEvents = true;
-
-				// Load actionable events from the configuration
-				actionableEvents = config.GetSection("ActionableEvents").Get<List<long>>();
 
 				return await Task.FromResult(true);
 			}
@@ -106,55 +107,9 @@ namespace Plugins
 		/// </summary>
 		/// <param name="loginAttemptHandler"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
 		{
 			loginAttemptsHandler = loginAttemptHandler;
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="blockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="unblockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="loginAttempt"></param>
-		/// <returns></returns>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> UnblockEvent(Blocks block)
-		{
 			return await Task.FromResult(true);
 		}
 
@@ -183,7 +138,8 @@ namespace Plugins
 					{
 						IpAddress = eventLogEntry.SourceNetworkAddress,
 						EventDate = DateTime.Now,
-						Details = $"Repeated RDP login failures. Last user: {eventLogEntry.AccountAccountName}"
+						Details = $"Repeated RDP login failures. Last user: {eventLogEntry.AccountAccountName}",
+						AttackType = AttackType.BruteForce
 					};
 
 					// Log attempt

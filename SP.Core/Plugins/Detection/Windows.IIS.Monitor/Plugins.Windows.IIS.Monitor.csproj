@@ -5,16 +5,17 @@
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Authors>Gideon Bakx</Authors>
-    <Product>Windows Event Monitor</Product>
-    <PackageId>WindowsEventMonitor</PackageId>
-    <AssemblyName>Plugins.Windows.Event.Monitor</AssemblyName>
+    <Product>Windows IIS Monitor</Product>
+    <PackageId>WindowsIISMonitor</PackageId>
+    <AssemblyName>Plugins.Windows.IIS.Monitor</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.event.monitor</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\windows.iis.monitor</OutDir>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="2.0.61" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.9" />
@@ -27,6 +28,7 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="System.Diagnostics.Tracing" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

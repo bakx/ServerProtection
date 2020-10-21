@@ -114,8 +114,17 @@ namespace SP.Core
 			{
 				// Add the login attempt
 				await protectHandler.AddLoginAttempt(loginAttempt);
-				// Analyze the login attempt to see if a block should be applied
-				block = await protectHandler.AnalyzeAttempt(loginAttempt);
+
+				// Override?
+				if (loginAttempt.OverrideBlock)
+				{
+					block = true;
+				}
+				else
+				{
+					// Analyze the login attempt to see if a block should be applied
+					block = await protectHandler.AnalyzeAttempt(loginAttempt);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -144,7 +153,8 @@ namespace SP.Core
 				IpAddress = loginAttempt.IpAddress,
 				Hostname = "",
 				Date = loginAttempt.EventDate,
-				Details = loginAttempt.Details
+				Details = loginAttempt.Details,
+				AttackType = loginAttempt.AttackType
 			};
 
 			// Diagnostics

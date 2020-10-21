@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using SP.Models.Enums;
 
 namespace SP.Models
 {
@@ -67,5 +69,19 @@ namespace SP.Models
 		/// Details about the login attempt. E.g., RDP brute force with username administrator.
 		/// </summary>
 		public string Details { get; set; }
+
+		/// <summary>
+		/// This property can be set from plug-ins to overwrite the block mechanism.
+		/// Login attempts in general can be attempted N times, while bots searching for exploitable
+		/// paths should be blocked right away.
+		/// </summary>
+		[IgnoreDataMember]
+		public bool OverrideBlock { get; set; }
+
+		/// <summary>
+		/// This property can be set from plug-ins to identify the type of Attack.
+		/// </summary>
+		[IgnoreDataMember]
+		public AttackType AttackType { get; set; }
 	}
 }

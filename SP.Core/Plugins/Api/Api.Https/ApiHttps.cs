@@ -14,7 +14,7 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class ApiHttps : IPluginBase, IApiHandler
+	public class ApiHttps : PluginBase, IApiHandler
 	{
 		private static readonly HttpClient HttpClient = new HttpClient();
 		private string apiUrl;
@@ -26,7 +26,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -73,7 +73,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
 			{
@@ -102,59 +102,12 @@ namespace Plugins
 				}
 			}
 		}
-
+		
 		/// <summary>
-		/// Not used by this plugin
+		/// 
 		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
+		/// <param name="minutes"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="blockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> UnblockEvent(Blocks block)
-		{
-			return await Task.FromResult(true);
-		}
-
 		public async Task<List<Blocks>> GetUnblock(int minutes)
 		{
 			// Contact the api

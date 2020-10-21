@@ -1,5 +1,5 @@
 {
-  Plugins: ["windows.eventmonitor", "windows.firewall", "abuseip", "api.grpc", "livereport.signalr"]
+  Plugins: ["windows.iis.monitor", "windows.eventmonitor", "windows.firewall", "abuseip", "api.grpc", "livereport.signalr"]
 
   Api: {
       # Url of the API service
