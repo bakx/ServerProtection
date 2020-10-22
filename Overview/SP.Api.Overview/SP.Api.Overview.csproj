@@ -36,6 +36,7 @@
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Data\" />
     <Folder Include="logs\" />
   </ItemGroup>
   <ItemGroup>

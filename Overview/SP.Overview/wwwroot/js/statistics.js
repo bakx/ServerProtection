@@ -1,5 +1,5 @@
 ﻿"use strict";
-var baseUrl = "http://local.api.sp.bakx.ca";
+var baseUrl = "http://api.overview.serverprotection.local";
 
 window.chartColors = [];
 
