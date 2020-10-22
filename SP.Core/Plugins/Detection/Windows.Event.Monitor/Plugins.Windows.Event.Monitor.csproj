@@ -7,7 +7,7 @@
     <Authors>Gideon Bakx</Authors>
     <Product>Windows Event Monitor</Product>
     <PackageId>WindowsEventMonitor</PackageId>
-    <AssemblyName>Plugins.Event.Monitor</AssemblyName>
+    <AssemblyName>Plugins.Windows.Event.Monitor</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

@@ -34,9 +34,9 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="Protos\accessAttempts.proto" />
     <None Remove="Protos\apiServices.proto" />
     <None Remove="Protos\blocks.proto" />
-    <None Remove="Protos\loginAttempts.proto" />
     <None Remove="Protos\statistics.proto" />
   </ItemGroup>
 
@@ -45,9 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\accessAttempts.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\apiServices.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\blocks.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\loginAttempts.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\statistics.proto" GrpcServices="Server" />
   </ItemGroup>
 

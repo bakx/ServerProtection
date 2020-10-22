@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SP.Models.Enums;
 
 namespace SP.Models
 {
@@ -94,5 +95,10 @@ namespace SP.Models
 		/// Indicates if an IP is blocked. Used in conjunction to remove the firewall rules.
 		/// </summary>
 		public byte IsBlocked { get; set; } = 1;
+
+		/// <summary>
+		/// This property is used to identify the type of Attack and log it for statistics.
+		/// </summary>
+		public AttackType AttackType { get; set; }
 	}
 }

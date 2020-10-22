@@ -1,0 +1,2 @@
+**Windows Only:** Connects to the Event Log of Windows server (requires Administrative permissions) and fires an AccessAttempt and BlockEvent event when it detects
+that a visitor requests specific paths through the web server.

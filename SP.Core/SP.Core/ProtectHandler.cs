@@ -45,36 +45,36 @@ namespace SP.Core
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <param name="fromTime"></param>
 		/// <returns></returns>
-		public async Task<int> GetLoginAttempts(LoginAttempts loginAttempt, DateTime fromTime)
+		public async Task<int> GetLoginAttempts(AccessAttempts accessAttempt, DateTime fromTime)
 		{
-			return await apiHandler.GetLoginAttempts(loginAttempt, detectIPRange, fromTime);
+			return await apiHandler.GetLoginAttempts(accessAttempt, detectIPRange, fromTime);
 		}
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
-		public async Task<bool> AddLoginAttempt(LoginAttempts loginAttempt)
+		/// <param name="accessAttempt"></param>
+		public async Task<bool> AddLoginAttempt(AccessAttempts accessAttempt)
 		{
 			// Increase statistics
-			return await apiHandler.AddLoginAttempt(loginAttempt);
+			return await apiHandler.AddLoginAttempt(accessAttempt);
 		}
 
 		/// <summary>
 		/// </summary>
-		/// <param name="loginAttempt"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		public async Task<bool> AnalyzeAttempt(LoginAttempts loginAttempt)
+		public async Task<bool> AnalyzeAttempt(AccessAttempts accessAttempt)
 		{
 			DateTime previousLogins = DateTime.Now.Subtract(new TimeSpan(0, timeSpanMinutes, 0));
 
 			// Determine the block count
-			int previousAttempts = await GetLoginAttempts(loginAttempt, previousLogins);
+			int previousAttempts = await GetLoginAttempts(accessAttempt, previousLogins);
 
 			// Diagnostics
-			log.LogDebug($"{loginAttempt.IpAddress} has {previousAttempts} login attempts");
+			log.LogDebug($"{accessAttempt.IpAddress} has {previousAttempts} login attempts");
 
 			// If the amount of attempts exceed the configured value, return true to indicate that this IP should be blocked
 			if (previousAttempts >= attempts)

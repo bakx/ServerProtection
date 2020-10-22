@@ -1,4 +1,23 @@
 - name: Introduction
   href: intro.md
-  name: Windows Service
+- name: Windows Service
   href: WindowsService.md
+- name: Plug-ins
+  href: Plugins.md
+  items:
+    - name: Api.Https
+      href: plugins\Api.Https.md
+    - name: Api.gRPC
+      href: plugins\Api.gRPC.md
+    - name: Windows.Event.Monitor
+      href: plugins\Windows.Event.Monitor.md
+    - name: Windows.IIS.Monitor
+      href: plugins\Windows.IIS.Monitor.md
+    - name: AbuseIP
+      href: plugins\AbuseIP.md
+    - name: LiveReport.SignalR
+      href: plugins\LiveReport.SignalR.md
+    - name: Windows.Firewall
+      href: plugins\Windows.Firewall.md
+    - name: Load.Simulator
+      href: plugins\Load.Simulator.md

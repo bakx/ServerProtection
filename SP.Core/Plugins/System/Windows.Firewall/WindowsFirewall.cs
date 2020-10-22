@@ -10,7 +10,7 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class WindowsFirewall : IPluginBase
+	public class WindowsFirewall : PluginBase
 	{
 		private static readonly Type TypeFwPolicy2 =
 			Type.GetTypeFromCLSID(new Guid("{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}"));
@@ -35,7 +35,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -85,7 +85,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
 			{
@@ -110,22 +110,14 @@ namespace Plugins
 		}
 
 		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
 		/// Register the Block event handler
 		/// </summary>
 		/// <param name="blockHandler"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
+		public override async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
 		{
+			log.Debug("Registered as BlockHandler");
+
 			BlockHandler = blockHandler;
 			return await Task.FromResult(true);
 		}
@@ -133,24 +125,18 @@ namespace Plugins
 		/// <summary>
 		/// Register the Unblock event handler
 		/// </summary>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
+		public override async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
 		{
+			log.Debug("Registered as UnblockHandler");
+
 			UnblockHandler = unblockHandler;
 			return await Task.FromResult(true);
 		}
 
 		/// <summary>
-		/// Not used by this plugin
+		/// Block the IP in the firewall
 		/// </summary>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Report the ip to AbuseIP
-		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
+		public override async Task<bool> BlockEvent(Blocks block)
 		{
 			INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
 			INetFwRule addRule = (INetFwRule) Activator.CreateInstance(TypeFwRule);
@@ -206,9 +192,9 @@ namespace Plugins
 		}
 
 		/// <summary>
-		/// Not used by this plugin
+		/// Unblock the IP in the firewall
 		/// </summary>
-		public async Task<bool> UnblockEvent(Blocks block)
+		public override async Task<bool> UnblockEvent(Blocks block)
 		{
 			INetFwPolicy2 firewallPolicy = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
 			firewallPolicy?.Rules.Remove(block.FirewallRuleName);

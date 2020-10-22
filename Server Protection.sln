@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SP.Overview", "Overview\SP.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SP.Api.Https", "Api\SP.Api.Https\SP.Api.Https.csproj", "{47C5017E-304C-4789-858F-2316340BB83C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Windows.IIS.Monitor", "SP.Core\Plugins\Detection\Windows.IIS.Monitor\Plugins.Windows.IIS.Monitor.csproj", "{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,10 @@ Global
 		{47C5017E-304C-4789-858F-2316340BB83C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47C5017E-304C-4789-858F-2316340BB83C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47C5017E-304C-4789-858F-2316340BB83C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +158,7 @@ Global
 		{DA37E2B1-57C3-4BFE-9CD3-F247D8309AB4} = {FABB4AC0-C403-437B-ABDB-6E841BAA59FD}
 		{9DC65F9E-6F63-4FD1-8130-FE158B68680E} = {FABB4AC0-C403-437B-ABDB-6E841BAA59FD}
 		{47C5017E-304C-4789-858F-2316340BB83C} = {D0F4AD41-8DD8-4512-8FB2-66B5653E6920}
+		{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3} = {CD4A0264-EED2-471C-BDB9-B5FD57E687C1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4837EBBA-68D4-4C02-96CD-59A89BD6B8EE}

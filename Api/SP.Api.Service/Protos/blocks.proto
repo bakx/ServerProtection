@@ -45,5 +45,6 @@ message Blocks {
 	google.protobuf.Timestamp date = 12;
 	string details = 13;
 	string firewallRuleName = 14;
-	int32 isBlocked = 15;	
+	int32 isBlocked = 15;
+	int32 attackType = 16;
 }

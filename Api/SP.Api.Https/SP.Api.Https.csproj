@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logs\" />
-    <Folder Include="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SP.Core\Models\SP.Models.csproj" />

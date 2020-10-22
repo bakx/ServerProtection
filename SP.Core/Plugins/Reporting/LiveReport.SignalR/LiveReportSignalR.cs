@@ -10,7 +10,7 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class LiveReportSignalR : IPluginBase
+	public class LiveReportSignalR : PluginBase
 	{
 		// Diagnostics
 		private ILogger log;
@@ -24,7 +24,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -70,7 +70,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
 			{
@@ -102,46 +102,16 @@ namespace Plugins
 		}
 
 		/// <summary>
-		/// Not used by this plug-in
 		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
+		/// <param name="accessAttempt"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> AccessAttemptEvent(AccessAttempts accessAttempt)
 		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plug-in
-		/// </summary>
-		/// <param name="blockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plug-in
-		/// </summary>
-		/// <param name="unblockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// </summary>
-		/// <param name="loginAttempt"></param>
-		/// <returns></returns>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
-			log.Debug("Invoking LoginAttempt");
+			log.Debug("Invoking AccessAttempt");
 
 			try
 			{
-				await Hub.InvokeAsync("LoginAttempt", loginAttempt);
+				await Hub.InvokeAsync("AccessAttempt", accessAttempt);
 				return true;
 			}
 			catch (Exception e)
@@ -153,7 +123,7 @@ namespace Plugins
 
 		/// <summary>
 		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
+		public override async Task<bool> BlockEvent(Blocks block)
 		{
 			log.Debug("Invoking Block");
 
@@ -173,7 +143,7 @@ namespace Plugins
 		/// </summary>
 		/// <param name="block"></param>
 		/// <returns></returns>
-		public async Task<bool> UnblockEvent(Blocks block)
+		public override async Task<bool> UnblockEvent(Blocks block)
 		{
 			log.Debug("Invoking Unblock");
 

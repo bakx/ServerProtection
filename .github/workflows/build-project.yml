@@ -22,8 +22,10 @@ jobs:
       run: dotnet build "SP.Core/Plugins/Api/Api.Https/Plugins.Api.Https.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
     - name: Build Plugins.Api.gRPC
       run: dotnet build "SP.Core/Plugins/Api/Api.GRPC/Plugins.Api.gRPC.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
-    - name: Build Plugins.Windows.EventMonitor
+    - name: Build Plugins.Windows.Event.Monitor
       run: dotnet build "SP.Core/Plugins/Detection/Windows.Event.Monitor/Plugins.Windows.Event.Monitor.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
+    - name: Build Plugins.Windows.IIS.Monitor
+      run: dotnet build "SP.Core/Plugins/Detection/Windows.IIS.Monitor/Plugins.Windows.IIS.Monitor.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
     - name: Build Plugins.AbuseIP
       run: dotnet build "SP.Core/Plugins/Reporting/AbuseIP/Plugins.AbuseIP.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
     - name: Build LiveReport.SignalR
@@ -84,6 +86,14 @@ jobs:
           name: Plugins.Windows.Event.Monitor
           # A file, directory or wildcard pattern that describes what to upload
           path: SP.Core/Plugins/Detection/Windows.Event.Monitor/bin/Any CPU/Release/netcoreapp3.1
+
+    - name: Upload Plugins.Windows.IIS.Monitor
+      uses: actions/upload-artifact@v2.2.0
+      with:
+          # Artifact name
+          name: Plugins.Windows.IIS.Monitor
+          # A file, directory or wildcard pattern that describes what to upload
+          path: SP.Core/Plugins/Detection/Windows.IIS.Monitor/bin/Any CPU/Release/netcoreapp3.1
 
     - name: Upload Plugins.AbuseIP
       uses: actions/upload-artifact@v2.2.0

@@ -10,12 +10,12 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class LoadSimulator : IPluginBase
+	public class LoadSimulator : PluginBase
 	{
 		private IConfigurationRoot config;
 		private ILogger log;
 
-		private IPluginBase.LoginAttempt loginAttemptsHandler;
+		private IPluginBase.AccessAttempt accessAttemptsHandler;
 
 		//
 		private int parallelThreads;
@@ -24,7 +24,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -62,7 +62,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
 			{
@@ -94,57 +94,13 @@ namespace Plugins
 		/// <summary>
 		/// Register the LoginAttemptsHandler in order to fire events
 		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
+		/// <param name="accessAttemptHandler"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
+		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			loginAttemptsHandler = loginAttemptHandler;
-			return await Task.FromResult(true);
-		}
+			log.Debug("Registered as LoginAttemptHandler");
 
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="blockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="unblockHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="loginAttempt"></param>
-		/// <returns></returns>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> UnblockEvent(Blocks block)
-		{
+			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);
 		}
 
@@ -159,7 +115,7 @@ namespace Plugins
 			Parallel.For((long) 0, parallelThreads, (i, res) =>
 			{
 				// Trigger login attempt event
-				LoginAttempts loginAttempt = new LoginAttempts
+				AccessAttempts accessAttempt = new AccessAttempts
 				{
 					IpAddress = $"123.123.123.{i}",
 					EventDate = DateTime.Now,
@@ -171,7 +127,7 @@ namespace Plugins
 					"Load test simulation.");
 
 				// Fire event
-				loginAttemptsHandler?.Invoke(loginAttempt);
+				accessAttemptsHandler?.Invoke(accessAttempt);
 			});
 		}
 	}

@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Models;
+using SP.Models.Enums;
 using SP.Plugins;
 
 namespace Plugins
 {
-	public class AbuseIP : IPluginBase
+	public class AbuseIP : PluginBase
 	{
 		private static readonly HttpClient HttpClient = new HttpClient();
 		private string apiKey;
@@ -27,7 +28,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Task<bool> Initialize(PluginOptions options)
+		public override Task<bool> Initialize(PluginOptions options)
 		{
 			try
 			{
@@ -74,7 +75,7 @@ namespace Plugins
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> Configure()
+		public override async Task<bool> Configure()
 		{
 			try
 			{
@@ -103,55 +104,23 @@ namespace Plugins
 		}
 
 		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		/// <param name="loginAttemptHandler"></param>
-		/// <returns></returns>
-		public async Task<bool> RegisterLoginAttemptHandler(IPluginBase.LoginAttempt loginAttemptHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
 		/// </summary>
 		/// <param name="blockHandler"></param>
 		/// <returns></returns>
-		public async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
+		public override async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
 		{
+			log.Debug("Registered as BlockHandler");
+
 			BlockHandler = blockHandler;
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-		{
-			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> LoginAttemptEvent(LoginAttempts loginAttempt)
-		{
 			return await Task.FromResult(true);
 		}
 
 		/// <summary>
 		/// Report the ip to AbuseIP
 		/// </summary>
-		public async Task<bool> BlockEvent(Blocks block)
+		public override async Task<bool> BlockEvent(Blocks block)
 		{
 			return await ReportIP(block);
-		}
-
-		/// <summary>
-		/// Not used by this plugin
-		/// </summary>
-		public async Task<bool> UnblockEvent(Blocks block)
-		{
-			return await Task.FromResult(true);
 		}
 
 		/// <summary>
@@ -162,10 +131,21 @@ namespace Plugins
 		{
 			try
 			{
+				// Convert attack type to AbuseIP category
+				string blockCategory = block.AttackType switch
+				{
+					AttackType.BruteForce => "18",
+					AttackType.PortScan => "14",
+					AttackType.SqlInjection => "16",
+					AttackType.WebExploit => "21",
+					AttackType.WebSpam => "10",
+					_ => "15"
+				};
+
 				Dictionary<string, string> values = new Dictionary<string, string>
 				{
 					{"ip", block.IpAddress},
-					{"categories", "18"},
+					{"categories", blockCategory},
 					{"comment", block.Details}
 				};
 

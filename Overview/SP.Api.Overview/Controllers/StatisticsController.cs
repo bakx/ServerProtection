@@ -87,7 +87,7 @@ namespace SP.Api.Overview.Controllers
 			await using Db database = new Db(db);
 
 			//
-			return (database.LoginAttempts
+			return (database.AccessAttempts
 					.AsEnumerable() ?? throw new InvalidOperationException())
 				.GroupBy(s => s.IpAddress)
 				.Select(cl => new TopIps
@@ -114,7 +114,7 @@ namespace SP.Api.Overview.Controllers
 			// Get last NN days
 			DateTime lastDays = DateTime.Now.AddDays(days * -1);
 
-			return database.LoginAttempts
+			return database.AccessAttempts
 				.Where(d => d.EventDate > lastDays && d.EventDate < DateTime.Now)
 				.AsEnumerable()
 				.GroupBy(l => l.EventDate.ToString("HH"))
@@ -142,7 +142,7 @@ namespace SP.Api.Overview.Controllers
 			await using Db database = new Db(db);
 
 			//
-			return database.LoginAttempts
+			return database.AccessAttempts
 				.Where(d => d.EventDate > lastMonth && d.EventDate < DateTime.Now)
 				.AsEnumerable()
 				.GroupBy(l => l.EventDate.ToString("M"))
