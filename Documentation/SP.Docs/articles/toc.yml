@@ -13,6 +13,8 @@
       href: plugins\Windows.Event.Monitor.md
     - name: Windows.IIS.Monitor
       href: plugins\Windows.IIS.Monitor.md
+    - name: Honeypot
+      href: plugins\Honeypot.md
     - name: AbuseIP
       href: plugins\AbuseIP.md
     - name: LiveReport.SignalR

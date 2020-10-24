@@ -316,7 +316,7 @@ namespace SP.Api.Overview.Controllers
 			//
 			return database.AccessAttempts
 				.OrderByDescending(b => b.Id)
-				.Take(15)
+				.Take(10)
 				.ToList();
 		}
 		
@@ -338,7 +338,7 @@ namespace SP.Api.Overview.Controllers
 			//
 			return database.Blocks
 				.OrderByDescending(b => b.Id)
-				.Take(15)
+				.Take(10)
 				.ToList();
 		}
 	}

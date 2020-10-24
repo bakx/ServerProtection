@@ -21,6 +21,9 @@ namespace Plugins
 		// SignalR hub
 		public HubConnection Hub { get; set; }
 
+		// Was a reconfigure attempted on exception?
+		public bool FailedReconfigure { get; set; }
+
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
@@ -87,7 +90,12 @@ namespace Plugins
 					await Hub.StartAsync();
 				};
 
+				// Start the hub
 				await Hub.StartAsync();
+
+				// Flag to indicate reconfigure was attempted should be reset
+				FailedReconfigure = false;
+
 				return true;
 			}
 			catch (Exception e)
@@ -116,6 +124,8 @@ namespace Plugins
 			}
 			catch (Exception e)
 			{
+				await RecoverInvalidState(e.Message);
+
 				log.Error(e.Message);
 				return false;
 			}
@@ -134,6 +144,8 @@ namespace Plugins
 			}
 			catch (Exception e)
 			{
+				await RecoverInvalidState(e.Message);
+
 				log.Error(e.Message);
 				return false;
 			}
@@ -154,8 +166,20 @@ namespace Plugins
 			}
 			catch (Exception e)
 			{
+				await RecoverInvalidState(e.Message);
+
 				log.Error(e.Message);
 				return false;
+			}
+		}
+
+		//
+		private async Task RecoverInvalidState(string exceptionMessage)
+		{
+			if (!FailedReconfigure && exceptionMessage.Contains("connection is not active"))
+			{
+				// Attempt to reconfigure
+				await Configure();
 			}
 		}
 	}
