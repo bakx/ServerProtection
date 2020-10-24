@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SP.Models;
+using SP.Models.Enums;
 using SP.Models.Statistics;
 
 namespace SP.Api.Overview.Controllers
@@ -23,6 +25,39 @@ namespace SP.Api.Overview.Controllers
 			this.db = db;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		[Route(nameof(GetTopAttacks))]
+		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
+		public async Task<IEnumerable<TopAttacks>> GetTopAttacks()
+		{
+			log.LogDebug(
+				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetTopAttacks)}.");
+
+			// Open handle to database
+			await using Db database = new Db(db);
+
+			// Return object
+			return database.Blocks
+				.Where(d => d.Date > DateTime.Now.AddDays(-1))
+				.AsEnumerable()
+				.GroupBy(s => s.AttackType)
+				.Select(cl => new TopAttacks
+				{
+					AttackType = (int) cl.Key,
+					Attempts = cl.LongCount()
+				})
+				.ToList();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="top"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetTopCountries))]
 		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
@@ -49,6 +84,11 @@ namespace SP.Api.Overview.Controllers
 				.ToList();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="top"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetTopCities))]
 		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
@@ -75,6 +115,11 @@ namespace SP.Api.Overview.Controllers
 				.ToList();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="top"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetTopIps))]
 		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
@@ -100,37 +145,68 @@ namespace SP.Api.Overview.Controllers
 				.ToList();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
-		[Route(nameof(GetAttemptsPerHour))]
-		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
-		public async Task<IEnumerable<StatsPerHour>> GetAttemptsPerHour(int days = 30)
+		[Route(nameof(GetAttackTypesAttemptsPerHour))]
+		[ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
+		public async Task<List<StatsPerHourCollection>> GetAttackTypesAttemptsPerHour()
 		{
 			log.LogDebug(
-				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetAttemptsPerHour)}.");
+				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetAttackTypesAttemptsPerHour)}.");
 
 			// Open handle to database
 			await using Db database = new Db(db);
 
 			// Get last NN days
-			DateTime lastDays = DateTime.Now.AddDays(days * -1);
+			DateTime lastDays = DateTime.Now.AddDays(-1);
 
-			return database.AccessAttempts
+			// Get all type of Attack Types in time frame
+			List<AttackType> attackTypes = database.AccessAttempts
 				.Where(d => d.EventDate > lastDays && d.EventDate < DateTime.Now)
-				.AsEnumerable()
-				.GroupBy(l => l.EventDate.ToString("HH"))
 				.ToList()
-				.Select(l => new StatsPerHour
-				{
-					Key = Convert.ToInt32(l.Key),
-					Attempts = l.LongCount()
-				})
-				.OrderBy(l => l.Key);
+				.GroupBy(d => d.AttackType)
+				.Select(d => d.Key)
+				.ToList();
+
+			//
+			List<StatsPerHourCollection> statsPerHourCollection = new List<StatsPerHourCollection>();
+
+			// Get stats for all Attack Types
+			foreach (AttackType attackType in attackTypes)
+			{
+				List<StatsPerHour> statsPerHours = database.AccessAttempts
+					.Where(d => d.AttackType == attackType && 
+					            d.EventDate > lastDays && d.EventDate < DateTime.Now)
+					.ToList()
+					.GroupBy(l => l.EventDate.ToString("HH"))
+					.Select(d => new StatsPerHour
+					{
+						Key = Convert.ToInt32(d.Key),
+						Attempts = d.LongCount()
+					})
+					.OrderBy(d => d.Key)
+					.ToList();
+
+				statsPerHourCollection.Add(new StatsPerHourCollection {
+					Key = Convert.ToString(attackType), 
+					Data = statsPerHours
+				});
+			}
+
+			return statsPerHourCollection;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetAttemptsPerDay))]
 		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
-		public async Task<IEnumerable<StatsPerDay>> GetAttemptsPerDay(int top = 500000)
+		public async Task<IEnumerable<StatsPerDay>> GetAttemptsPerDay()
 		{
 			log.LogDebug(
 				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetAttemptsPerDay)}.");
@@ -155,6 +231,11 @@ namespace SP.Api.Overview.Controllers
 				.OrderBy(l => DateTime.Parse(l.Key));
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="days"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetBlocksPerHour))]
 		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
@@ -184,6 +265,10 @@ namespace SP.Api.Overview.Controllers
 				.OrderBy(l => l.Key);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetBlocksPerDay))]
 		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
@@ -211,6 +296,50 @@ namespace SP.Api.Overview.Controllers
 					Attempts = l.LongCount()
 				})
 				.OrderBy(l => l.Key);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		[Route(nameof(GetLatestAttempts))]
+		[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
+		public async Task<IEnumerable<AccessAttempts>> GetLatestAttempts()
+		{
+			log.LogDebug(
+				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetLatestAttempts)}.");
+
+			// Open handle to database
+			await using Db database = new Db(db);
+
+			//
+			return database.AccessAttempts
+				.OrderByDescending(b => b.Id)
+				.Take(15)
+				.ToList();
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		[Route(nameof(GetLatestBlocks))]
+		[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
+		public async Task<IEnumerable<Blocks>> GetLatestBlocks()
+		{
+			log.LogDebug(
+				$"Received call from {Request.HttpContext.Connection.RemoteIpAddress} to {nameof(GetLatestBlocks)}.");
+
+			// Open handle to database
+			await using Db database = new Db(db);
+
+			//
+			return database.Blocks
+				.OrderByDescending(b => b.Id)
+				.Take(15)
+				.ToList();
 		}
 	}
 }

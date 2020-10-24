@@ -29,25 +29,23 @@ window.onload = function() {
     loadStatistics();
 };
 
-
 function loadStatistics() {
-    getData("countriesChart",
-        "Top 10 countries",
-        baseUrl + "/statistics/GetTopCountries",
-        "country",
-        createDoughnutChart);
-    getData("citiesChart", "Top 10 cities", baseUrl + "/statistics/GetTopCities", "city", createDoughnutChart);
-    getData("ipChart", "Top 10 ip", baseUrl + "/statistics/GetTopIps", "ipAddress", createDoughnutChart);
+    getData("attacksChart", "", baseUrl + "/statistics/GetTopAttacks", "attackType", createDoughnutChart, getAttackType);
+    getData("countriesChart", "", baseUrl + "/statistics/GetTopCountries", "country", createDoughnutChart, null);
+    getData("citiesChart", "", baseUrl + "/statistics/GetTopCities", "city", createDoughnutChart, null);
+    getData("ipChart", "", baseUrl + "/statistics/GetTopIps", "ipAddress", createDoughnutChart, null);
 
-    getData("attemptsPerHourChart", "", baseUrl + "/statistics/GetAttemptsPerHour", "key", createLineChart);
-    getData("attemptsPerDayChart", "", baseUrl + "/statistics/GetAttemptsPerDay", "key", createLineChart);
+    getData("attackTypesAttemptsPerHourChart", "", baseUrl + "/statistics/GetAttackTypesAttemptsPerHour", "key", createMultiLineChart, null);
+    getData("attemptsPerDayChart", "", baseUrl + "/statistics/GetAttemptsPerDay", "key", createLineChart, null);
 
-    getData("blocksPerHourChart", "", baseUrl + "/statistics/GetBlocksPerHour", "key", createLineChart);
-    getData("blocksPerDayChart", "", baseUrl + "/statistics/GetBlocksPerDay", "key", createLineChart);
+    getData("blocksPerHourChart", "", baseUrl + "/statistics/GetBlocksPerHour", "key", createLineChart, null);
+    getData("blocksPerDayChart", "", baseUrl + "/statistics/GetBlocksPerDay", "key", createLineChart, null);
 
+    getData("last25AccessAttemptsList", "", baseUrl + "/statistics/GetLatestAttempts", "eventDate", populateList, null);
+    getData("last25BlockList", "", baseUrl + "/statistics/GetLatestBlocks", "date", populateList, null);
 }
 
-function createDoughnutChart(elem, title, data, dataElement) {
+function createDoughnutChart(elem, title, data, dataElement, dataElementMapping) {
 
     var config = {
         type: "doughnut",
@@ -75,7 +73,7 @@ function createDoughnutChart(elem, title, data, dataElement) {
     var chart = new Chart(ctx, config);
 
     // Create empty data set
-    var dataset = {
+    var dataSet = {
         data: [],
         backgroundColor: []
     };
@@ -83,17 +81,84 @@ function createDoughnutChart(elem, title, data, dataElement) {
     for (let i = 0; i < data.length; i++) {
 
         // Populate data
-        dataset.data.push(data[i].attempts);
+        dataSet.data.push(data[i].attempts);
 
         // Add color
-        dataset.backgroundColor.push(getColor(i).color);
+        dataSet.backgroundColor.push(getColor(i).color);
 
         // Add label
-        config.data.labels.push(data[i][dataElement]);
+
+        // Check if conversion is needed
+        if (dataElementMapping !== null) {
+            config.data.labels.push(dataElementMapping(data[i][dataElement]));
+        } else {
+            config.data.labels.push(data[i][dataElement]);
+        }
     }
 
-    // Add dataset
-    config.data.datasets.push(dataset);
+    // Add dataSet
+    config.data.datasets.push(dataSet);
+
+    // Update pie chart
+    chart.update();
+}
+
+function createMultiLineChart(elem, title, data, dataElement) {
+
+    var config = {
+        type: "line",
+        data: {
+            datasets: [],
+            labels: []
+        },
+        options: {
+            responsive: true,
+
+            title: {
+                display: true,
+                text: title
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    };
+
+    var ctx = document.getElementById(elem).getContext("2d");
+    var chart = new Chart(ctx, config);
+    var dataSet = {};
+
+    for (let i = 0; i < data.length; i++) {
+
+        // Create empty data set
+        dataSet = {
+            data: [],
+            backgroundColor: [],
+            fill: false,
+        };
+
+           // Add label
+        dataSet.label = data[i][dataElement];
+
+        for (let j = 0; j < data[i].data.length; j++) {
+
+            if (i === 0) {
+                config.data.labels.push(data[i].data[j].key);
+                }
+
+
+            // Populate data
+            dataSet.data.push(data[i].data[j].attempts);
+
+            // Add color
+            dataSet.borderColor = getColor(i).color;
+            dataSet.backgroundColor = getColor(i).color;
+        }
+
+        // Add data set
+        config.data.datasets.push(dataSet);
+    }
 
     // Update pie chart
     chart.update();
@@ -125,7 +190,7 @@ function createLineChart(elem, title, data, dataElement) {
     var chart = new Chart(ctx, config);
 
     // Create empty data set
-    var dataset = {
+    var dataSet = {
         data: [],
         backgroundColor: [],
         fill: false,
@@ -134,34 +199,90 @@ function createLineChart(elem, title, data, dataElement) {
     for (let i = 0; i < data.length; i++) {
 
         // Populate data
-        dataset.data.push(data[i].attempts);
+        dataSet.data.push(data[i].attempts);
 
         // Add color
-        dataset.backgroundColor.push(getColor(0).color);
+        dataSet.backgroundColor.push(getColor(0).color);
 
         // Add label
         config.data.labels.push(data[i][dataElement]);
     }
 
     // Add data set
-    config.data.datasets.push(dataset);
+    config.data.datasets.push(dataSet);
 
     // Update pie chart
     chart.update();
 }
 
-function getData(elem, title, url, dataElement, callback) {
+function populateList(elem, title, data, dateElement) {
+
+    var target = document.getElementById(elem);
+
+    for (let i = 0; i < data.length; i++) {
+        target.appendChild(createListItem(getAttackType(data[i].attackType), data[i].details, data[i].ipAddress, new Date(data[i][dateElement]).toLocaleString()));
+    }
+}
+
+function createListItem(type, details, ipAddress, date) {
+
+    // Create card
+    var card = document.createElement("div");
+    card.className = "item";
+
+    // Content div
+    var cardContent = document.createElement("div");
+    cardContent.className = "content";
+
+    var cardHeader = document.createElement("div");
+    cardHeader.className = "header";
+    cardHeader.appendChild(document.createTextNode(date));
+
+    cardContent.appendChild(cardHeader);
+    cardContent.appendChild(document.createTextNode(details));
+
+    var cardIpAddress = document.createElement("div");
+    cardIpAddress.appendChild(document.createTextNode(ipAddress));
+
+    var cardType = document.createElement("div");
+    cardType.appendChild(document.createTextNode(type));
+    
+    cardContent.appendChild(cardIpAddress);
+    cardContent.appendChild(cardType);
+
+    card.appendChild(cardContent);
+    return card;
+}
+
+function getData(elem, title, url, dataElement, callback, dataElementMapping) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url);
     xhr.onload = function() {
         if (xhr.status === 200) {
-            callback(elem, title, JSON.parse(xhr.responseText), dataElement);
+            callback(elem, title, JSON.parse(xhr.responseText), dataElement, dataElementMapping);
             return;
         }
 
         alert("Request failed.  Returned status of " + xhr.status);
     };
     xhr.send();
+}
+
+function getAttackType(i) {
+    switch (i) {
+        case 1:
+            return "Web Spam";
+        case 2:
+            return "Port Scan";
+        case 3:
+            return "Sql Injection";
+        case 4:
+            return "Brute-Force";
+        case 5:
+            return "Web Exploit";
+        default:
+            return "Not specified";
+    }
 }
 
 function getColor(i) {
