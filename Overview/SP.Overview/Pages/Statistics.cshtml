@@ -5,33 +5,35 @@
 }
 
 <h1>Statistics</h1>
-<p>This page shows statistics of unauthorized login attempts that are captured on this server. They are cached and refresh every 5 to 30 minutes.</p>
+<p>This page shows statistics of unauthorized login attempts that are captured on this server. They are cached up to 12 hours each.</p>
 
 <div class="ui two column stackable grid">
+    <div class="column">
+        <h4>Attack Types last 24 hours</h4>
+        <canvas id="attacksChart"></canvas>
+    </div>
     <div class="column">
         <h4>Top 10 countries</h4>
         <canvas id="countriesChart"></canvas>
     </div>
+</div>
+
+
+<div class="ui two column stackable grid">
     <div class="column">
         <h4>Top 10 cities</h4>
         <canvas id="citiesChart"></canvas>
     </div>
-</div>
-
-<div class="ui two column stackable grid">
     <div class="column">
         <h4>Top 10 IPs</h4>
         <canvas id="ipChart"></canvas>
     </div>
-    <div class="column">
-        <h4></h4>
-    </div>
 </div>
 
 <div class="ui two column stackable grid">
     <div class="column">
-        <h4>Attempts per hour of the day</h4>
-        <canvas id="attemptsPerHourChart"></canvas>
+        <h4>Attempts last 24 hours</h4>
+        <canvas id="attackTypesAttemptsPerHourChart"></canvas>
     </div>
     <div class="column">
         <h4>Attempts per day of the month</h4>
@@ -47,6 +49,23 @@
     <div class="column">
         <h4>Blocks per day of the month</h4>
         <canvas id="blocksPerDayChart"></canvas>
+    </div>
+</div>
+
+<div class="ui two column stackable grid">
+    <div class="column">
+        <h4>Last 15 attempts</h4>
+        <div class="ui segment">
+            <div id="last25AccessAttemptsList" class="ui relaxed divided list">
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <h4>Last 15 blocks</h4>
+        <div class="ui segment">
+            <div id="last25BlockList" class="ui relaxed divided list">
+            </div>
+        </div>
     </div>
 </div>
 
