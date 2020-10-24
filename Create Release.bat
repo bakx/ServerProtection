@@ -18,6 +18,7 @@ dotnet build SP.Core\Plugins\Api\Api.Https\Plugins.Api.Https.csproj /t:Restore,R
 dotnet build SP.Core\Plugins\Api\Api.gRPC\Plugins.Api.gRPC.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Detection\Windows.Event.Monitor\Plugins.Windows.Event.Monitor.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Detection\Windows.IIS.Monitor\Plugins.Windows.IIS.Monitor.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
+dotnet build SP.Core\Plugins\Detection\Honeypot\Plugins.Honeypot.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Reporting\AbuseIP\Plugins.AbuseIP.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Reporting\LiveReport.SignalR\Plugins.LiveReport.SignalR.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 msbuild.exe  SP.Core\Plugins\System\Windows.Firewall\Plugins.Windows.Firewall.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
@@ -31,6 +32,7 @@ xcopy "SP.Core\Plugins\Api\Api.Https\bin\%configurationName%\netcoreapp3.1" "%re
 xcopy "SP.Core\Plugins\Api\Api.gRPC\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\api.gRPC\" /E
 xcopy "SP.Core\Plugins\Detection\Windows.Event.Monitor\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\windows.event.monitor\" /E
 xcopy "SP.Core\Plugins\Detection\Windows.IIS.Monitor\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\windows.iis.monitor\" /E
+xcopy "SP.Core\Plugins\Detection\Honeypot\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\honeypot\" /E
 xcopy "SP.Core\Plugins\Reporting\AbuseIP\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\abuseip\" /E
 xcopy "SP.Core\Plugins\Reporting\LiveReport.SignalR\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\livereport.signalr\" /E
 xcopy "SP.Core\Plugins\System\Windows.Firewall\bin\%configurationName%\netcoreapp3.1" "%releasePath%\plugins\windows.firewall\" /E
@@ -45,6 +47,7 @@ signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\api.grpc\Plugins.Api.gRPC.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.event.monitor\Plugins.Windows.Event.Monitor.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.iis.monitor\Plugins.Windows.IIS.Monitor.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\honeypot\Plugins.Honeypot.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\abuseip\Plugins.AbuseIP.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\plugins\windows.firewall\Plugins.Windows.Firewall.dll"
 
@@ -76,6 +79,9 @@ ren "%releasePath%\plugins\windows.event.monitor\logSettings.json" "sample.logSe
 
 ren "%releasePath%\plugins\windows.iis.monitor\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\windows.iis.monitor\logSettings.json" "sample.logSettings.json"
+
+ren "%releasePath%\plugins\honeypot\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\plugins\honeypot\logSettings.json" "sample.logSettings.json"
 
 ren "%releasePath%\plugins\windows.firewall\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\plugins\windows.firewall\logSettings.json" "sample.logSettings.json"

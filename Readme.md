@@ -51,6 +51,9 @@ that a login failure occured of type 4625.
 **Windows Only:** Connects to the Event Log of Windows server (requires Administrative permissions) and fires an AccessAttempt and BlockEvent event when it detects
 that a visitor requests specific paths through the web server.
 
+#### **Plugins.Honeypot**
+Sets up a TCP listener on configured ports and fires an AccessAttempt and BlockEvent event when it detects that a visitor attempted a connection on that port.
+
 ### **Reporting**
 #### **Plugins.AbuseIP**
 Reports the hacking attempt to www.abuseipdb.com
