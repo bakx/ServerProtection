@@ -178,6 +178,9 @@ namespace Plugins
 		{
 			if (!FailedReconfigure && exceptionMessage.Contains("connection is not active"))
 			{
+				// Flip the flag to prevent endless loops.
+				FailedReconfigure = true;
+
 				// Attempt to reconfigure
 				await Configure();
 			}

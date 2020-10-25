@@ -31,7 +31,7 @@ namespace SP.Api.Overview.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[Route(nameof(GetTopAttacks))]
-		[ResponseCache(Duration = 43200, Location = ResponseCacheLocation.Any, NoStore = false)]
+		[ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
 		public async Task<IEnumerable<TopAttacks>> GetTopAttacks()
 		{
 			log.LogDebug(
@@ -190,11 +190,25 @@ namespace SP.Api.Overview.Controllers
 					.OrderBy(d => d.Key)
 					.ToList();
 
+				// Assure that all keys have a value or any charts rendered from this data might not work correctly.
+				for (int i = 0; i < 24; i++)
+				{
+					if (statsPerHours.Any(c => c.Key == i))
+					{
+						continue;
+					}
+
+					statsPerHours.Add( new StatsPerHour{ Key = i, Attempts = 0});
+				}
+
 				statsPerHourCollection.Add(new StatsPerHourCollection {
 					Key = Convert.ToString(attackType), 
 					Data = statsPerHours
 				});
 			}
+
+			// Validate that all data sets have data. If not, add 0 as default
+			
 
 			return statsPerHourCollection;
 		}
