@@ -42,7 +42,7 @@ function loadStatistics() {
     getData("blocksPerDayChart", "", baseUrl + "/statistics/GetBlocksPerDay", "key", createLineChart, null);
 
     getData("last10AccessAttemptsList", "", baseUrl + "/statistics/GetLatestAttempts", "eventDate", populateList, null);
-    getData("last10BlockList", "", baseUrl + "/statistics/GetLatestBlocks", "date", populateList, null);
+    getData("last10BlockList", "", baseUrl + "/statistics/GetLatestBlocks", "eventDate", populateList, null);
 }
 
 function createDoughnutChart(elem, title, data, dataElement, dataElementMapping) {

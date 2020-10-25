@@ -38,7 +38,7 @@ namespace SP.Api.Https.Controllers
 
 			return database.Blocks.Where(b => b.IsBlocked == 1)
 				.ToListAsync().Result.Where(b =>
-					b.Date < DateTime.Now.Subtract(new TimeSpan(0, minutes, 0)) &&
+					b.EventDate < DateTime.Now.Subtract(new TimeSpan(0, minutes, 0)) &&
 					b.IsBlocked == 1
 				).ToList();
 		}
@@ -77,7 +77,7 @@ namespace SP.Api.Https.Controllers
 			// Overwrite block details
 			blocks.City = block.City;
 			blocks.Country = block.Country;
-			blocks.Date = block.Date;
+			blocks.EventDate = block.EventDate;
 			blocks.Hostname = block.Hostname;
 			blocks.Details = block.Details;
 			blocks.IpAddress = block.IpAddress;

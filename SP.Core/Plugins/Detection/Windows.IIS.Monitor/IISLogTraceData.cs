@@ -128,7 +128,7 @@ namespace Plugins
 		static IISLogTraceData()
 		{
 			const string names = "EnabledFieldsFlags,Date,Time,C_ip,Cs_username,"
-			                     + "S_sitename,S_computername,S_ip,Cs_method,Cs_uri_stem,"
+								 + "S_sitename,S_computername,S_ip,Cs_method,Cs_uri_stem,"
 			                     + "Cs_uri_query,Sc_status,Sc_win32_status,Sc_bytes,"
 			                     + "Cs_bytes,Time_taken,S_port,CsUser_agent,Cookie,Referrer,"
 			                     + "Cs_version,Cs_host,Sc_substatus,CustomFields";

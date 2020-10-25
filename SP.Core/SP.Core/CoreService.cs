@@ -152,7 +152,7 @@ namespace SP.Core
 			{
 				IpAddress = accessAttempt.IpAddress,
 				Hostname = "",
-				Date = accessAttempt.EventDate,
+				EventDate = accessAttempt.EventDate,
 				Details = accessAttempt.Details,
 				AttackType = accessAttempt.AttackType
 			};

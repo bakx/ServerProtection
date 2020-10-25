@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-api.grpc{Date}.log"
+                "pathFormat": "logs/plugins-Api.gRPC{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "plugins-api-grpc"
+      "Application": "plugins-Api.gRPC"
     }
   }
 }

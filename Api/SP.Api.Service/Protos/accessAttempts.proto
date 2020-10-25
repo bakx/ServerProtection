@@ -34,4 +34,7 @@ message AccessAttempt {
 	google.protobuf.Timestamp eventDate = 8;
 	string details = 9;
 	int32 attackType = 10;
+	string custom1 = 11;
+	int32 custom2 = 12;
+	int64 custom3 = 13;
 }

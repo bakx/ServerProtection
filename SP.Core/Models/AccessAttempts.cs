@@ -11,7 +11,7 @@ namespace SP.Models
 		private string ipAddress;
 
 		/// <summary>
-		/// Unique identifier for the login attempt.
+		/// Unique identifier for the attempt.
 		/// </summary>
 		[Key]
 		public long Id { get; set; }
@@ -60,12 +60,12 @@ namespace SP.Models
 		public byte IpAddress4 { get; set; }
 
 		/// <summary>
-		/// The date the login event took place.
+		/// The date the event took place.
 		/// </summary>
 		public DateTime EventDate { get; set; }
 
 		/// <summary>
-		/// Details about the login attempt. E.g., RDP brute force with username administrator.
+		/// Details about the attempt. E.g., RDP brute force with username administrator.
 		/// </summary>
 		public string Details { get; set; }
 
@@ -73,6 +73,21 @@ namespace SP.Models
 		/// This property can be set from plug-ins to identify the type of Attack.
 		/// </summary>
 		public AttackType AttackType { get; set; }
+
+		/// <summary>
+		/// Custom field that can be set to anything depending on the plug-in.
+		/// </summary>
+		public string Custom1 { get; set; }
+
+		/// <summary>
+		/// Custom field that can be set to anything depending on the plug-in.
+		/// </summary>
+		public int Custom2 { get; set; }
+
+		/// <summary>
+		/// Custom field that can be set to anything depending on the plug-in.
+		/// </summary>
+		public long Custom3 { get; set; }
 
 		/// <summary>
 		/// This property can be set from plug-ins to overwrite the block mechanism.

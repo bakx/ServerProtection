@@ -130,7 +130,10 @@ namespace Plugins
 				EventDate = DateTime.Now,
 				Details = $"Attempt to access port {e.Port} by IP {e.IpAddress}",
 				OverrideBlock = true,
-				AttackType = AttackType.PortScan
+				AttackType = AttackType.PortScan,
+				Custom1 = "",
+				Custom2 = e.Port,
+				Custom3 = 0
 			};
 
 			// Log attempt

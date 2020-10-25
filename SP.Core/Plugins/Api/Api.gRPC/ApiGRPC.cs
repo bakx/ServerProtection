@@ -160,7 +160,7 @@ namespace Plugins
 					City = blocks.City,
 					ISP = blocks.ISP,
 					Details = blocks.Details,
-					Date = blocks.Date.ToDateTime(),
+					EventDate = blocks.Date.ToDateTime(),
 					FirewallRuleName = blocks.FirewallRuleName,
 					IsBlocked = (byte) blocks.IsBlocked,
 					AttackType = (AttackType) blocks.AttackType
@@ -198,7 +198,7 @@ namespace Plugins
 						City = blocks.City ?? "",
 						ISP = blocks.ISP ?? "",
 						Details = blocks.Details,
-						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.EventDate, DateTimeKind.Utc)),
 						FirewallRuleName = blocks.FirewallRuleName,
 						IsBlocked = blocks.IsBlocked,
 						AttackType = (int) blocks.AttackType
@@ -240,7 +240,7 @@ namespace Plugins
 						City = block.City ?? "",
 						ISP = block.ISP ?? "",
 						Details = block.Details,
-						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.EventDate, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
 						IsBlocked = block.IsBlocked,
 						AttackType = (int) block.AttackType
@@ -282,7 +282,7 @@ namespace Plugins
 						City = block.City ?? "",
 						ISP = block.ISP ?? "",
 						Details = block.Details,
-						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.Date, DateTimeKind.Utc)),
+						Date = Timestamp.FromDateTime(DateTime.SpecifyKind(block.EventDate, DateTimeKind.Utc)),
 						FirewallRuleName = block.FirewallRuleName,
 						IsBlocked = block.IsBlocked,
 						AttackType = (int) block.AttackType
@@ -335,7 +335,10 @@ namespace Plugins
 						Details = accessAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(accessAttempt.EventDate,
 							DateTimeKind.Utc)),
-						AttackType = (int) accessAttempt.AttackType
+						AttackType = (int) accessAttempt.AttackType,
+						Custom1 = accessAttempt.Custom1,
+						Custom2 = accessAttempt.Custom2,
+						Custom3 = accessAttempt.Custom3
 					}
 				});
 
@@ -377,7 +380,10 @@ namespace Plugins
 						Details = accessAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(accessAttempt.EventDate,
 							DateTimeKind.Utc)),
-						AttackType = (int) accessAttempt.AttackType
+						AttackType = (int) accessAttempt.AttackType,
+						Custom1 = accessAttempt.Custom1,
+						Custom2 = accessAttempt.Custom2,
+						Custom3 = accessAttempt.Custom3
 					}
 				});
 
@@ -419,7 +425,10 @@ namespace Plugins
 						Details = accessAttempt.Details,
 						EventDate = Timestamp.FromDateTime(DateTime.SpecifyKind(accessAttempt.EventDate,
 							DateTimeKind.Utc)),
-						AttackType = (int) accessAttempt.AttackType
+						AttackType = (int) accessAttempt.AttackType,
+						Custom1 = accessAttempt.Custom1,
+						Custom2 = accessAttempt.Custom2,
+						Custom3 = accessAttempt.Custom3
 					}
 				});
 

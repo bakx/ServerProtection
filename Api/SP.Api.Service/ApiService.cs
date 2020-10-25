@@ -90,7 +90,10 @@ namespace SP.Api.Service
 				IpAddress4 = Convert.ToByte(request.AccessAttempts.IpAddress4),
 				Details = request.AccessAttempts.Details,
 				EventDate = request.AccessAttempts.EventDate.ToDateTime(),
-				AttackType = (AttackType) request.AccessAttempts.AttackType
+				AttackType = (AttackType) request.AccessAttempts.AttackType,
+				Custom1 = request.AccessAttempts.Custom1,
+				Custom2 = request.AccessAttempts.Custom2,
+				Custom3 = request.AccessAttempts.Custom3
 			};
 
 			await database.AccessAttempts.AddAsync(accessAttempt);
@@ -122,7 +125,7 @@ namespace SP.Api.Service
 
 			List<Blocks> blockedEntries = database.Blocks.Where(b => b.IsBlocked == 1)
 				.ToListAsync().Result.Where(b =>
-					b.Date < date.Subtract(new TimeSpan(0, request.Minutes, 0)) &&
+					b.EventDate < date.Subtract(new TimeSpan(0, request.Minutes, 0)) &&
 					b.IsBlocked == 1
 				).ToList();
 
@@ -130,9 +133,9 @@ namespace SP.Api.Service
 			GetUnblocksResponse result = new GetUnblocksResponse();
 
 			// Convert models
-			result.Blocks.AddRange( new RepeatedField<Api.Models.Blocks>
+			result.Blocks.AddRange( new RepeatedField<Models.Blocks>
 			{
-				blockedEntries.Select(blocks => new Api.Models.Blocks
+				blockedEntries.Select(blocks => new Models.Blocks
 				{
 					Id = blocks.Id,
 					IpAddress = blocks.IpAddress,
@@ -141,7 +144,7 @@ namespace SP.Api.Service
 					City = blocks.City ?? "",
 					ISP = blocks.ISP ?? "",
 					Details = blocks.Details,
-					Date =  Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.Date, DateTimeKind.Utc)),
+					Date =  Timestamp.FromDateTime(DateTime.SpecifyKind(blocks.EventDate, DateTimeKind.Utc)),
 					FirewallRuleName = blocks.FirewallRuleName,
 					IsBlocked = blocks.IsBlocked,
 					AttackType = (int) blocks.AttackType
@@ -173,7 +176,7 @@ namespace SP.Api.Service
 				Country = request.Blocks.Country ?? "",
 				City = request.Blocks.City ?? "",
 				ISP = request.Blocks.ISP ?? "",
-				Date = request.Blocks.Date.ToDateTime(),
+				EventDate = request.Blocks.Date.ToDateTime(),
 				Details = request.Blocks.Details,
 				FirewallRuleName = request.Blocks.FirewallRuleName,
 				IsBlocked = (byte) request.Blocks.IsBlocked,
@@ -211,7 +214,7 @@ namespace SP.Api.Service
 			// Overwrite block details
 			blocks.City = request.Blocks.City;
 			blocks.Country = request.Blocks.Country;
-			blocks.Date = request.Blocks.Date.ToDateTime();
+			blocks.EventDate = request.Blocks.Date.ToDateTime();
 			blocks.Hostname = request.Blocks.Hostname;
 			blocks.Details = request.Blocks.Details;
 			blocks.IpAddress = request.Blocks.IpAddress;

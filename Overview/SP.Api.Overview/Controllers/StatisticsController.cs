@@ -42,7 +42,7 @@ namespace SP.Api.Overview.Controllers
 
 			// Return object
 			return database.Blocks
-				.Where(d => d.Date > DateTime.Now.AddDays(-1))
+				.Where(d => d.EventDate > DateTime.Now.AddDays(-1))
 				.AsEnumerable()
 				.GroupBy(s => s.AttackType)
 				.Select(cl => new TopAttacks
@@ -266,11 +266,11 @@ namespace SP.Api.Overview.Controllers
 
 //
 			return database.Blocks
-				.Where(d => d.Date > lastDays)
+				.Where(d => d.EventDate > lastDays)
 				.AsEnumerable()
 				.OrderByDescending(l => l.Id)
 				.ToList()
-				.GroupBy(l => DateTime.Parse(Convert.ToString(l.Date, CultureInfo.InvariantCulture)).Hour)
+				.GroupBy(l => DateTime.Parse(Convert.ToString(l.EventDate, CultureInfo.InvariantCulture)).Hour)
 				.Select(l => new StatsPerHour
 				{
 					Key = l.Key,
@@ -299,11 +299,11 @@ namespace SP.Api.Overview.Controllers
 
 			//
 			return database.Blocks
-				.Where(d => d.Date.Month == lastMonth.Month && d.Date.Year == lastMonth.Year)
+				.Where(d => d.EventDate.Month == lastMonth.Month && d.EventDate.Year == lastMonth.Year)
 				.AsEnumerable()
 				.OrderByDescending(l => l.Id)
 				.ToList()
-				.GroupBy(l => l.Date.Day)
+				.GroupBy(l => l.EventDate.Day)
 				.Select(l => new StatsPerHour
 				{
 					Key = l.Key,

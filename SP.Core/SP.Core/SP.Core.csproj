@@ -12,18 +12,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Config\appSettings.json" />
-    <Content Remove="Config\logSettings.json" />
+    <Content Remove="config\appSettings.json" />
+    <Content Remove="config\logSettings.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Config\appSettings.json">
+    <None Include="config\appSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Config\logSettings.json">
+    <None Include="config\logSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -52,10 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Config\appSettings.development.hjson">
+    <None Update="config\appSettings.development.hjson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Config\appSettings.hjson">
+    <None Update="config\appSettings.hjson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
