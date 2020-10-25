@@ -154,7 +154,7 @@ namespace Plugins
 				block.FirewallRuleName = string.Format(nameTemplate, blockIp);
 
 				// Create description
-				string description = string.Format(descriptionTemplate, block.Date.ToString(dateFormat));
+				string description = string.Format(descriptionTemplate, block.EventDate.ToString(dateFormat));
 
 				// Create firewall rule
 				addRule.Name = block.FirewallRuleName;

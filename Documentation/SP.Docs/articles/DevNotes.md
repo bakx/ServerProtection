@@ -1,5 +1,6 @@
 ## Ignore notes below
-
+When developing plug-ins, Custom1, 2 and 3 have to be set to default\actual values. 
+Should not stay null.
 
 
 # 
@@ -14,6 +15,9 @@ Add-Migration InitialCreate
 update-database
 
 Add-Migration AddAttackTypeToBlocks
+update-database
+
+Add-Migration AddCustomFieldsToAccessAttempts
 update-database
 
 Add-Migration IpRanges

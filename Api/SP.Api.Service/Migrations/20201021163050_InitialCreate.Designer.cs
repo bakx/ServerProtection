@@ -70,7 +70,7 @@ namespace SP.Api.Service.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("EventDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Details")

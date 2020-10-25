@@ -52,17 +52,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Config\appSettings.development.json">
+    <None Update="config\appSettings.development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
-    <None Update="Config\appsettings.json">
+    <None Update="config\appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
-    <None Update="Config\logSettings.json">
+    <None Update="config\logSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

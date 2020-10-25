@@ -84,7 +84,7 @@ namespace SP.Models
 		/// <summary>
 		/// Date when the block was activated.
 		/// </summary>
-		public DateTime Date { get; set; }
+		public DateTime EventDate { get; set; }
 
 		/// <summary>
 		/// Name of the rule in the firewall.

@@ -140,7 +140,10 @@ namespace Plugins
 				EventDate = DateTime.Now,
 				Details = $"Attempt to access {data.UriStem} by IP {data.ClientIp}",
 				OverrideBlock = true,
-				AttackType = AttackType.WebExploit
+				AttackType = AttackType.WebExploit,
+				Custom1 = data.UriStem,
+				Custom2 = 0,
+				Custom3 = 0
 			};
 
 			// Log attempt

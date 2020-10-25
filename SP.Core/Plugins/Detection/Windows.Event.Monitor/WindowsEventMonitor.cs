@@ -141,7 +141,10 @@ namespace Plugins
 						IpAddress = eventLogEntry.SourceNetworkAddress,
 						EventDate = DateTime.Now,
 						Details = $"Repeated RDP login failures. Last user: {eventLogEntry.AccountAccountName}",
-						AttackType = AttackType.BruteForce
+						AttackType = AttackType.BruteForce,
+						Custom1 = eventLogEntry.AccountAccountName,
+						Custom2 = 0,
+						Custom3 = 0
 					};
 
 					// Log attempt

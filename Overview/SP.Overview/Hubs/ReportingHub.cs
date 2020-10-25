@@ -27,7 +27,7 @@ namespace SP.Overview.Hubs
 		{
 			await Clients.All.SendCoreAsync("ReportBlock",
 				new object[]
-					{block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP, AttackTypeString.GetName(block.AttackType)},
+					{block.Id, block.EventDate, block.Details, block.IpAddress, block.City, block.Country, block.ISP, AttackTypeString.GetName(block.AttackType)},
 				CancellationToken.None);
 		}
 
@@ -39,7 +39,7 @@ namespace SP.Overview.Hubs
 		{
 			await Clients.All.SendCoreAsync("ReportUnblock",
 				new object[]
-					{block.Id, block.Date, block.Details, block.IpAddress, block.City, block.Country, block.ISP, AttackTypeString.GetName(block.AttackType)},
+					{block.Id, block.EventDate, block.Details, block.IpAddress, block.City, block.Country, block.ISP, AttackTypeString.GetName(block.AttackType)},
 				CancellationToken.None);
 		}
 	}
