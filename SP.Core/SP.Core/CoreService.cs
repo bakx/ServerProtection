@@ -39,6 +39,7 @@ namespace SP.Core
 		private readonly IProtectHandler protectHandler;
 
 		// Configuration items
+		private string source;
 		private List<string> enabledPlugins;
 		private bool blockIPRange;
 		private bool ipDataEnabled;
@@ -100,6 +101,9 @@ namespace SP.Core
 		/// <returns></returns>
 		private async void OnLoginAttemptEvent(AccessAttempts accessAttempt)
 		{
+			// Set source name
+			accessAttempt.Source = source;
+
 			// Notify plug-ins of login attempt
 			foreach (IPluginBase pluginBase in plugins)
 			{
@@ -321,6 +325,9 @@ namespace SP.Core
 		/// </summary>
 		private void Configure()
 		{
+			// Used to identify this machine
+			source = config.GetSection("Source").Get<string>();
+
 			// List of plug-ins that should be enabled
 			enabledPlugins = config.GetSection("Plugins").Get<List<string>>();
 

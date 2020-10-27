@@ -17,6 +17,11 @@ namespace SP.Models
 		public long Id { get; set; }
 
 		/// <summary>
+		/// Identifies the source of the attempt.
+		/// </summary>
+		public string Source { get; set; }
+
+		/// <summary>
 		/// IP Address of machine that triggered the event.
 		/// </summary>
 		public string IpAddress

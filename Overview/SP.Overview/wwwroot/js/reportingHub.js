@@ -7,7 +7,7 @@ var hasBlock = false;
 var hasUnblock = false;
 
 connection.on("ReportAccessAttempt",
-    function(attemptId, attemptIpAddress, attemptEventDate, attemptDetails, attemptAttackType) {
+    function(attemptId, attemptSource, attemptIpAddress, attemptEventDate, attemptDetails, attemptAttackType) {
 
         // Get reference to login attempts
         var elem = document.getElementById("accessAttempts");
@@ -48,6 +48,9 @@ connection.on("ReportAccessAttempt",
         // Add feed
         var cardFeed = document.createElement("div");
         cardFeed.className = "ui small feed";
+
+        // Source
+        cardFeed.appendChild(createEventCard("Source: " + attemptSource));
 
         // Details
         cardFeed.appendChild(createEventCard("Details: " + attemptDetails));

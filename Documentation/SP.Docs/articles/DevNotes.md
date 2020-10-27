@@ -20,5 +20,8 @@ update-database
 Add-Migration AddCustomFieldsToAccessAttempts
 update-database
 
+Add-Migration AddSourceToAccessAttempts
+update-database
+
 Add-Migration IpRanges
 update-database

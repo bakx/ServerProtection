@@ -25,16 +25,17 @@ message AddAccessAttemptResponse {
 
 message AccessAttempt {
 	int64 id = 1;
-	string ipAddress = 2;
-	int32 ipAddress1 = 3;
-	int32 ipAddress2 = 4;
-	int32 ipAddress3 = 5;
-	int32 ipAddress4 = 6;
-	string ipAddressRange = 7;
-	google.protobuf.Timestamp eventDate = 8;
-	string details = 9;
-	int32 attackType = 10;
-	string custom1 = 11;
-	int32 custom2 = 12;
-	int64 custom3 = 13;
+	string source = 2;
+	string ipAddress = 3;
+	int32 ipAddress1 = 4;
+	int32 ipAddress2 = 5;
+	int32 ipAddress3 = 6;
+	int32 ipAddress4 = 7;
+	string ipAddressRange = 8;
+	google.protobuf.Timestamp eventDate = 9;
+	string details = 10;
+	int32 attackType = 11;
+	string custom1 = 12;
+	int32 custom2 = 13;
+	int64 custom3 = 14;
 }
