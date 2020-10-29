@@ -20,9 +20,9 @@ It contains all the *api* calls required for the project to work and is responsi
 It's recommended to use the **SP.Api.gRPC** instead of the **SP.Api.Https**.
 
 ## **SP.Core**
-This project contains various indidivual components which are set up to work together. They are divided between SP.Core, Api's and Plug-ins.
+This project contains various individual components which are set up to work together. They are divided between SP.Core, Api's and Plug-ins.
 
-The base of the Server Protection is the SP.Core project.
+The base of Server Protection is the SP.Core project.
 
 ### **SP.Core**
 The Core is considered the base program and loads all enabled plug-ins. It should ideally be run as a service. 

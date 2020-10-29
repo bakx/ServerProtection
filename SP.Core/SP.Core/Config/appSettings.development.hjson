@@ -1,4 +1,7 @@
 {
+  # This is used to identify this machine (e.g., SERVER01)
+  Source: "DEV"
+
   Plugins: ["windows.firewall", "windows.iis.monitor", "windows.event.monitor", "honeypot", "livereport.signalr", "api.grpc"]
 
   Blocking: {

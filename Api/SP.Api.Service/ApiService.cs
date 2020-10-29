@@ -83,6 +83,7 @@ namespace SP.Api.Service
 			SP.Models.AccessAttempts accessAttempt = new SP.Models.AccessAttempts
 			{
 				Id = request.AccessAttempts.Id,
+				Source = request.AccessAttempts.Source,
 				IpAddress = request.AccessAttempts.IpAddress,
 				IpAddress1 = Convert.ToByte(request.AccessAttempts.IpAddress1),
 				IpAddress2 = Convert.ToByte(request.AccessAttempts.IpAddress2),

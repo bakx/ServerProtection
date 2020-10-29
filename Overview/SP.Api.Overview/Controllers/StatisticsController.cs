@@ -198,7 +198,7 @@ namespace SP.Api.Overview.Controllers
 						continue;
 					}
 
-					statsPerHours.Add( new StatsPerHour{ Key = i, Attempts = 0});
+					statsPerHours.Insert( i, new StatsPerHour{ Key = i, Attempts = 0});
 				}
 
 				statsPerHourCollection.Add(new StatsPerHourCollection {
