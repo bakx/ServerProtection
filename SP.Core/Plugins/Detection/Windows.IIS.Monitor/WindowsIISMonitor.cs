@@ -35,7 +35,11 @@ namespace Plugins
 				// Initiate the configuration
 				config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
-					.AddJsonFile("appSettings.json", false, true)
+#if DEBUG
+					.AddJsonFile("appSettings.development.json", false, true)
+#else
+                    .AddJsonFile("appSettings.json", false, true)
+#endif
 					.AddJsonFile("logSettings.json", false, true)
 					.Build();
 
@@ -79,17 +83,22 @@ namespace Plugins
 					using TraceEventSession session = new TraceEventSession("IIS-ETW");
 
 					// Enable IIS ETW provider and set up a new trace source on it
-					session.EnableProvider(IISLogTraceEventParser.ProviderName);
+					if (session.EnableProvider(IISLogTraceEventParser.ProviderName)) {
 
-					using ETWTraceEventSource traceSource =
-						new ETWTraceEventSource("IIS-ETW", TraceEventSourceType.Session);
-					IISLogTraceEventParser parser = new IISLogTraceEventParser(traceSource);
+						using ETWTraceEventSource traceSource =
+							new ETWTraceEventSource("IIS-ETW", TraceEventSourceType.Session);
+						IISLogTraceEventParser parser = new IISLogTraceEventParser(traceSource);
 
-					// Listen to event
-					parser.IISLog += ParserOnIISLog;
+						// Listen to event
+						parser.IISLog += ParserOnIISLog;
 
-					// Start processing
-					traceSource.Process();
+						// Start processing
+						traceSource.Process();
+					}
+					else
+					{
+						log.Error($"Failed to enable provider ${IISLogTraceEventParser.ProviderName}");
+					}
 				})
 				{
 					IsBackground = true
@@ -161,7 +170,7 @@ namespace Plugins
 		/// <returns></returns>
 		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			log.Debug("Registered as LoginAttemptHandler");
+			log.Debug($"Registered handler: {nameof(RegisterAccessAttemptHandler)}");
 
 			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);

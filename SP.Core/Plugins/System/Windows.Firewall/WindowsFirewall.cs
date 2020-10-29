@@ -116,7 +116,7 @@ namespace Plugins
 		/// <returns></returns>
 		public override async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
 		{
-			log.Debug("Registered as BlockHandler");
+			log.Debug($"Registered handler: {nameof(RegisterBlockHandler)}");
 
 			BlockHandler = blockHandler;
 			return await Task.FromResult(true);
@@ -127,7 +127,7 @@ namespace Plugins
 		/// </summary>
 		public override async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
 		{
-			log.Debug("Registered as UnblockHandler");
+			log.Debug($"Registered handler: {nameof(RegisterUnblockHandler)}");
 
 			UnblockHandler = unblockHandler;
 			return await Task.FromResult(true);

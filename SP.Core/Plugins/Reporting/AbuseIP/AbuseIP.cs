@@ -109,7 +109,7 @@ namespace Plugins
 		/// <returns></returns>
 		public override async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
 		{
-			log.Debug("Registered as BlockHandler");
+			log.Debug($"Registered handler: {nameof(RegisterBlockHandler)}");
 
 			BlockHandler = blockHandler;
 			return await Task.FromResult(true);
