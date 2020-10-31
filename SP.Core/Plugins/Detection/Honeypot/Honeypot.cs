@@ -35,7 +35,11 @@ namespace Plugins
 				// Initiate the configuration
 				config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
-					.AddJsonFile("appSettings.json", false, true)
+#if DEBUG
+					.AddJsonFile("appSettings.development.json", false, true)
+#else
+                    .AddJsonFile("appSettings.json", false, true)
+#endif
 					.AddJsonFile("logSettings.json", false, true)
 					.Build();
 
@@ -144,13 +148,13 @@ namespace Plugins
 		}
 
 		/// <summary>
-		/// Register the LoginAttemptsHandler in order to fire events
+		/// Register the AccessAttemptHandler in order to fire events
 		/// </summary>
 		/// <param name="accessAttemptHandler"></param>
 		/// <returns></returns>
 		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			log.Debug("Registered as LoginAttemptHandler");
+			log.Debug($"Registered handler: {nameof(RegisterAccessAttemptHandler)}");
 
 			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);

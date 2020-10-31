@@ -98,7 +98,7 @@ namespace Plugins
 		/// <returns></returns>
 		public override async Task<bool> RegisterAccessAttemptHandler(IPluginBase.AccessAttempt accessAttemptHandler)
 		{
-			log.Debug("Registered as LoginAttemptHandler");
+			log.Debug($"Registered handler: {nameof(RegisterAccessAttemptHandler)}");
 
 			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);
