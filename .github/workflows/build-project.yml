@@ -15,7 +15,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: 5.0.100
     - name: Build SP Core
       run: dotnet build "SP.Core/SP.Core/SP.Core.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
     - name: Build Plugins.Api.Https
