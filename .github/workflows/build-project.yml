@@ -15,7 +15,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: 5.0.100
     - name: Build SP Core
       run: dotnet build "SP.Core/SP.Core/SP.Core.csproj" /t:Restore,Clean,Rebuild /p:Configuration="Release" /p:Platform="Any CPU" /p:SourceRevisionId="${{ github.sha }}"
     - name: Build Plugins.Api.Https
@@ -44,7 +44,7 @@ jobs:
 #          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
 #          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
 #          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
-#          folder: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
+#          folder: SP.Core/SP.Core/bin/Any CPU/Release/net5.0/
 #          recursive: false
 
 #    - name: Code signing Plugins
@@ -54,7 +54,7 @@ jobs:
 #          certificate: "${{ secrets.CODE_SIGNING_CERTIFICATE }}"
 #          certificatesha1: "${{ secrets.CERTIFICATE_HASH }}"
 #          password: "${{ secrets.CERTIFICATE_PASSWORD }}"
-#          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/netcoreapp3.1/
+#          folder:  SP.Core/Plugins/**/**/bin/Any CPU/Release/net5.0/
 #          recursive: false
 
     - name: Upload SP.Core
@@ -63,7 +63,7 @@ jobs:
           # Artifact name
           name: SP.Core
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/SP.Core/bin/Any CPU/Release/netcoreapp3.1/
+          path: SP.Core/SP.Core/bin/Any CPU/Release/net5.0/
 
     - name: Upload Plugins.Api.Https
       uses: actions/upload-artifact@v2.2.0
@@ -71,7 +71,7 @@ jobs:
           # Artifact name
           name: Plugins.Api.Https
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Api/Api.Https/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Api/Api.Https/bin/Any CPU/Release/net5.0
 
     - name: Upload Plugins.Api.gRPC
       uses: actions/upload-artifact@v2.2.0
@@ -79,7 +79,7 @@ jobs:
           # Artifact name
           name: Plugins.Api.gRPC
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Api/Api.gRPC/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Api/Api.gRPC/bin/Any CPU/Release/net5.0
 
     - name: Upload Plugins.Windows.Event.Monitor
       uses: actions/upload-artifact@v2.2.0
@@ -87,7 +87,7 @@ jobs:
           # Artifact name
           name: Plugins.Windows.Event.Monitor
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Detection/Windows.Event.Monitor/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Detection/Windows.Event.Monitor/bin/Any CPU/Release/net5.0
 
     - name: Upload Plugins.Windows.IIS.Monitor
       uses: actions/upload-artifact@v2.2.0
@@ -95,7 +95,7 @@ jobs:
           # Artifact name
           name: Plugins.Windows.IIS.Monitor
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Detection/Windows.IIS.Monitor/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Detection/Windows.IIS.Monitor/bin/Any CPU/Release/net5.0
 
     - name: Upload Plugins.Honeypot
       uses: actions/upload-artifact@v2.2.0
@@ -103,7 +103,7 @@ jobs:
           # Artifact name
           name: Plugins.Honeypot
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Detection/Honeypot/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Detection/Honeypot/bin/Any CPU/Release/net5.0
 
     - name: Upload Plugins.AbuseIP
       uses: actions/upload-artifact@v2.2.0
@@ -111,7 +111,7 @@ jobs:
           # Artifact name
           name: Plugins.AbuseIP
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Reporting/AbuseIP/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Reporting/AbuseIP/bin/Any CPU/Release/net5.0
 
     - name: Upload Plugins.LiveReport.SignalR
       uses: actions/upload-artifact@v2.2.0
@@ -119,7 +119,7 @@ jobs:
           # Artifact name
           name: Plugins.LiveReport.SignalR
           # A file, directory or wildcard pattern that describes what to upload
-          path: SP.Core/Plugins/Reporting/LiveReport.SignalR/bin/Any CPU/Release/netcoreapp3.1
+          path: SP.Core/Plugins/Reporting/LiveReport.SignalR/bin/Any CPU/Release/net5.0
 
 #    - name: Upload Plugins.Windows.Firewall
 #      uses: actions/upload-artifact@v2.2.0
@@ -127,7 +127,7 @@ jobs:
 #          # Artifact name
 #          name: Plugins.Windows.Firewall
 #          # A file, directory or wildcard pattern that describes what to upload
-#          path: SP.Core/Plugins/System/Windows.Firewall/bin/Any CPU/Release/netcoreapp3.1
+#          path: SP.Core/Plugins/System/Windows.Firewall/bin/Any CPU/Release/net5.0
 
 #    - name: Upload Plugins.Load.Simulator
 #      uses: actions/upload-artifact@v2.2.0
@@ -135,4 +135,4 @@ jobs:
 #          # Artifact name
 #          name: Plugins.Load.Simulator
 #          # A file, directory or wildcard pattern that describes what to upload
-#          path: SP.Core/Plugins/Testing/Plugins.Load.Simulator/bin/Any CPU/Release/netcoreapp3.1
+#          path: SP.Core/Plugins/Testing/Plugins.Load.Simulator/bin/Any CPU/Release/net5.0

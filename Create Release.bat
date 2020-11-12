@@ -29,17 +29,17 @@ echo ###
 echo ### Copying files from Configuration project to release folder
 echo ###
 
-xcopy "SP.Core\SP.Core\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\" /E
-xcopy "SP.Core\Plugins\Api\Api.Https\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\api.https\" /E
-xcopy "SP.Core\Plugins\Api\Api.gRPC\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\api.gRPC\" /E
-xcopy "SP.Core\Plugins\Detection\Windows.Event.Monitor\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\windows.event.monitor\" /E
-xcopy "SP.Core\Plugins\Detection\Windows.IIS.Monitor\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\windows.iis.monitor\" /E
-xcopy "SP.Core\Plugins\Detection\Honeypot\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\honeypot\" /E
-xcopy "SP.Core\Plugins\Reporting\AbuseIP\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\abuseip\" /E
-xcopy "SP.Core\Plugins\Reporting\LiveReport.SignalR\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\livereport.signalr\" /E
-xcopy "SP.Core\Plugins\System\Windows.Firewall\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Protect\plugins\windows.firewall\" /E
+xcopy "SP.Core\SP.Core\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\" /E
+xcopy "SP.Core\Plugins\Api\Api.Https\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\api.https\" /E
+xcopy "SP.Core\Plugins\Api\Api.gRPC\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\api.gRPC\" /E
+xcopy "SP.Core\Plugins\Detection\Windows.Event.Monitor\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.event.monitor\" /E
+xcopy "SP.Core\Plugins\Detection\Windows.IIS.Monitor\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.iis.monitor\" /E
+xcopy "SP.Core\Plugins\Detection\Honeypot\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\honeypot\" /E
+xcopy "SP.Core\Plugins\Reporting\AbuseIP\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\abuseip\" /E
+xcopy "SP.Core\Plugins\Reporting\LiveReport.SignalR\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\livereport.signalr\" /E
+xcopy "SP.Core\Plugins\System\Windows.Firewall\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.firewall\" /E
 
-xcopy "Api\SP.Api.Service\bin\%configurationName%\netcoreapp3.1" "%releasePath%\SP.Api.Service\" /E
+xcopy "Api\SP.Api.Service\bin\%configurationName%\net5.0" "%releasePath%\SP.Api.Service\" /E
 
 echo ###
 echo ### Singing dlls
