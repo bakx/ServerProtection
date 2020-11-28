@@ -7,10 +7,10 @@
     <UserSecretsId>9b4d725e-9571-4a92-9a51-c8976933b14b</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Config\logSettings.json" />
+    <Content Remove="config\logSettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Config\logSettings.json">
+    <None Include="config\logSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

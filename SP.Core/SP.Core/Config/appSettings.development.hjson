@@ -30,7 +30,7 @@
       Url: "https://api.ipdata.co/{0}?api-key={1}"
 
       # API key
-      Key: "6deaddf8b1f897a8804a10393d6c3625aff3653aa3d7a74e4e3e35e1"
+      Key: "your-key"
 
       # Enable/Disable IPData
       Enabled: false

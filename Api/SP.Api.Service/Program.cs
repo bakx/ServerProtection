@@ -11,7 +11,7 @@ namespace SP.Api.Service
 	internal static class Program
 	{
 		private static readonly string
-			BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+			BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName;
 
 		public static void Main(string[] args)
 		{
