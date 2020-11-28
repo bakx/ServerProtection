@@ -8,44 +8,43 @@ using Serilog;
 
 namespace SP.Api.Service
 {
-	internal static class Program
-	{
-		private static readonly string
-			BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+    internal static class Program
+    {
+        private static readonly string
+            BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName;
 
-		public static void Main(string[] args)
-		{
-			CreateHostBuilder(args).Build().Run();
-		}
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-		public static IHostBuilder CreateHostBuilder(string[] args)
-		{
-			// Initiate the configuration
-			IConfigurationRoot config = new ConfigurationBuilder()
-				.SetBasePath(BasePath)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            // Initiate the configuration
+            IConfigurationRoot config = new ConfigurationBuilder()
+                .SetBasePath(BasePath)
 #if DEBUG
-				.AddJsonFile("config/appSettings.development.json", false, true)
+                .AddJsonFile("config/appSettings.development.json", false, true)
 #else
                 .AddJsonFile("config/appSettings.json", false, true)
 #endif
-				.AddJsonFile("config/logSettings.json", false, true)
-				.Build();
+                .AddJsonFile("config/logSettings.json", false, true)
+                .Build();
 
-			ILogger log = new LoggerConfiguration()
-				.ReadFrom.Configuration(config)
-				.CreateLogger();
+            ILogger log = new LoggerConfiguration()
+                .ReadFrom.Configuration(config)
+                .CreateLogger();
 
-			return Host.CreateDefaultBuilder(args)
-				.UseWindowsService()
-
-				.ConfigureServices((hostContext, services) => { services.AddSingleton(config); })			
-				.ConfigureWebHostDefaults(
-					webBuilder =>
-					{
-						webBuilder.UseConfiguration(config);
-						webBuilder.UseStartup<Startup>();
-					})
-				.UseSerilog(log);
-		}
-	}
+            return Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) => { services.AddSingleton(config); })
+                .ConfigureWebHostDefaults(
+                    webBuilder =>
+                    {
+                        webBuilder.UseConfiguration(config);
+                        webBuilder.UseStartup<Startup>();
+                    })
+                .UseSerilog(log);
+        }
+    }
 }

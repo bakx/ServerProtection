@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,29 +8,29 @@ using Microsoft.Extensions.Hosting;
 
 namespace SP.Api.Overview
 {
-	public class Startup
-	{
-		public Startup(IConfiguration configuration)
-		{
-			Configuration = configuration;
-		}
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
-		public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.AddResponseCaching();
-			services.AddHttpContextAccessor();
-			services.AddControllers();
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddResponseCaching();
+            services.AddHttpContextAccessor();
+            services.AddControllers();
 
 #if DEBUG
-			services.AddEntityFrameworkSqlServer().AddDbContext<Db>((sp, options) =>
-			{
-				options
-					.UseSqlServer(Configuration.GetConnectionString("DevelopmentDatabase"))
-					.UseInternalServiceProvider(sp);
-			});
+            services.AddEntityFrameworkSqlServer().AddDbContext<Db>((sp, options) =>
+            {
+                options
+                    .UseSqlServer(Configuration.GetConnectionString("DevelopmentDatabase"))
+                    .UseInternalServiceProvider(sp);
+            });
 #else
             services.AddEntityFrameworkSqlServer().AddDbContext<Db>((sp, options) =>
             {
@@ -38,25 +39,30 @@ namespace SP.Api.Overview
                     .UseInternalServiceProvider(sp);
             });
 #endif
-		}
+        }
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-			}
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-			app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-			app.UseRouting();
+            app.UseRouting();
 
-			app.UseResponseCaching();
+            app.UseResponseCaching();
 
-			app.UseAuthorization();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
-			app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-		}
-	}
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+    }
 }
