@@ -12,11 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="config\appSettings.json" />
-    <Content Remove="config\logSettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="config\appSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -61,6 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="logs" />
     <Folder Include="logs\" />
     <Folder Include="Data\" />
     <Folder Include="Resources\" />

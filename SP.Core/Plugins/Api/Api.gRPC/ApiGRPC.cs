@@ -36,7 +36,7 @@ namespace Plugins
 			{
 				// Initiate the configuration
 				IConfigurationRoot config = new ConfigurationBuilder()
-					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
+					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
 #if DEBUG
 					.AddJsonFile("appSettings.development.json", false, true)
 #else

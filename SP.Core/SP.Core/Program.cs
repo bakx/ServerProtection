@@ -17,10 +17,15 @@ namespace SP.Core
 		public static void Main(string[] args)
 		{
 #if DEBUG
-			HjsonValue.Save(HjsonValue.Load(Path.Combine(BasePath, "config/appSettings.development.hjson")).Qo(),
-				"config/appSettings.development.json");
+			HjsonValue.Save(HjsonValue.Load(
+				Path.Combine(BasePath, "config/appSettings.development.hjson")).Qo(),
+				Path.Combine(BasePath, "config/appSettings.development.json")
+				);
 #else
-            HjsonValue.Save(HjsonValue.Load(Path.Combine(BasePath, "config/appSettings.hjson")).Qo(), "config/appSettings.json");
+            HjsonValue.Save(HjsonValue.Load(
+				Path.Combine(BasePath, "config/appSettings.hjson")).Qo(), 
+				Path.Combine(BasePath, "config/appSettings.json")
+				);
 #endif
 
 			CreateHostBuilder(args).Build().Run();

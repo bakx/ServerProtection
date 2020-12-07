@@ -34,6 +34,7 @@ namespace SP.Plugins
 		{
 			return await Task.FromResult(true);
 		}
+
 		public virtual async Task<bool> BlockEvent(Blocks block)
 		{
 			return await Task.FromResult(true);
