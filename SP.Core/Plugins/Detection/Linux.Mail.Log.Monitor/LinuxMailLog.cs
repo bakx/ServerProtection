@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using SP.Models;
+using SP.Models.Enums;
 using SP.Plugins;
 
 namespace Plugins
@@ -18,6 +20,11 @@ namespace Plugins
 		private IConfigurationRoot config;
 		private ILogger log;
 		private IPluginBase.AccessAttempt accessAttemptsHandler;
+
+        private string logLocation;
+        private string postfixRegularExpression;
+
+        private Regex postfixFailedAuthentication;
 
 		/// <summary>
 		/// </summary>
@@ -73,6 +80,12 @@ namespace Plugins
 		/// <returns></returns>
 		public override async Task<bool> Configure()
 		{
+			// Get configuration items
+            logLocation = config.GetSection("LogLocation").Get<string>();
+            postfixRegularExpression = config.GetSection("PostfixRegularExpression").Get<string>();
+
+			postfixFailedAuthentication = new Regex(postfixRegularExpression, RegexOptions.Compiled);
+
 			try
 			{
 				thread = new Thread(async () =>
@@ -89,17 +102,16 @@ namespace Plugins
 					process.StartInfo.RedirectStandardError = true;
 
 					process.StartInfo.FileName = "tail";
-					process.StartInfo.Arguments = "-f /var/log/maillog";
+					process.StartInfo.Arguments = $"-f {logLocation}";
 
 					process.Start();
 					process.BeginOutputReadLine();
 					await process.WaitForExitAsync();
 
-					
-
                     process.Exited += async (sender, args) =>
                     {
-						Console.WriteLine("exited, restarting");
+						log.Warning("Process exited, restarting...");
+
                         process.Start();
                         process.BeginOutputReadLine();
                         await process.WaitForExitAsync();
@@ -127,14 +139,43 @@ namespace Plugins
 		}
 
 		///
-		public void AnalyzeEntry(object sendingProcess, DataReceivedEventArgs outLine)
-		{
-			// Collect the sort command output.
-			if (!string.IsNullOrEmpty(outLine.Data))
-			{
-				Console.WriteLine(outLine.Data);
-			}
-		}
+		public void AnalyzeEntry(object sendingProcess, DataReceivedEventArgs data)
+        {
+			// Detect if there is data received.
+			if (string.IsNullOrEmpty(data.Data))
+            {
+                return;
+            }
+
+            Match match = postfixFailedAuthentication.Match(data.Data);
+            
+            // RegEx failed, likely not an authentication failure event
+            if (!match.Success)
+            {
+                return;
+            }
+
+            string ip = match.Captures[1].Value;
+
+
+            // Trigger login attempt event
+            AccessAttempts accessAttempt = new AccessAttempts
+            {
+                IpAddress = ip,
+                EventDate = DateTime.Now,
+                Details = "SMTP Authentication failed.",
+                AttackType = AttackType.BruteForce,
+                Custom1 = "",
+                Custom2 = 0,
+                Custom3 = 0
+            };
+
+            // Log attempt
+            log.Information($"{ip} failed SMTP authentication.");
+
+            // Fire event
+            accessAttemptsHandler?.Invoke(accessAttempt);
+        }
 
 		/// <summary>
 		/// Register the LoginAttemptsHandler in order to fire events
