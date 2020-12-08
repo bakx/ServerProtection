@@ -139,7 +139,7 @@ namespace Plugins
 		}
 
 		///
-		public void AnalyzeEntry(object sendingProcess, DataReceivedEventArgs data)
+		private void AnalyzeEntry(object sendingProcess, DataReceivedEventArgs data)
         {
 			// Detect if there is data received.
 			if (string.IsNullOrEmpty(data.Data))
@@ -155,9 +155,8 @@ namespace Plugins
                 return;
             }
 
-            string ip = match.Captures[1].Value;
-
-
+            string ip = match.Groups[1].Value;
+            
             // Trigger login attempt event
             AccessAttempts accessAttempt = new AccessAttempts
             {
