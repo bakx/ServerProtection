@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Serilog;
@@ -43,8 +44,8 @@ namespace Plugins
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
 
-                process.StartInfo.FileName = "tail";
-                process.StartInfo.Arguments = $"-f {configItem.Log}";
+                process.StartInfo.FileName = configItem.Command;
+                process.StartInfo.Arguments = configItem.Arguments.Replace("{log}", configItem.Log);
 
                 process.Start();
                 process.BeginOutputReadLine();
@@ -84,17 +85,35 @@ namespace Plugins
             {
                 return;
             }
+            
+            // Common properties
+            string ip = "";
+            string user = "";
+            
+            // Detect if an IP is extracted
+            if (match.Groups.Keys.Contains("ip"))
+            {
+                ip = match.Groups["ip"].Value;
+            }
+            
+            // Detect if an username is extracted
+            if (match.Groups.Keys.Contains("user"))
+            {
+                user = match.Groups["user"].Value;
+            }
 
-            string ip = match.Groups[1].Value;
+            var description = configItem.Description
+                .Replace("{ip}", ip)
+                .Replace("{user}", user);
 
             // Trigger login attempt event
             AccessAttempts accessAttempt = new AccessAttempts
             {
                 IpAddress = ip,
                 EventDate = DateTime.Now,
-                Details = configItem.Description.Replace("{ip}", ip),
+                Details = description,
                 AttackType = AttackType.BruteForce,
-                Custom1 = "",
+                Custom1 = user,
                 Custom2 = 0,
                 Custom3 = 0
             };
