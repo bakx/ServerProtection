@@ -3,14 +3,21 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using NetFwTypeLib;
 using Serilog;
 using SP.Models;
 using SP.Plugins;
 
 namespace Plugins
 {
-	public class LinuxIpTablesFirewall : PluginBase
+	public class Firewall : PluginBase
 	{
+		private static readonly Type TypeFwPolicy2 =
+			Type.GetTypeFromCLSID(new Guid("{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}"));
+
+		private static readonly Type TypeFwRule =
+			Type.GetTypeFromCLSID(new Guid("{2C5BC43E-3369-4C33-AB0C-BE9469677AF4}"));
+
 		private bool blockIPRange;
 		private string dateFormat;
 		private string descriptionTemplate;
@@ -36,17 +43,17 @@ namespace Plugins
 				IConfigurationRoot config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
 #if DEBUG
-					.AddJsonFile("appSettings.development.json", false, true)
+					.AddJsonFile("appSettings.development.json", false)
 #else
-                    .AddJsonFile("appSettings.json", false, true)
+                    .AddJsonFile("appSettings.json", false)
 #endif
-					.AddJsonFile("logSettings.json", false, true)
+					.AddJsonFile("logSettings.json", false)
 					.Build();
 
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(LinuxIpTablesFirewall));
+					.ForContext(typeof(Firewall));
 
 				// Configuration settings
 				nameTemplate = config.GetSection("Firewall:Rules:NameTemplate").Get<string>();
@@ -64,7 +71,7 @@ namespace Plugins
 				if (log == null)
 				{
 					Console.WriteLine(e);
-					File.WriteAllText(nameof(LinuxIpTablesFirewall), e.Message);
+					File.WriteAllText(nameof(Firewall), e.Message);
 				}
 				else
 				{
@@ -131,41 +138,55 @@ namespace Plugins
 		/// </summary>
 		public override async Task<bool> BlockEvent(Blocks block)
 		{
-            // Ip Address to block
-            string blockIp = blockIPRange
-                ? block.IpAddressRange
-                : block.IpAddress;
+			INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
+			INetFwRule addRule = (INetFwRule) Activator.CreateInstance(TypeFwRule);
 
-            // Create Rule Name
-            block.FirewallRuleName = string.Format(nameTemplate, blockIp);
+			if (addRule != null && fwPolicy2 != null)
+			{
+				addRule.Profiles = fwPolicy2.CurrentProfileTypes;
 
-            // Create description
-            string description = string.Format(descriptionTemplate, block.EventDate.ToString(dateFormat));
+				// Ip Address to block
+				string blockIp = blockIPRange
+					? block.IpAddressRange
+					: block.IpAddress;
 
-            // Create firewall rule
-            //addRule.Name = block.FirewallRuleName;
-            //addRule.Description = description;
-            //addRule.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY;
+				// Create Rule Name
+				block.FirewallRuleName = string.Format(nameTemplate, blockIp);
 
-            //addRule.RemoteAddresses = blockIp;
+				// Create description
+				string description = string.Format(descriptionTemplate, block.EventDate.ToString(dateFormat));
 
-            //addRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
-            //addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
-            //addRule.Enabled = true;
+				// Create firewall rule
+				addRule.Name = block.FirewallRuleName;
+				addRule.Description = description;
+				addRule.Protocol = (int) NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_ANY;
 
-            try
-            {
-                //fwPolicy2.Rules.Add(addRule);
+				addRule.RemoteAddresses = blockIp;
 
-                // Diagnostics
-                log.Information(
-                    $"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
-            }
-            catch (Exception e)
-            {
-                // Diagnostics
-                log.Error($"Unable to create firewall rule {block.FirewallRuleName}: {e.Message}");
-            }
+				addRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
+				addRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
+				addRule.Enabled = true;
+
+				try
+				{
+					fwPolicy2.Rules.Add(addRule);
+
+					// Diagnostics
+					log.Information(
+						$"Created firewall rules {block.FirewallRuleName} to block {blockIp}");
+				}
+				catch (Exception e)
+				{
+					// Diagnostics
+					log.Error($"Unable to create firewall rule {block.FirewallRuleName}: {e.Message}");
+				}
+			}
+			else
+			{
+				// Diagnostics
+				log.Error(
+					$"Unable to add firewall rules. Null values: addRule = {addRule == null}, fwPolicy2 = {fwPolicy2 == null}");
+			}
 
 			return await Task.FromResult(true);
 		}
@@ -175,8 +196,8 @@ namespace Plugins
 		/// </summary>
 		public override async Task<bool> UnblockEvent(Blocks block)
 		{
-			//INetFwPolicy2 firewallPolicy = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
-			//firewallPolicy?.Rules.Remove(block.FirewallRuleName);
+			INetFwPolicy2 firewallPolicy = (INetFwPolicy2) Activator.CreateInstance(TypeFwPolicy2);
+			firewallPolicy?.Rules.Remove(block.FirewallRuleName);
 
 			// Diagnostics
 			log.Information($"Removed firewall rule {block.FirewallRuleName} that blocked {block.IpAddress}");

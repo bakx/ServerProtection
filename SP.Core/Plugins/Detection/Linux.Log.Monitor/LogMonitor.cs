@@ -1,25 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using SP.Models;
 using SP.Plugins;
 
 namespace Plugins
 {
-	public class LoadSimulator : PluginBase
+	public class LinuxLog : PluginBase
 	{
 		private IConfigurationRoot config;
 		private ILogger log;
-
 		private IPluginBase.AccessAttempt accessAttemptsHandler;
 
-		//
-		private int parallelThreads;
-		private Timer timer;
+        private List<ConfigurationItem> detectionConfig;
 
 		/// <summary>
 		/// </summary>
@@ -28,17 +25,28 @@ namespace Plugins
 		{
 			try
 			{
+				string basePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName;
+
+				if (basePath == null)
+				{
+					log.Warning("Unable to retrieve base path. Configuration might not load correctly.");
+				}
+
 				// Initiate the configuration
 				config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
-					.AddJsonFile("appSettings.json", false)
+#if DEBUG
+					.AddJsonFile("appSettings.development.json", false)
+#else
+                    .AddJsonFile("appSettings.json", false)
+#endif
 					.AddJsonFile("logSettings.json", false)
 					.Build();
 
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(LoadSimulator));
+					.ForContext(typeof(LinuxLog));
 
 				log.Information("Plugin initialized");
 
@@ -64,20 +72,18 @@ namespace Plugins
 		/// <returns></returns>
 		public override async Task<bool> Configure()
 		{
+			// Get configuration items
+            detectionConfig = config.GetSection("Detection").Get<List<ConfigurationItem>>();
+
 			try
-			{
-				// Load configuration
-				parallelThreads = config.GetSection("ParallelThreads").Get<int>();
+            {
+                foreach (Monitor monitor in detectionConfig.Select(item => new Monitor(accessAttemptsHandler, log, item)))
+                {
+                    monitor.Start();
+                }
 
-				timer = new Timer(Callback, null, TimeSpan.FromSeconds(5), TimeSpan.Zero);
-
-				return await Task.FromResult(true);
-			}
-			catch (Exception e)
-			{
-				log.Error("{0}", e);
-				return await Task.FromResult(false);
-			}
+                return await Task.FromResult(true);
+            }
 			finally
 			{
 				if (log == null)
@@ -102,33 +108,6 @@ namespace Plugins
 
 			accessAttemptsHandler = accessAttemptHandler;
 			return await Task.FromResult(true);
-		}
-
-		/// <summary>
-		/// </summary>
-		/// <param name="state"></param>
-		private void Callback(object state)
-		{
-			// Disable timer
-			timer.Change(0, 1000);
-
-			Parallel.For((long) 0, parallelThreads, (i, res) =>
-			{
-				// Trigger login attempt event
-				AccessAttempts accessAttempt = new AccessAttempts
-				{
-					IpAddress = $"123.123.123.{i}",
-					EventDate = DateTime.Now,
-					Details = "Repeated RDP login failures. Last user: loadTest"
-				};
-
-				// Log attempt
-				log.Information(
-					"Load test simulation.");
-
-				// Fire event
-				accessAttemptsHandler?.Invoke(accessAttempt);
-			});
 		}
 	}
 }

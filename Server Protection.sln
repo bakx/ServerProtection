@@ -64,9 +64,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Windows.IIS.Monitor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Honeypot", "SP.Core\Plugins\Detection\Honeypot\Plugins.Honeypot.csproj", "{A2700F5E-53E1-4EF1-9DB6-7431F17E5979}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Linux.Mail.Log.Monitor", "SP.Core\Plugins\Detection\Linux.Mail.Log.Monitor\Plugins.Linux.Mail.Log.Monitor.csproj", "{5BB3E287-F237-4469-A566-D982EF8E60AA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Linux.IPTables.Firewall", "SP.Core\Plugins\System\Linux.IPTables.Firewall\Plugins.Linux.IPTables.Firewall.csproj", "{C5622EB2-8C1D-4034-9828-32DD6C755BF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Linux.Log.Monitor", "SP.Core\Plugins\Detection\Linux.Log.Monitor\Plugins.Linux.Log.Monitor.csproj", "{A98544D1-7FFE-422F-A34B-896FC6BEA3CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -138,14 +138,14 @@ Global
 		{A2700F5E-53E1-4EF1-9DB6-7431F17E5979}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2700F5E-53E1-4EF1-9DB6-7431F17E5979}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2700F5E-53E1-4EF1-9DB6-7431F17E5979}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BB3E287-F237-4469-A566-D982EF8E60AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BB3E287-F237-4469-A566-D982EF8E60AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BB3E287-F237-4469-A566-D982EF8E60AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BB3E287-F237-4469-A566-D982EF8E60AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C5622EB2-8C1D-4034-9828-32DD6C755BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5622EB2-8C1D-4034-9828-32DD6C755BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5622EB2-8C1D-4034-9828-32DD6C755BF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5622EB2-8C1D-4034-9828-32DD6C755BF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A98544D1-7FFE-422F-A34B-896FC6BEA3CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A98544D1-7FFE-422F-A34B-896FC6BEA3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A98544D1-7FFE-422F-A34B-896FC6BEA3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A98544D1-7FFE-422F-A34B-896FC6BEA3CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,8 +174,8 @@ Global
 		{47C5017E-304C-4789-858F-2316340BB83C} = {D0F4AD41-8DD8-4512-8FB2-66B5653E6920}
 		{44E8E8AF-ECA1-44EB-8B81-AC49881B44D3} = {CD4A0264-EED2-471C-BDB9-B5FD57E687C1}
 		{A2700F5E-53E1-4EF1-9DB6-7431F17E5979} = {CD4A0264-EED2-471C-BDB9-B5FD57E687C1}
-		{5BB3E287-F237-4469-A566-D982EF8E60AA} = {CD4A0264-EED2-471C-BDB9-B5FD57E687C1}
 		{C5622EB2-8C1D-4034-9828-32DD6C755BF3} = {B61741DE-57EA-4D3F-9AE3-1922EC1765C7}
+		{A98544D1-7FFE-422F-A34B-896FC6BEA3CF} = {CD4A0264-EED2-471C-BDB9-B5FD57E687C1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4837EBBA-68D4-4C02-96CD-59A89BD6B8EE}

@@ -36,11 +36,11 @@ namespace Plugins
 				config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
 #if DEBUG
-					.AddJsonFile("appSettings.development.json", false, true)
+					.AddJsonFile("appSettings.development.json", false)
 #else
-                    .AddJsonFile("appSettings.json", false, true)
+                    .AddJsonFile("appSettings.json", false)
 #endif
-					.AddJsonFile("logSettings.json", false, true)
+					.AddJsonFile("logSettings.json", false)
 					.Build();
 
 				log = new LoggerConfiguration()

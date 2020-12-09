@@ -12,7 +12,7 @@ namespace SP.Core
 	internal static class Program
 	{
 		private static readonly string
-			BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+			BasePath = Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName;
 
 		public static void Main(string[] args)
 		{
@@ -37,11 +37,11 @@ namespace SP.Core
 			IConfigurationRoot config = new ConfigurationBuilder()
 				.SetBasePath(BasePath)
 #if DEBUG
-				.AddJsonFile("config/appSettings.development.json", false, true)
+				.AddJsonFile("config/appSettings.development.json", false)
 #else
-                .AddJsonFile("config/appSettings.json", false, true)
+                .AddJsonFile("config/appSettings.json", false)
 #endif
-				.AddJsonFile("config/logSettings.json", false, true)
+				.AddJsonFile("config/logSettings.json", false)
 				.Build();
 
 			ILogger log = new LoggerConfiguration()

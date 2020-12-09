@@ -5,5 +5,5 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:Plugins.WindowsEventMonitor.EventLogOnEntryWritten(System.Object,System.Diagnostics.EntryWrittenEventArgs)")]
-[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:Plugins.WindowsEventMonitor.Configure~System.Threading.Tasks.Task{System.Boolean}")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:Plugins.EventMonitor.EventLogOnEntryWritten(System.Object,System.Diagnostics.EntryWrittenEventArgs)")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:Plugins.EventMonitor.Configure~System.Threading.Tasks.Task{System.Boolean}")]

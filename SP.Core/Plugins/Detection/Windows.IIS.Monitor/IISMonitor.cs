@@ -15,7 +15,7 @@ using SP.Plugins;
 
 namespace Plugins
 {
-	public class WindowsIISMonitor : PluginBase
+	public class IISMonitor : PluginBase
 	{
 		private Thread thread;
 		private List<string> sitesMonitored;
@@ -34,7 +34,7 @@ namespace Plugins
 			{
 				// Initiate the configuration
 				config = new ConfigurationBuilder()
-					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName)
+					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
 #if DEBUG
 					.AddJsonFile("appSettings.development.json", false, true)
 #else
@@ -46,7 +46,7 @@ namespace Plugins
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(WindowsIISMonitor));
+					.ForContext(typeof(IISMonitor));
 
 				log.Information("Plugin initialized");
 

@@ -5,13 +5,13 @@
     <RootNamespace>Plugins</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Authors>Gideon Bakx</Authors>
-    <Product>Linux Mail Log Monitor</Product>
-    <PackageId>LinuxMailLogMonitor</PackageId>
-    <AssemblyName>Plugins.Linux.Mail.Log.Monitor</AssemblyName>
+    <Product>Linux Log Monitor</Product>
+    <PackageId>LinuxLogMonitor</PackageId>
+    <AssemblyName>Plugins.Linux.Log.Monitor</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\linux.mail.log.monitor</OutDir>
+    <OutDir>$(SolutionDir)\SP.Core\SP.Core\bin\$(Configuration)\$(TargetFramework)\plugins\linux.log.monitor</OutDir>
   </PropertyGroup>
 
   <ItemGroup>

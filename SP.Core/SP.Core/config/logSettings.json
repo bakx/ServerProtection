@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-Linux.Mail.Log.Monitor{Date}.log"
+                "pathFormat": "logs/core{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "plugins-Linux.Mail.Log.Monitor"
+      "Application": "SP.Core"
     }
   }
 }

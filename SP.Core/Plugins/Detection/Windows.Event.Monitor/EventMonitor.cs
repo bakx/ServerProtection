@@ -13,7 +13,7 @@ using EventLogEntry = Plugins.Models.EventLogEntry;
 
 namespace Plugins
 {
-	public class WindowsEventMonitor : PluginBase
+	public class EventMonitor : PluginBase
 	{
 		/// <summary>
 		/// </summary>
@@ -40,17 +40,17 @@ namespace Plugins
 				config = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
 #if DEBUG
-					.AddJsonFile("appSettings.development.json", false, true)
+					.AddJsonFile("appSettings.development.json", false)
 #else
-                    .AddJsonFile("appSettings.json", false, true)
+                    .AddJsonFile("appSettings.json", false)
 #endif
-					.AddJsonFile("logSettings.json", false, true)
+					.AddJsonFile("logSettings.json", false)
 					.Build();
 
 				log = new LoggerConfiguration()
 					.ReadFrom.Configuration(config)
 					.CreateLogger()
-					.ForContext(typeof(WindowsEventMonitor));
+					.ForContext(typeof(EventMonitor));
 
 				log.Information("Plugin initialized");
 
