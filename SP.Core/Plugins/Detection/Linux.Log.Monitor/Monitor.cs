@@ -16,18 +16,29 @@ namespace Plugins
 
         private readonly ILogger log;
         private readonly ConfigurationItem configItem;
-        private readonly IPluginBase.AccessAttempt accessAttemptsHandler;
+        private IPluginBase.AccessAttempt accessAttemptsHandler;
 
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public Monitor(IPluginBase.AccessAttempt accessAttemptsHandler, ILogger log, ConfigurationItem configItem)
+        public Monitor(ILogger log, ConfigurationItem configItem)
         {
-            this.accessAttemptsHandler = accessAttemptsHandler;
             this.log = log;
             this.configItem = configItem;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="handler"></param>
+        public void RegisterAccessAttemptsHandler(IPluginBase.AccessAttempt handler)
+        {
+            accessAttemptsHandler = handler;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void Start()
         {          
             // setfacl -m user:centos:r /var/log/maillog*
@@ -102,7 +113,7 @@ namespace Plugins
                 user = match.Groups["user"].Value;
             }
 
-            var description = configItem.Description
+            string description = configItem.Description
                 .Replace("{ip}", ip)
                 .Replace("{user}", user);
 
@@ -119,7 +130,7 @@ namespace Plugins
             };
 
             // Log attempt
-            log.Information($"{ip} failed SMTP authentication.");
+            log.Information(description);
 
             // Fire event
             accessAttemptsHandler?.Invoke(accessAttempt);

@@ -23,6 +23,7 @@ dotnet build SP.Core\Plugins\Detection\Honeypot\Plugins.Honeypot.csproj /t:Resto
 dotnet build SP.Core\Plugins\Reporting\AbuseIP\Plugins.AbuseIP.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Reporting\LiveReport.SignalR\Plugins.LiveReport.SignalR.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 msbuild.exe  SP.Core\Plugins\System\Windows.Firewall\Plugins.Windows.Firewall.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
+dotnet build SP.Core\Plugins\System\Linux.IPTables.Firewall\Plugins.Linux.IPTables.Firewall.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 
 dotnet build Api\SP.Api.Service\SP.Api.Service.csproj /t:Restore,Clean,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 
@@ -40,6 +41,7 @@ xcopy "SP.Core\Plugins\Detection\Honeypot\bin\%configurationName%\net5.0" "%rele
 xcopy "SP.Core\Plugins\Reporting\AbuseIP\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\abuseip\" /E
 xcopy "SP.Core\Plugins\Reporting\LiveReport.SignalR\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\livereport.signalr\" /E
 xcopy "SP.Core\Plugins\System\Windows.Firewall\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.firewall\" /E
+xcopy "SP.Core\Plugins\System\Linux.IPTables.Firewall\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\inux.iptables.firewall\" /E
 
 xcopy "Api\SP.Api.Service\bin\%configurationName%\net5.0" "%releasePath%\SP.Api.Service\" /E
 
@@ -57,6 +59,7 @@ signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\honeypot\Plugins.Honeypot.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\abuseip\Plugins.AbuseIP.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\windows.firewall\Plugins.Windows.Firewall.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\linux.iptables.firewall\Plugins.Linux.IPTables.Firewall.dll"
 
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Api.Service\SP.Api.Service.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Api.Service\SP.Api.Service.exe"
@@ -98,6 +101,9 @@ ren "%releasePath%\SP.Protect\plugins\honeypot\logSettings.json" "sample.logSett
 
 ren "%releasePath%\SP.Protect\plugins\windows.firewall\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\SP.Protect\plugins\windows.firewall\logSettings.json" "sample.logSettings.json"
+
+ren "%releasePath%\SP.Protect\plugins\linux.iptables.firewall\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\SP.Protect\plugins\linux.iptables.firewall\logSettings.json" "sample.logSettings.json"
 
 del "%releasePath%\SP.Protect\plugins\livereport.signalr\appSettings.development.json" /s /f /q
 ren "%releasePath%\SP.Protect\plugins\livereport.signalr\appSettings.json" "sample.appSettings.json"

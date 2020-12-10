@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -14,8 +13,8 @@ namespace Plugins
 	{
 		private IConfigurationRoot config;
 		private ILogger log;
-		private IPluginBase.AccessAttempt accessAttemptsHandler;
 
+		private readonly List<Monitor> monitors = new List<Monitor>();
         private List<ConfigurationItem> detectionConfig;
 
 		/// <summary>
@@ -77,9 +76,10 @@ namespace Plugins
 
 			try
             {
-                foreach (Monitor monitor in detectionConfig.Select(item => new Monitor(accessAttemptsHandler, log, item)))
+                foreach (ConfigurationItem configItem in detectionConfig)
                 {
-                    monitor.Start();
+                    Monitor monitor = new Monitor(log, configItem);
+                    monitors.Add(monitor);
                 }
 
                 return await Task.FromResult(true);
@@ -106,7 +106,13 @@ namespace Plugins
 		{
 			log.Debug($"Registered handler: {nameof(RegisterAccessAttemptHandler)}");
 
-			accessAttemptsHandler = accessAttemptHandler;
+			// Pass the handler to the listening monitors
+            foreach (Monitor monitor in monitors)
+            {
+				monitor.RegisterAccessAttemptsHandler(accessAttemptHandler);
+				monitor.Start();
+            }
+
 			return await Task.FromResult(true);
 		}
 	}

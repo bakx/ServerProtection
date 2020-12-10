@@ -19,7 +19,7 @@
             {
               "Name": "RollingFile",
               "Args": {
-                "pathFormat": "logs/plugins-Windows.Firewall{Date}.log"
+                "pathFormat": "logs/plugins-Linux.IPtables.Firewall{Date}.log"
               }
             }
           ]
@@ -39,7 +39,7 @@
       "WithThreadId"
     ],
     "Properties": {
-      "Application": "plugins-Windows.Firewall"
+      "Application": "plugins-Linux.IPtables.Firewall"
     }
   }
 }
