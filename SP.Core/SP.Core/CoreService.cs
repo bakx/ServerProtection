@@ -69,11 +69,11 @@ namespace SP.Core
 		}
 
 		// Unblock Timer
-		public Timer UnblockTimer { get; private set; }
+		private Timer UnblockTimer { get; set; }
 
 		/// <summary>
 		/// </summary>
-		protected async Task UnblockTask(object _)
+		private async Task UnblockTask(object _)
 		{
 			List<Blocks> unblockList = await apiHandler.GetUnblock(unblockTimeSpanMinutes);
 
@@ -352,7 +352,7 @@ namespace SP.Core
 			// Paths that contain plugins.
 			string[] pluginPaths =
 			{
-				Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? string.Empty, "plugins")
+				Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins")
 			};
 
 			// Loop through all plugin paths and retrieve all plugins that match the naming requirements.

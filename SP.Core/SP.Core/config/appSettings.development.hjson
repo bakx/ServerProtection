@@ -2,7 +2,7 @@
   # This is used to identify this machine (e.g., SERVER01)
   Source: "DEV"
 
-  Plugins: ["linux.log.monitor", "livereport.signalr", "api.grpc"]   
+  Plugins: ["linux.log.monitor", "linux.iptables.firewall", "livereport.signalr", "api.grpc"]   
     
   Blocking: {
     # Amount of attempts that will results in block if within timespan

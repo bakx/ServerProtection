@@ -4,28 +4,28 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": ".SP.Api.Service.dll",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "Api/SP.Api.Service/bin/Debug/net5.0/SP.Api.Service.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        // },
         // {
-        //     "name": "SP.Core.dll",
+        //     "name": ".SP.Api.Service.dll",
         //     "type": "coreclr",
         //     "request": "launch",
         //     "preLaunchTask": "build",
-        //     "program": "SP.Core/SP.Core/bin/Debug/net5.0/SP.Core.dll",
+        //     "program": "Api/SP.Api.Service/bin/Debug/net5.0/SP.Api.Service.dll",
         //     "args": [],
         //     "cwd": "${workspaceFolder}",
         //     "stopAtEntry": false,
         //     "console": "internalConsole"
         // },
+        {
+            "name": "SP.Core.dll",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "SP.Core/SP.Core/bin/Debug/net5.0/SP.Core.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
 
 
     ]

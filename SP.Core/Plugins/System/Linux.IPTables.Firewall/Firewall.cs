@@ -14,10 +14,13 @@ namespace Plugins
     {
         // Diagnostics
         private ILogger log;
-
-        // Handlers
-        public IPluginBase.Block BlockHandler { get; set; }
-        public IPluginBase.Unblock UnblockHandler { get; set; }
+        
+        //
+        // sudo yum install iptables-services
+        // sudo systemctl start iptables
+        // sudo systemctl enable iptables
+        //
+        
 
         /// <summary>
         /// </summary>
@@ -91,41 +94,27 @@ namespace Plugins
         }
 
         /// <summary>
-        /// Register the Block event handler
-        /// </summary>
-        /// <param name="blockHandler"></param>
-        /// <returns></returns>
-        public override async Task<bool> RegisterBlockHandler(IPluginBase.Block blockHandler)
-        {
-            log.Debug($"Registered handler: {nameof(RegisterBlockHandler)}");
-
-            BlockHandler = blockHandler;
-            return await Task.FromResult(true);
-        }
-
-        /// <summary>
-        /// Register the Unblock event handler
-        /// </summary>
-        public override async Task<bool> RegisterUnblockHandler(IPluginBase.Unblock unblockHandler)
-        {
-            log.Debug($"Registered handler: {nameof(RegisterUnblockHandler)}");
-
-            UnblockHandler = unblockHandler;
-            return await Task.FromResult(true);
-        }
-
-        /// <summary>
         /// Block the IP in the firewall
         /// </summary>
         public override async Task<bool> BlockEvent(Blocks block)
         {
-            await ExecuteEvent(ActionType.Add, block);
-            await Save();
+            try
+            {
+                block.FirewallRuleName = "";
+                
+                await ExecuteEvent(ActionType.Add, block);
+                await Save();
 
-            // Diagnostics
-            log.Information($"Created firewall rule that blocks {block.IpAddress}");
+                // Diagnostics
+                log.Information($"Created firewall rule that blocks {block.IpAddress}");
 
-            return await Task.FromResult(true);
+                return await Task.FromResult(true);
+            }
+            catch (Exception e)
+            {
+                log.Error($"Unable to create firewall rule : {e.Message}");
+                return await Task.FromResult(false);
+            }
         }
 
         /// <summary>
@@ -133,15 +122,24 @@ namespace Plugins
         /// </summary>
         public override async Task<bool> UnblockEvent(Blocks block)
         {
-            await ExecuteEvent(ActionType.Remove, block);
-            await Save();
+            try
+            {
+                block.FirewallRuleName = "";
+                
+                await ExecuteEvent(ActionType.Remove, block);
+                await Save();
 
-            // Diagnostics
-            log.Information($"Removed firewall rule that blocked {block.IpAddress}");
+                // Diagnostics
+                log.Information($"Removed firewall rule that blocked {block.IpAddress}");
 
-            return await Task.FromResult(true);
+                return await Task.FromResult(true);
+            }
+            catch (Exception e)
+            {
+                log.Error($"Unable to remove firewall rule : {e.Message}");
+                return await Task.FromResult(false);
+            }
         }
-
 
         /// <summary>
         /// 
@@ -149,7 +147,7 @@ namespace Plugins
         /// <param name="type"></param>
         /// <param name="block"></param>
         /// <returns></returns>
-        public async Task<bool> ExecuteEvent(ActionType type, Blocks block)
+        private async Task<bool> ExecuteEvent(ActionType type, Blocks block)
         {
             try
             {
@@ -162,7 +160,7 @@ namespace Plugins
                         RedirectStandardError = true,
                         FileName = "sudo",
                         Arguments =
-                            $"iptables -{(type == ActionType.Add ? "A" : "D")} INPUT -s {block.IpAddress} -j DROP"
+                            $"iptables -{(type == ActionType.Add ? "I" : "D")} INPUT -s {block.IpAddress} -j DROP"
                     }
                 };
 
@@ -173,13 +171,13 @@ namespace Plugins
             {
                 // Diagnostics
                 log.Error(
-                    $"Unable to {(type == ActionType.Add ? "create" : "remove")} firewall rule {block.FirewallRuleName}: {e.Message}");
+                    $"Unable to {(type == ActionType.Add ? "create" : "remove")} firewall rule {block.IpAddress}: {e.Message}");
             }
 
             return await Task.FromResult(true);
         }
 
-        public enum ActionType
+        private enum ActionType
         {
             Add,
             Remove
@@ -200,8 +198,8 @@ namespace Plugins
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
-                        FileName = "service ",
-                        Arguments = "iptables save"
+                        FileName = "sudo",
+                        Arguments = "service iptables save"
                     }
                 };
 
@@ -209,8 +207,7 @@ namespace Plugins
                 await process.WaitForExitAsync();
 
                 // Diagnostics
-                log.Information(
-                    "Saved firewall rule");
+                log.Information("Saved firewall rule");
             }
             catch (Exception e)
             {
