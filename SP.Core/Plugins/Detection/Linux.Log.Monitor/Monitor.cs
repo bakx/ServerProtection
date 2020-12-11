@@ -40,7 +40,7 @@ namespace Plugins
         /// 
         /// </summary>
         public void Start()
-        {          
+        {
             // setfacl -m user:centos:r /var/log/maillog*
             // setfacl -m user:centos:r /var/log/secure*
 
@@ -88,7 +88,7 @@ namespace Plugins
             }
 
             Regex temp = new Regex(configItem.Regex);
-            
+
             Match match = temp.Match(data.Data);
 
             // RegEx failed, likely not an authentication failure event
@@ -96,17 +96,17 @@ namespace Plugins
             {
                 return;
             }
-            
+
             // Common properties
             string ip = "";
             string user = "";
-            
+
             // Detect if an IP is extracted
             if (match.Groups.Keys.Contains("ip"))
             {
                 ip = match.Groups["ip"].Value;
             }
-            
+
             // Detect if an username is extracted
             if (match.Groups.Keys.Contains("user"))
             {

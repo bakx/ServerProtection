@@ -14,13 +14,12 @@ namespace Plugins
     {
         // Diagnostics
         private ILogger log;
-        
+
         //
         // sudo yum install iptables-services
         // sudo systemctl start iptables
         // sudo systemctl enable iptables
         //
-        
 
         /// <summary>
         /// </summary>
@@ -101,7 +100,7 @@ namespace Plugins
             try
             {
                 block.FirewallRuleName = "";
-                
+
                 await ExecuteEvent(ActionType.Add, block);
                 await Save();
 
@@ -125,7 +124,7 @@ namespace Plugins
             try
             {
                 block.FirewallRuleName = "";
-                
+
                 await ExecuteEvent(ActionType.Remove, block);
                 await Save();
 
@@ -147,7 +146,7 @@ namespace Plugins
         /// <param name="type"></param>
         /// <param name="block"></param>
         /// <returns></returns>
-        private async Task<bool> ExecuteEvent(ActionType type, Blocks block)
+        private async Task ExecuteEvent(ActionType type, Blocks block)
         {
             try
             {
@@ -173,8 +172,6 @@ namespace Plugins
                 log.Error(
                     $"Unable to {(type == ActionType.Add ? "create" : "remove")} firewall rule {block.IpAddress}: {e.Message}");
             }
-
-            return await Task.FromResult(true);
         }
 
         private enum ActionType
