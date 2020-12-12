@@ -41,6 +41,7 @@ namespace SP.Core
 		// Configuration items
 		private string source;
 		private List<string> enabledPlugins;
+        private List<string> whitelist;
 		private bool blockIPRange;
 		private bool ipDataEnabled;
 		private string ipDataKey;
@@ -68,12 +69,9 @@ namespace SP.Core
 			UnblockEvent += OnUnblockEvent;
 		}
 
-		// Unblock Timer
-		private Timer UnblockTimer { get; set; }
-
 		/// <summary>
 		/// </summary>
-		private async Task UnblockTask(object _)
+		private async Task UnblockTask()
 		{
 			List<Blocks> unblockList = await apiHandler.GetUnblock(unblockTimeSpanMinutes);
 
@@ -160,6 +158,14 @@ namespace SP.Core
 				Details = accessAttempt.Details,
 				AttackType = accessAttempt.AttackType
 			};
+
+			// Check whitelist
+            if (whitelist.Contains(accessAttempt.IpAddress))
+            {
+                // Diagnostics
+                log.LogDebug($"Ignoring block event for whitelisted IP address {accessAttempt.IpAddress}");
+                return;
+            }
 
 			// Diagnostics
 			log.LogDebug($"In routine to block {accessAttempt.IpAddress}");
@@ -304,7 +310,7 @@ namespace SP.Core
 			try
 			{
 				// Unblock timer
-				UnblockTimer = new Timer(async state => await UnblockTask(state), null, TimeSpan.Zero,
+				_ = new Timer(async state => await UnblockTask(), null, TimeSpan.Zero,
 					TimeSpan.FromMinutes(15));
 			}
 			catch(Exception e)
@@ -336,6 +342,9 @@ namespace SP.Core
 
 			// Should IP range (0/24) be blocked instead of single IP?
 			blockIPRange = config.GetSection("Blocking:BlockIPRange").Get<bool>();
+
+			// Whitelisted IPs
+            whitelist = config.GetSection("Whitelist").Get<List<string>>();
 
 			// Get IPData configuration items
 			ipDataUrl = config.GetSection("Tools:IPData:Url").Get<string>();

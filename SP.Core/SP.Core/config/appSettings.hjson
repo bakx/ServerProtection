@@ -32,6 +32,9 @@
     UnblockTimeSpanMinutes: 300
   }
 
+  # Whitelisted IP addresses
+  Whitelist: ["127.0.0.1"]
+
   Tools: {
     # IP Data api key
     IPData: {
