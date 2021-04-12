@@ -1,25 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SP.Models;
+using SP.Models.Enums;
 using SP.Plugins;
+using EventLogEntry = Plugins.Models.EventLogEntry;
 
 namespace Plugins
 {
-    public class LoadSimulator : PluginBase
+    public class EventMonitor : PluginBase
     {
-        private IConfigurationRoot config;
-        private ILogger log;
-
-        private IPluginBase.AccessAttempt accessAttemptsHandler;
+        /// <summary>
+        /// </summary>
+        public enum Events : long
+        {
+            FailedLogin = 4625
+        }
 
         //
-        private int parallelThreads;
-        private Timer timer;
+        private List<long> actionableEvents;
+
+        private IConfigurationRoot config;
+        private ILogger log;
+        private IPluginBase.AccessAttempt accessAttemptsHandler;
 
         /// <summary>
         /// </summary>
@@ -31,14 +39,18 @@ namespace Plugins
                 // Initiate the configuration
                 config = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
+#if DEBUG
+                    .AddJsonFile("appSettings.development.json", false)
+#else
                     .AddJsonFile("appSettings.json", false)
+#endif
                     .AddJsonFile("logSettings.json", false)
                     .Build();
 
                 log = new LoggerConfiguration()
                     .ReadFrom.Configuration(config)
                     .CreateLogger()
-                    .ForContext(typeof(LoadSimulator));
+                    .ForContext(typeof(EventMonitor));
 
                 log.Information("Plugin initialized");
 
@@ -66,10 +78,13 @@ namespace Plugins
         {
             try
             {
-                // Load configuration
-                parallelThreads = config.GetSection("ParallelThreads").Get<int>();
+                // Load actionable events from the configuration
+                actionableEvents = config.GetSection("ActionableEvents").Get<List<long>>();
 
-                timer = new Timer(Callback, null, TimeSpan.FromSeconds(5), TimeSpan.Zero);
+                // Register EventLog
+                EventLog eventLog = new EventLog("Security");
+                eventLog.EntryWritten += EventLogOnEntryWritten;
+                eventLog.EnableRaisingEvents = true;
 
                 return await Task.FromResult(true);
             }
@@ -106,29 +121,45 @@ namespace Plugins
 
         /// <summary>
         /// </summary>
-        /// <param name="state"></param>
-        private void Callback(object state)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EventLogOnEntryWritten(object sender, EntryWrittenEventArgs e)
         {
-            // Disable timer
-            timer.Change(0, 1000);
-
-            Parallel.For((long) 0, parallelThreads, (i, res) =>
+            // If not actionable, ignore
+            if (!actionableEvents.Contains(e.Entry.InstanceId))
             {
-                // Trigger login attempt event
-                AccessAttempts accessAttempt = new AccessAttempts
+                return;
+            }
+
+            switch (e.Entry.InstanceId)
+            {
+                // Failed login
+                case (long) Events.FailedLogin:
                 {
-                    IpAddress = $"123.123.123.{i}",
-                    EventDate = DateTime.Now,
-                    Details = "Repeated RDP login failures. Last user: loadTest"
-                };
+                    // Parse entry into EventLogEntry
+                    EventLogEntry eventLogEntry = new EventLogEntry(e.Entry.ReplacementStrings);
 
-                // Log attempt
-                log.Information(
-                    "Load test simulation.");
+                    // Trigger login attempt event
+                    AccessAttempts accessAttempt = new AccessAttempts
+                    {
+                        IpAddress = eventLogEntry.SourceNetworkAddress,
+                        EventDate = DateTime.Now,
+                        Details = $"Repeated RDP login failures. Last user: {eventLogEntry.AccountAccountName}",
+                        AttackType = AttackType.BruteForce,
+                        Custom1 = eventLogEntry.AccountAccountName,
+                        Custom2 = 0,
+                        Custom3 = 0
+                    };
 
-                // Fire event
-                accessAttemptsHandler?.Invoke(accessAttempt);
-            });
+                    // Log attempt
+                    log.Information(
+                        $"Workstation {eventLogEntry.SourceWorkstationName} from {eventLogEntry.SourceNetworkAddress} failed logging in.");
+
+                    // Fire event
+                    accessAttemptsHandler?.Invoke(accessAttempt);
+                    break;
+                }
+            }
         }
     }
 }

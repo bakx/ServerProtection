@@ -2,8 +2,8 @@
   # This is used to identify this machine (e.g., SERVER01)
   Source: "DEV"
 
-  Plugins: ["windows.firewall", "windows.iis.monitor", "windows.event.monitor", "honeypot", "livereport.signalr", "api.grpc"]
-
+  Plugins: ["linux.log.monitor", "linux.iptables.firewall", "livereport.signalr", "api.grpc"]   
+    
   Blocking: {
     # Amount of attempts that will results in block if within timespan
     Attempts: 3
@@ -20,6 +20,9 @@
     # Remove the block after NN minutes
     UnblockTimeSpanMinutes: 300
   }
+
+  # Whitelisted IP addresses
+  Whitelist: ["127.0.0.1"]
 
   Tools: {
     # IP Data api key

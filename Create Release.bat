@@ -18,10 +18,12 @@ dotnet build SP.Core\Plugins\Api\Api.Https\Plugins.Api.Https.csproj /t:Restore,R
 dotnet build SP.Core\Plugins\Api\Api.gRPC\Plugins.Api.gRPC.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Detection\Windows.Event.Monitor\Plugins.Windows.Event.Monitor.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Detection\Windows.IIS.Monitor\Plugins.Windows.IIS.Monitor.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
+dotnet build SP.Core\Plugins\Detection\Linux.Log.Monitor\Plugins.Linux.Log.Monitor.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Detection\Honeypot\Plugins.Honeypot.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Reporting\AbuseIP\Plugins.AbuseIP.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 dotnet build SP.Core\Plugins\Reporting\LiveReport.SignalR\Plugins.LiveReport.SignalR.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 msbuild.exe  SP.Core\Plugins\System\Windows.Firewall\Plugins.Windows.Firewall.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
+dotnet build SP.Core\Plugins\System\Linux.IPTables.Firewall\Plugins.Linux.IPTables.Firewall.csproj /t:Restore,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 
 dotnet build Api\SP.Api.Service\SP.Api.Service.csproj /t:Restore,Clean,Rebuild /p:Configuration=%configurationName% /p:Platform=AnyCPU
 
@@ -34,10 +36,12 @@ xcopy "SP.Core\Plugins\Api\Api.Https\bin\%configurationName%\net5.0" "%releasePa
 xcopy "SP.Core\Plugins\Api\Api.gRPC\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\api.gRPC\" /E
 xcopy "SP.Core\Plugins\Detection\Windows.Event.Monitor\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.event.monitor\" /E
 xcopy "SP.Core\Plugins\Detection\Windows.IIS.Monitor\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.iis.monitor\" /E
+xcopy "SP.Core\Plugins\Detection\Linux.Log.Monitor\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\linux.log.monitor\" /E
 xcopy "SP.Core\Plugins\Detection\Honeypot\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\honeypot\" /E
 xcopy "SP.Core\Plugins\Reporting\AbuseIP\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\abuseip\" /E
 xcopy "SP.Core\Plugins\Reporting\LiveReport.SignalR\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\livereport.signalr\" /E
 xcopy "SP.Core\Plugins\System\Windows.Firewall\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\windows.firewall\" /E
+xcopy "SP.Core\Plugins\System\Linux.IPTables.Firewall\bin\%configurationName%\net5.0" "%releasePath%\SP.Protect\plugins\inux.iptables.firewall\" /E
 
 xcopy "Api\SP.Api.Service\bin\%configurationName%\net5.0" "%releasePath%\SP.Api.Service\" /E
 
@@ -51,9 +55,11 @@ signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\api.grpc\Plugins.Api.gRPC.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\windows.event.monitor\Plugins.Windows.Event.Monitor.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\windows.iis.monitor\Plugins.Windows.IIS.Monitor.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\linux.log.monitor\Plugins.Linux.Log.Monitor.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\honeypot\Plugins.Honeypot.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\abuseip\Plugins.AbuseIP.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\windows.firewall\Plugins.Windows.Firewall.dll"
+signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Protect\plugins\linux.iptables.firewall\Plugins.Linux.IPTables.Firewall.dll"
 
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Api.Service\SP.Api.Service.dll"
 signtool.exe sign /n "Gideon Bakx" /fd sha256 /t "http://timestamp.comodoca.com" "%releasePath%\SP.Api.Service\SP.Api.Service.exe"
@@ -87,11 +93,17 @@ ren "%releasePath%\SP.Protect\plugins\windows.event.monitor\logSettings.json" "s
 ren "%releasePath%\SP.Protect\plugins\windows.iis.monitor\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\SP.Protect\plugins\windows.iis.monitor\logSettings.json" "sample.logSettings.json"
 
+ren "%releasePath%\SP.Protect\plugins\linux.log.monitor\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\SP.Protect\plugins\linux.log.monitor\logSettings.json" "sample.logSettings.json"
+
 ren "%releasePath%\SP.Protect\plugins\honeypot\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\SP.Protect\plugins\honeypot\logSettings.json" "sample.logSettings.json"
 
 ren "%releasePath%\SP.Protect\plugins\windows.firewall\appSettings.json" "sample.appSettings.json"
 ren "%releasePath%\SP.Protect\plugins\windows.firewall\logSettings.json" "sample.logSettings.json"
+
+ren "%releasePath%\SP.Protect\plugins\linux.iptables.firewall\appSettings.json" "sample.appSettings.json"
+ren "%releasePath%\SP.Protect\plugins\linux.iptables.firewall\logSettings.json" "sample.logSettings.json"
 
 del "%releasePath%\SP.Protect\plugins\livereport.signalr\appSettings.development.json" /s /f /q
 ren "%releasePath%\SP.Protect\plugins\livereport.signalr\appSettings.json" "sample.appSettings.json"

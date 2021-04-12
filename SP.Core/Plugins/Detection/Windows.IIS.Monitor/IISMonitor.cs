@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Sockets;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Diagnostics.Tracing;
+using Microsoft.Diagnostics.Tracing.Session;
 using Microsoft.Extensions.Configuration;
-using Plugins.Models;
 using Serilog;
 using SP.Models;
 using SP.Models.Enums;
@@ -14,16 +15,15 @@ using SP.Plugins;
 
 namespace Plugins
 {
-    public class Honeypot : PluginBase
+    public class IISMonitor : PluginBase
     {
         private Thread thread;
-        private List<int> portsMonitored;
+        private List<string> sitesMonitored;
+        private List<string> exploitPaths;
 
         private IConfigurationRoot config;
         private ILogger log;
         private IPluginBase.AccessAttempt accessAttemptsHandler;
-
-        public event EventHandler<ConnectionEventArgs> ConnectionRequest;
 
         /// <summary>
         /// </summary>
@@ -36,17 +36,17 @@ namespace Plugins
                 config = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName)
 #if DEBUG
-                    .AddJsonFile("appSettings.development.json", false)
+                    .AddJsonFile("appSettings.development.json", false, true)
 #else
-                    .AddJsonFile("appSettings.json", false)
+                    .AddJsonFile("appSettings.json", false, true)
 #endif
-                    .AddJsonFile("logSettings.json", false)
+                    .AddJsonFile("logSettings.json", false, true)
                     .Build();
 
                 log = new LoggerConfiguration()
                     .ReadFrom.Configuration(config)
                     .CreateLogger()
-                    .ForContext(typeof(Honeypot));
+                    .ForContext(typeof(IISMonitor));
 
                 log.Information("Plugin initialized");
 
@@ -74,42 +74,38 @@ namespace Plugins
         {
             try
             {
-                // Load ports monitored from the configuration
-                portsMonitored = config.GetSection("PortsMonitored").Get<List<int>>();
+                // Load actionable events from the configuration
+                sitesMonitored = config.GetSection("SitesMonitored").Get<List<string>>();
+                exploitPaths = config.GetSection("ExploitPaths").Get<List<string>>();
 
-                ConnectionRequest += OnConnectionRequest;
-
-                foreach (int port in portsMonitored)
+                thread = new Thread(() =>
                 {
-                    thread = new Thread(() =>
+                    using TraceEventSession session = new TraceEventSession("IIS-ETW");
+
+                    // Enable IIS ETW provider and set up a new trace source on it
+                    if (session.EnableProvider(IISLogTraceEventParser.ProviderName))
                     {
-                        TcpListener tcpListener = new TcpListener(System.Net.IPAddress.Any, port);
-                        tcpListener.Start();
+                        using ETWTraceEventSource traceSource =
+                            new ETWTraceEventSource("IIS-ETW", TraceEventSourceType.Session);
+                        IISLogTraceEventParser parser = new IISLogTraceEventParser(traceSource);
 
-                        // Diagnostics
-                        log.Information($"Listening on port {port}");
+                        // Listen to event
+                        parser.IISLog += ParserOnIISLog;
 
-                        // Enter the listening loop.
-                        while (true)
-                        {
-                            // Perform a blocking call to accept requests.
-                            TcpClient client = tcpListener.AcceptTcpClient();
-
-                            // Update Events.
-                            ConnectionRequest?.Invoke(this, new ConnectionEventArgs(client));
-
-                            // Remove client
-                            client.Dispose();
-                        }
-
-                        // ReSharper disable once FunctionNeverReturns
-                    })
+                        // Start processing
+                        traceSource.Process();
+                    }
+                    else
                     {
-                        IsBackground = true
-                    };
+                        log.Error($"Failed to enable provider ${IISLogTraceEventParser.ProviderName}");
+                    }
+                })
+                {
+                    IsBackground = true
+                };
+                thread.Start();
 
-                    thread.Start();
-                }
+                // traceSource.StopProcessing();
 
                 return await Task.FromResult(true);
             }
@@ -126,30 +122,49 @@ namespace Plugins
             }
         }
 
-        private void OnConnectionRequest(object sender, ConnectionEventArgs e)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        private void ParserOnIISLog(IISLogTraceData data)
         {
+            // Check if this site is monitored
+            if (!sitesMonitored.Contains(data.ServiceName))
+            {
+                return;
+            }
+
+            // Check if path is in prohibited list
+            bool isProhibited = exploitPaths.Any(p => data.UriStem.Contains(p));
+
+            if (!isProhibited)
+            {
+                return;
+            }
+
             // Trigger login attempt event
             AccessAttempts accessAttempt = new AccessAttempts
             {
-                IpAddress = e.IpAddress,
+                IpAddress = data.ClientIp,
                 EventDate = DateTime.Now,
-                Details = $"Attempt to access port {e.Port} by IP {e.IpAddress}",
+                Details = $"Attempt to access {data.UriStem} by IP {data.ClientIp}",
                 OverrideBlock = true,
-                AttackType = AttackType.PortScan,
-                Custom1 = "",
-                Custom2 = e.Port,
+                AttackType = AttackType.WebExploit,
+                Custom1 = data.UriStem,
+                Custom2 = 0,
                 Custom3 = 0
             };
 
             // Log attempt
-            log.Information($"Attempt to access port {e.Port} by IP {e.IpAddress}");
+            log.Information(
+                $"Attempt to access {data.UriStem} on {data.ServiceName} by IP {data.ClientIp}.");
 
             // Fire event
             accessAttemptsHandler?.Invoke(accessAttempt);
         }
 
         /// <summary>
-        /// Register the AccessAttemptHandler in order to fire events
+        /// Register the LoginAttemptsHandler in order to fire events
         /// </summary>
         /// <param name="accessAttemptHandler"></param>
         /// <returns></returns>
