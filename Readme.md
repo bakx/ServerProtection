@@ -96,5 +96,5 @@ https://documentation.serverprotection.dev
 ## Future goals - Not implemented
 * To support attacks on a complete server park, Server Protection communicates through the SP.API project. This allows system administrators to protect multiple servers simultanously 
 when an attack is detected.
-* Support Linux and Mac (by adding plug-ins specifically for these platforms)
+* Better support for Linux and Mac (by adding plug-ins specifically for these platforms)
  * Look into https://otx.alienvault.com/
